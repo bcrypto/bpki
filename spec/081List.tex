@@ -1,0 +1,132 @@
+\section{Перечень процессов}\label{PROCESSES.List}
+
+Управление сертификатами конечных участников ИОК реализуется через 
+следующие процессы. 
+
+\begin{enumerate}
+\item
+\texttt{Enroll}~--- 
+выпуск сертификата для стороны, которая располагает действительным
+удостоверением, но не обязательно действительным сертификатом.
+\item
+\texttt{Reenroll}~--- 
+обновление действительного сертификата.
+\item
+\texttt{Spawn}~--- 
+выпуск нового сертификата для стороны, которая располагает действительным
+сертификатом.
+\item
+\texttt{Retrieve}~--- 
+получение сертификата, который был запрошен в процессах~\texttt{Enroll},
+\texttt{Reenroll}, \texttt{Spawn} и выпуск которого задерживается.
+\item
+\texttt{Chpwd}~--- 
+установка (изменение) пароля отзыва сертификата.
+\item
+\texttt{Revoke}~--- 
+отзыв сертификата.
+\end{enumerate}
+
+Каждый процесс представляет собой последовательность определенных процедур. 
+При ошибке в любой из процедур процесс также завершается с ошибкой.
+
+Процесс может включать процедуры отправки запроса УЦ и получения 
+соответствующего ответа. Форматы запросов и ответов схематически представлены 
+в таблице~\ref{Table.PROCESSES.Fmt}. Используются имена типов данных и их 
+компонентов, описанные в разделе~\ref{FMT}. Нижний индекс~C означает 
+субъекта сертификата, нижний индекс~опРЦ~--- оператора~РЦ.
+Нижний индекс \texttt{SignedData} указывает на подписанта,
+нижний индекс \texttt{EnvelopedData}~--- на получателя конвертованных 
+данных.
+
+\begin{table}[bht]
+\caption{Схемы форматов запросов~/ ответов}
+\label{Table.PROCESSES.Fmt}
+\begin{tabular}{|l|l|}
+\hline
+\multicolumn{2}{|c|}{Процесс \texttt{Enroll}}\\
+\hline
+\hline
+\rule{0pt}{18pt}
+Запрос &
+$\texttt{EnvelopedData}_{\text{УЦ}}\bigl(
+\texttt{SignedData}_{\text{РЦ~| опРЦ}}
+(\texttt{CertificateRequest}_{\text{С}})\bigr)$ или\\
+&
+$\texttt{EnvelopedData}_{\text{УЦ}}(
+\texttt{CertificateRequest}_{\text{С}}[\texttt{enrollPwd}])$\\[6pt]
+\hline                                      
+%
+\rule{0pt}{18pt}
+Ответ &
+$\texttt{EnvelopedData}_{\text{РЦ~| опРЦ~| С}}(\texttt{Certificate}_{\text{С}})$ или\\
+&
+$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[6pt]
+\hline                                     
+\hline
+\multicolumn{2}{|c|}{Процессы \texttt{Reenroll} и \texttt{Spawn}}\\
+\hline
+\hline
+\rule{0pt}{15pt}
+Запрос &
+$\texttt{EnvelopedData}_{\text{УЦ}}\Bigl(
+\texttt{SignedData}_{\text{С}}
+(\texttt{CertificateRequest}_{\text{С}})\Bigr)$\\[3pt]
+\hline                                      
+%
+\rule{0pt}{15pt}
+Ответ &
+$\texttt{EnvelopedData}_{\text{С}}(\texttt{Certificate}_{\text{С}})$ или\\
+&
+$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
+\hline                                     
+\hline
+\multicolumn{2}{|c|}{Процесс \texttt{Retrieve}}\\
+\hline
+\hline
+\rule{0pt}{15pt}
+Запрос &
+\texttt{BPKIRetrieveReq}\\[3pt]
+\hline                                      
+%
+\rule{0pt}{15pt}
+Ответ &
+$\texttt{EnvelopedData}_{\text{РЦ~| опРЦ~| С}}(\texttt{Certificate}_{\text{С}})$ или\\
+&
+$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
+\hline                                     
+\hline
+\multicolumn{2}{|c|}{Процесс \texttt{Chpwd}}\\
+\hline
+\hline
+\rule{0pt}{15pt}
+Запрос &
+$\texttt{EnvelopedData}_{\text{УЦ}}(\texttt{revokePwd})$\\[3pt]
+\hline                                      
+%
+\rule{0pt}{15pt}
+Ответ &
+$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
+\hline                                     
+\hline
+\multicolumn{2}{|c|}{Процесс \texttt{Revoke}}\\
+\hline
+\hline
+\rule{0pt}{15pt}
+Запрос &
+$\texttt{EnvelopedData}_{\text{УЦ}}
+\bigl(\texttt{SignedData}_{\text{С}}(\texttt{BPKIRevoke})\bigr)$ или\\
+&
+$\texttt{EnvelopedData}_{\text{УЦ}}(\texttt{BPKIRevoke})$\\[3pt]
+\hline                                      
+%
+\rule{0pt}{15pt}
+Ответ &
+$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
+\hline                                     
+\end{tabular}
+\end{table}
+
+Перечисленные в таблице запросы и ответы транспортируются в виде пакетов 
+HTTP. Правила транспорта определяются в разделе~\ref{TRANSPORT}.
+

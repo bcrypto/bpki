@@ -1,0 +1,16 @@
+# TeX files
+*.aux
+*.idx
+*.log
+*.out
+*.thm
+*.toc
+*.dvi
+
+# Tmp files
+~*.*
+*.bak
+*.backup
+
+# Concrete files
+clear.bat

@@ -1,0 +1,55 @@
+\section{Ответ удостоверяющего центра}\label{FMT.BPKIResp}
+
+Формат ответа УЦ на запрос другой стороны определяется следующим типом~АСН.1:
+\begin{verbatim}
+BPKIResp ::= SEQUENCE { 
+  statusInfo  PKIStatusInfo,
+  requestId   OCTET STRING(SIZE(32)),
+  nonce       OCTET STRING(SIZE(8)) OPTIONAL }
+\end{verbatim}
+
+Компонент \texttt{statusInfo} содержит статус обработки запроса.
+Тип \texttt{PKIStatusInfo} определен в СТБ 34.101.tsp. 
+
+В случае успеха вложенные в~\texttt{statusInfo} 
+компоненты~\texttt{statusString} 
+и~\texttt{failInfo} должны быть опущены, а вложенный
+компонент~\texttt{status} должен принимать значение~\texttt{granted}.
+%
+Если ошибка произошла по причине загруженности УЦ или потому, 
+что обработка запроса требует времени, 
+то~\texttt{statusString} и~\texttt{failInfo} также должны быть опущены, 
+а~\texttt{status} должно принимать значение~\texttt{wating}.
+%
+При других ошибках в~\texttt{status} должно быть выбрано 
+значение~\texttt{rejection}, в~\texttt{failInfo} должен быть указан один 
+из кодов ошибки, определенных в СТБ 34.101.tsp, а в~\texttt{statusString} 
+ошибка может быть дополнительно прокомментирована.
+
+Компонент \texttt{requestId} содержит идентификатор запроса~--- 
+его хэш-значение, вычисляемое с помощью алгоритма \texttt{belt-hash} 
+(см. п.~\ref{CRYPTO.Hash}). 
+
+Необязательный компонент~\texttt{nonce} содержит синхропосылку~---
+случайную строку октетов, которая делает ответы УЦ неповторяющимися даже 
+при одинаковых~\texttt{requestId}. Компонент используется только в ответах
+на повторные запросы.
+
+\section{Повторный запрос}\label{FMT.BPKIRetrieveReq}
+
+Если получен ответ УЦ со статусом~\texttt{waiting}, то этот ответ можно 
+уточнить, обратившись к УЦ повторно. Формат повторного запроса 
+определяется следующим типом АСН.1:
+\begin{verbatim}
+BPKIRetrieveReq ::= SEQUENCE { 
+  requestId   OCTET STRING(SIZE(32)),
+  nonce       OCTET STRING(SIZE(8))}
+\end{verbatim}
+
+Компонент~\texttt{requestId} содержит идентификатор первоначального 
+запроса, компонент~\texttt{nonce}~--- синхропосылку. Синхропосылка 
+выбирается случайно отправителем повторного запроса. 
+
+При обработке повторного запроса~\texttt{BPKIRetrieveReq} УЦ
+переносит его компоненты в свой ответ~\texttt{BPKIResp}.
+
