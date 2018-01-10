@@ -93,17 +93,18 @@ call decode out/ca2/cert_ca2
 echo[
 echo -- 5 Creating End Entities -----------------------------------------------
 
-call :Create aa
-call :Create ra
-call :Create ocsp
-call :Create tsa
-call :Create dvcs
-call :Create ids
-call :Create tls
-call :Create np
-call :Create fnp
-call :Create lr
-call :Create acd
+call :Create aa 1825
+call :Create ra 1825
+call :Create ocsp 1095
+call :Create tsa 1825
+call :Create dvcs 1825
+call :Create ids 1095
+call :Create tls 1095
+call :Create np 730
+call :Create fnp 730
+call :Create lr 730
+call :Create opra 730
+call :Create acd 1095
 
 goto End
 
@@ -121,7 +122,7 @@ if %ERRORLEVEL% neq 0 goto Create_Error
 
 call decode out/%1/req_%1 > NUL
 
-openssl ca -name ca1 -batch -in out/%1/req_%1 -key ca1ca1 ^
+openssl ca -name ca1 -batch -in out/%1/req_%1 -key ca1ca1 -days %2 ^
   -extfile ./cfg/%1.cfg -extensions exts -out out/%1/cert_%1 -notext ^
   -utf8 2> NUL
 
