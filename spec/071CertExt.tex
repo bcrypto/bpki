@@ -104,9 +104,17 @@ TLS-сервер & + &  &  + & & \\
 
 % todo: В СТБ 34.101.67 дан пример сертификата ЦАС. В сертификате 
 % установлены (?) флаги digitalSignature и cRLSign. Разобраться.
+% reply: Никаких ограничений на установление каких-либо флагов я не нашел. 
+% Кроме того, что если установлен keyCertSign, то в basicConstaints 
+% указывается CA = true. Дальше отвечу по поводу digitalSignature.
 
 % todo: найден сертификат ЦАС, в расширении basicConstaints которого 
 % CA = true. Разобраться.
+% reply: Цитата из rfc 5755: So, the AC issuer's PKC MUST NOT have a
+% basicConstraints extension with the cA boolean set to TRUE. Эта 
+% цитата влечет за собой снятие флага keyCertSign, и установку 
+% флага в digitalSignature. Такой вариант выглядит наиболее разумным.
+% К тому же, будет соответствие с примером из СТБ.
 
 \subsection{Расширение \texttt{ExtKeyUsageSyntax}}\label{FMT.Ext.EKU}
 
@@ -138,6 +146,8 @@ TLS-сервер & + &  &  + & & \\
 (\verb|bpki-eku-clientTM|). Идентификаторы определены в приложении~\ref{ASN1}.
 
 % todo: emailProtection для SignedData / EnvelopedData?
+% reply: Как я понял, данный флаг используется если генерировать подпись в
+% Mime-формате. Подпись в openssl без этого флага генерируется.
 
 \subsection{Расширение \texttt{certificatePolicies}}\label{FMT.Ext.CP}
 
