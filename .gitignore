@@ -13,4 +13,5 @@
 *.backup
 
 # Concrete files
+dumpasn1
 clear.bat

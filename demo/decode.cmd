@@ -8,6 +8,6 @@ goto Decode_End
 :Decode_Success
 
 echo Processing %1... Ok
-dumpasn1 "%1.der" > "%1.txt" 2> NUL
+dumpasn1 -z -cdumpasn1_by.cfg "%1.der" > "%1.txt" 2> NUL
 
 :Decode_End
