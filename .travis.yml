@@ -3,23 +3,25 @@
 
 sudo: required
 
+dist: trusty
+
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install texlive-latex-base
-  - sudo apt-get install texlive-latex-extra
-  - sudo apt-get install texlive-latex-recommended
-  - sudo apt-get install texlive-lang-cyrillic
+  - sudo apt-get install -y --no-install-recommends
+      texlive-base texlive-latex-base texlive-latex-extra 
+      texlive-latex-recommended texlive-generic-extra
+      texlive-fonts-recommended texlive-generic-recommended
+      texlive-fonts-extra texlive-lang-cyrillic 
 
 script:
   - cd spec
-  - sudo pdflatex -interaction=nonstopmode bpki.tex
-  - sudo pdflatex -interaction=nonstopmode bpki.tex
+  - pdflatex -interaction=nonstopmode -halt-on-error bpki.tex
+  - pdflatex -interaction=nonstopmode -halt-on-error bpki.tex
 
 deploy:
   provider: releases
   api_key: 
     secure: "GaG4ItsLAyMvg8QzasuKhoAXugtc8PMFdWgFmI6m09U/EwryT+mfpZDFEJ7Y1+8eBHt3iUVtmunrW6mBkOossCpfhbudcaSjmSuW98pFhE1B+RFo/IxXYxc0eHQJzeO4cd3+1HfL8Ny3sIivr24mBHPGl1ddV8ozbcJG/R7ZhWUhQDOY3271vs6tmiR2YdFzB8j0wqdfM2tyykM6BH4BHiSXtN4F0dnpVaMfiesbfqYMIj4qAaB2zuTPmbhB6g6O6uAIFDI24Os3Tz7R1BR2+eb2nOx+myjjMgzd5qKA4od1xZCoGfGHTSa8iTDLHvwxF8PL9RdFoR8G5MjMyCxHHllT6C3Slai5Q4JDx7K3RPqNlut6E20P/D5larWKUpH4rbBkMF3w+XXuiqXHJaSZGtF4IScSrPVXfWEDiq5D80rYabFzh5WMLNAYVaYLlsutZM5C0MldHjLEWbiNyZaZ71S6/8ZVxAq7GJ8ytr8melAOu4lh/uwRWpQR4uH+JFogJgGDhOARyzFgKF0Pk5nK6oQilFA06E9wvjDT1Dvir5CeqX4/ix4s1s1iSgY/6Q+gsvtEGnwYfgYVoreex3yeHCyoGQBu8GY853tXoWqcYqRhpMhopdm6C3b/jPhrSAcbFBTvtjyTl2g5fC5JhAWHaU9SlT/QbwjmwmV/6cWEBLM="
-  file: "spec/bpki.pdf"
+  file: spec/bpki.pdf
   skip_cleanup: true
   overwrite: true
   on:
