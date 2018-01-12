@@ -1,10 +1,10 @@
 # Travis-CI Build for bpki
 # see travis-ci.org for details
 
-os: linux
+sudo: required
 
-# R contains LaTeX
-language: r
+before_install:
+  - sudo apt-get -qq update && sudo apt-get install -y --no-install-recommends texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra dvipng texlive-latex-recommended
 
 script:
   - cd spec
