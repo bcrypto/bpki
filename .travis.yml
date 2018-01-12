@@ -12,8 +12,8 @@ before_install:
 
 script:
   - cd spec
-  - pdflatex -interaction=nonstopmode bpki.tex
-  - pdflatex -interaction=nonstopmode bpki.tex
+  - sudo pdflatex -interaction=nonstopmode bpki.tex
+  - sudo pdflatex -interaction=nonstopmode bpki.tex
 
 deploy:
   provider: releases
