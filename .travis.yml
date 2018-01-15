@@ -16,6 +16,7 @@ script:
   - cd spec
   - pdflatex -interaction=nonstopmode -halt-on-error bpki.tex
   - pdflatex -interaction=nonstopmode -halt-on-error bpki.tex
+  - cd ..
 
 deploy:
   provider: releases
