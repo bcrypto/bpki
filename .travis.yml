@@ -3,17 +3,19 @@
 
 sudo: required
 
+dist: trusty
+
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install texlive-latex-base
-  - sudo apt-get install texlive-latex-extra
-  - sudo apt-get install texlive-latex-recommended
-  - sudo apt-get install texlive-lang-cyrillic
+  - sudo apt-get install -y --no-install-recommends
+      texlive-base texlive-latex-base texlive-latex-extra 
+      texlive-latex-recommended texlive-generic-extra
+      texlive-fonts-recommended texlive-generic-recommended
+      texlive-fonts-extra texlive-lang-cyrillic 
 
 script:
   - cd spec
-  - sudo pdflatex -interaction=nonstopmode bpki.tex
-  - sudo pdflatex -interaction=nonstopmode bpki.tex
+  - pdflatex -interaction=nonstopmode -halt-on-error bpki.tex
+  - pdflatex -interaction=nonstopmode -halt-on-error bpki.tex
 
 deploy:
   provider: releases
@@ -23,5 +25,5 @@ deploy:
   skip_cleanup: true
   overwrite: true
   on:
-    repo: spec/bpki
+    repo: bcrypto/bpki
     tags: true
