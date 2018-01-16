@@ -28,9 +28,9 @@ echo             stored in out/%1/req_%1.der
 
 echo    3 enveloping Signed(CSR(%1)) for CA1 
 
-openssl cms -encrypt -in out/%1/req_%1 -econtent_type pkcs7-data ^
-  -inform PEM -belt-cfb256 -out out/%1/enveloped_req_%1 ^
-  -outform PEM -recip out/ca1/cert_ca1
+openssl cms -encrypt -in out/%1/req_%1.der -econtent_type pkcs7-data ^
+  -binary -belt-cfb256 -out out/%1/enveloped_req_%1 ^
+  -outform pem -recip out/ca1/cert_ca1
 
 call decode out/%1/enveloped_req_%1 > NUL
 
@@ -45,9 +45,12 @@ echo             stored in out/%1/req_ticket_%1.bin
 
 echo    5 recovering Enveloped(CSR(%1))
 
-openssl cms -decrypt -in out/%1/enveloped_req_%1.der -inform der ^
- -inkey out/ca1/privkey_ca1 -out out/%1/recovered_req_%1 -outform pem ^
+openssl cms -decrypt -in out/%1/enveloped_req_%1 -inform pem ^
+ -inkey out/ca1/privkey_ca1 -out out/%1/recovered_req_%1.der -outform der ^
  -passin pass:ca1ca1
+
+openssl req -in out/%1/recovered_req_%1.der -inform der ^
+  -out out/%1/recovered_req_%1 -outform pem > NUL
 
 call decode out/%1/recovered_req_%1 > NUL
 
@@ -69,9 +72,9 @@ echo             stored in out/%1/tmp_cert_%1.der
 
 echo    8 enveloping Cert(%1) for %1
 
-openssl cms -encrypt -in out/%1/tmp_cert_%1 -econtent_type pkcs7-data ^
-  -inform PEM -belt-ctr256 -out out/%1/enveloped_cert_%1 ^
-  -outform PEM -recip out/%1/tmp_cert_%1
+openssl cms -encrypt -in out/%1/tmp_cert_%1.der -inform der -binary ^
+  -econtent_type pkcs7-data -belt-ctr256 -out out/%1/enveloped_cert_%1 ^
+  -outform pem -recip out/%1/tmp_cert_%1
 
 call decode out/%1/enveloped_cert_%1 > NUL
 
@@ -79,9 +82,12 @@ echo             stored in out/%1/enveloped_cert_%1.der
 
 echo    9 recovering Enveloped(Cert(%1)) 
 
-openssl cms -decrypt -in out/%1/enveloped_cert_%1.der -inform der ^
- -inkey out/%1/privkey_%1 -out out/%1/cert_%1 -outform pem ^
- -passin pass:%1%1%1
+openssl cms -decrypt -in out/%1/enveloped_cert_%1 -inform pem ^
+  -inkey out/%1/privkey_%1 -passin pass:%1%1%1 ^
+  -out out/%1/cert_%1.der -outform der
+
+openssl x509 -in out/%1/cert_%1.der -inform der ^
+  -out out/%1/cert_%1 -outform pem > NUL
 
 call decode out/%1/cert_%1 > NUL
 

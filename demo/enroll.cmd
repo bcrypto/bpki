@@ -9,15 +9,15 @@ set OPENSSL_CONF=openssl.cfg
 
 echo == Enroll1(fnp)... =======================================================
 
-call enroll1 np 730
+call enroll1 fnp 730
 
 echo == Enroll2(lr)... ========================================================
 
-call enroll2 fnp 730
+call enroll2 lr 730
 
 echo == Enroll3(np)... ========================================================
 
-call enroll3 lr 730
+call enroll3 np 730
 
 echo == Enroll4(acd)... =======================================================
 
