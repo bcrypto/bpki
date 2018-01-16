@@ -13,6 +13,5 @@
 *.backup
 
 # Concrete files
-dumpasn1
 support
 clear.bat

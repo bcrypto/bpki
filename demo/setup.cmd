@@ -1,12 +1,15 @@
 @echo off
+rem ===========================================================================
+rem \brief Создание модельных УЦ и выпуск модельных сертификатов
+rem \project bpki/demo
+rem ===========================================================================
 
 echo == Initializing PKI ======================================================
 
 set OPENSSL_CONF=openssl.cfg
 md out 2> NUL
 
-echo[
-echo -- 1 Generating Params ---------------------------------------------------
+echo == 1 Generating Params ===================================================
 
 openssl genpkey -genparam -algorithm bign -pkeyopt params:bign-curve256v1 ^
   -out out/params256
@@ -21,8 +24,7 @@ openssl pkeyparam -in out/params256 -noout -text
 openssl pkeyparam -in out/params384 -noout -text
 openssl pkeyparam -in out/params512 -noout -text
 
-echo[
-echo -- 2 Creating CA0 (Root CA) ----------------------------------------------
+echo == 2 Creating CA0 (Root CA) ==============================================
 
 cd out
 md ca0 2> NUL
@@ -44,8 +46,7 @@ openssl x509 -req -extfile ./cfg/ca0.cfg -extensions exts ^
 
 call decode out/ca0/cert_ca0
 
-echo[
-echo -- 3 Creating CA1 (Republican CA) ----------------------------------------
+echo == 3 Creating CA1 (Republican CA) ========================================
 
 cd out
 md ca1 2> NUL
@@ -67,8 +68,7 @@ openssl ca -name ca0 -create_serial -batch -in out/ca1/req_ca1 -key ca0ca0 ^
 
 call decode out/ca1/cert_ca1
 
-echo[
-echo -- 4 Creating CA2 (Subordinate CA) ---------------------------------------
+echo == 4 Creating CA2 (Subordinate CA) =======================================
 
 cd out
 md ca2 2> NUL
@@ -90,8 +90,7 @@ openssl ca -name ca1 -create_serial -batch -in out/ca2/req_ca2 -key ca1ca1 ^
 
 call decode out/ca2/cert_ca2
 
-echo[
-echo -- 5 Creating End Entities -----------------------------------------------
+echo == 5 Creating End Entities ===============================================
 
 call :Create aa 1825
 call :Create ra 1825
@@ -100,11 +99,7 @@ call :Create tsa 1825
 call :Create dvcs 1825
 call :Create ids 1095
 call :Create tls 1095
-call :Create np 730
-call :Create fnp 730
-call :Create lr 730
 call :Create opra 730
-call :Create acd 1095
 
 goto End
 
@@ -136,9 +131,10 @@ goto Create_End
 
 :Create_Error
 echo Creating %1... Failed
+exit /b 1
 
 :Create_End
-exit /b
+exit /b 0
 
 :End
 
