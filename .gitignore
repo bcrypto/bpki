@@ -7,6 +7,10 @@
 *.toc
 *.dvi
 
+# Graphic files
+*.eps
+*.cdr
+
 # Tmp files
 ~*.*
 *.bak
