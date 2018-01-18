@@ -67,8 +67,10 @@
 \verb|bpki-eku-clientTM| / \verb|bpki-eku-serverTM| 
 (см.~п.~\ref{FMT.Ext.EKU}). 
 
-% todo: extKeyUsage vs ExtKeyUsageSyntax
-% todo: дополнительные идентификаторы добавляет УЦ?
+% issue#5: подкорректировать названия расширений 
+% (extKeyUsage vs ExtKeyUsageSyntax vs ExtKeyUsage)
+
+% todo: глубже проработать с bpki-eku-clientTM / bpki-eku-serverTM
 
 \item 
 Расширение \texttt{subjectAltName}. В расширении указываются 
@@ -76,7 +78,7 @@
 Расширение должны включать в свои запросы TLS-сервер и КА 
 \doubt{и не должны включать другие стороны}.
 
-% todo: разрешить включать всем конечным участникам.
+% issue#4: "не должны" -> "могут".
 
 \item
 Расширение~\texttt{certificatePolicies}. В расширении

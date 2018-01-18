@@ -2,8 +2,7 @@
 rem ===========================================================================
 rem \brief Процесc Enroll1
 rem \project bpki/demo
-rem \params %1  конечный участник, %2  срок действия (дней)
-rem \pre Предварительно выполнен setup.cmd
+rem \params %1 -- конечный участник, %2 -- срок действия (дней)
 rem \pre Имеется конфигурационный файл ./cfg/%1.cfg 
 rem \post Сертификат out/%1/cert_%1 и промежуточные объекты.
 rem ===========================================================================
@@ -73,8 +72,7 @@ copy out\ca0\cert_ca0 + out\ca1\cert_ca1 out\%1\chain_opra > NUL
 
 openssl cms -verify -in out/%1/recovered_signed_req_%1 -inform pem ^
   -CAfile out/%1/chain_opra -certfile out/ca1/cert_ca1 ^
-  -signer out/%1/verified_cert_opra -out out/%1/verified_req_%1.der ^
-  -outform der -purpose any 2> NUL
+  -out out/%1/verified_req_%1.der -outform der -purpose any 2> NUL
 
 echo    8 extracting CSR(%1) from Signed(CSR(%1))
 

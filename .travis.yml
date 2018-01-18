@@ -1,9 +1,14 @@
 # Travis-CI Build for bpki
 # see travis-ci.org for details
 
-sudo: required
+language: generic
 
+branches:
+  only: master
+
+os: linux
 dist: trusty
+sudo: required
 
 before_install:
   - sudo apt-get install -y --no-install-recommends
