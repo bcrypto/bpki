@@ -64,6 +64,10 @@ BPKIRevokeReq ::= SEQUENCE {
 является обязательным, некритическим и содержит код причины 
 отзыва сертификата.  
 
+% todo: другие расширения? invalidityDate?
+
+% todo: поддерживать certificateHold? связанное расширение holdInstructionCode?
+
 Расширения СОС описывается компонентом \texttt{crlExtensions}
 типа~\texttt{CertificateList}. Должны использоваться следующие расширения: 
 \begin{enumerate}
