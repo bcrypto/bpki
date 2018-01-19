@@ -3,9 +3,6 @@
 
 language: generic
 
-branches:
-  only: master
-
 os: linux
 dist: trusty
 sudo: required
@@ -32,4 +29,5 @@ deploy:
   overwrite: true
   on:
     repo: bcrypto/bpki
+    branch: master
     tags: true
