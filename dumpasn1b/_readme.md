@@ -1,7 +1,9 @@
-\brief dumpasn1b: A local version of dumpasn1  
-\created 2018.01.15  
-\version 2018.01.19  
+<!--
+\brief dumpasn1b: A local version of dumpasn1
+\created 2018.01.15
+\version 2018.01.19
 \thanks dumpasn1 is writen by (c) Peter Gutmann <pgut001@cs.auckland.ac.nz>
+-->
 
 [dumpasn1](http://www.cs.auckland.ac.nz/~pgut001/dumpasn1.c) - 
 это популярная программа дампа контейнеров АСН.1. К сожалению, dumpasn1 не 
