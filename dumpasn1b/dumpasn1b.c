@@ -1,3 +1,38 @@
+/* 
+*******************************************************************************
+\file dumpasn1b.c
+\brief dumpasn1b: A local version of dumpasn1
+\created 2018.01.15
+\version 2018.01.25
+\thanks dumpasn1 is writen by (c) Peter Gutmann <pgut001@cs.auckland.ac.nz>
+*******************************************************************************
+*/
+
+/* 
+*******************************************************************************
+[dumpasn1](http://www.cs.auckland.ac.nz/~pgut001/dumpasn1.c) --
+это популярная программа дампа контейнеров АСН.1. К сожалению, dumpasn1 не 
+справляется с отображением русских и белорусских символов в строках типа 
+UTF8String. 
+
+Мы решили проблему, немного подправив dumpasn1. Новую редакцию программы
+назвали dumpasn1b. В dumpasn1b дамп выводится не на консоль, а в файл, имя 
+которого является дополнительным параметром командной строки. 
+Unicode-символы в выходном файле кодируются по правилам UTF-8.
+
+Еще одна проблема dumpasn1 -- определенные синтаксические конструкции АСН.1 
+могут быть восприняты неверно:
+\code
+  fputs( "Error: This file appears to be a base64-encoded text "
+    "file, not binary data.\n", stderr );
+\endcode
+Например, мы столкнулись с неверной интерпретацией запроса OCSP, который 
+начинается с 6 (!) вложенных друг в друга SEQUENCE. Проблема частично 
+устранена заменой строки "i >= 4" на строку "i >= 8".
+*******************************************************************************
+*/
+
+
 /* ASN.1 data display code, copyright Peter Gutmann 
    <pgut001@cs.auckland.ac.nz>, based on ASN.1 dump program by David Kemp, 
    with contributions from various people including Matthew Hamrick, Bruno 
@@ -1397,29 +1432,87 @@ static int displayUnicode( const wchar_t wCh, const int level )
 	}
 #endif /* __WIN32__ || __UNIX__ || __OS390__ */
 
-static int displayUTF8( const wchar_t wCh, const int level )
-	{
-	char buf[4];
-	size_t count = 1;
-	buf[0] = wCh & 255;
-	if (buf[0] & 0x80)
-		count++, buf[1] = (wCh >> 8) & 255;
-	if( level < maxNestLevel )
+static int displayBMP(const wchar_t wCh, const int level)
+{
+	// accordingly to https://stackoverflow.com/questions/4607413/
+	// c-library-to-convert-unicode-code-points-to-utf8
+	char buf[2];
+	size_t count = 0;
+	if (wCh < 0x80)
+		buf[count++] = (char)wCh;
+	else if (wCh < 0x800)
+		buf[count++] = 192 + wCh / 64, buf[count++] = 128 + wCh % 64;
+	else if (wCh -0xd800u < 0x800)
+		buf[count++] = '.';
+	else if (wCh < 0x10000)
+		buf[count++] = 224 + wCh / 4096, buf[count++] = 128 + wCh / 64 % 64, 
+			buf[count++] = 128 + wCh % 64;
+	else if (wCh < 0x110000)
+		buf[count++] = 240 + wCh / 262144, buf[count++] = 128 + wCh / 4096 % 64, 
+			buf[count++] = 128 + wCh / 64 % 64, buf[count++] = 128 + wCh % 64;
+	else
+		buf[count++] = '.';
+
+	if (level < maxNestLevel)
 	{
 #ifdef __WIN32__
 		int oldmode;
-		fflush( output );
-		oldmode = _setmode( fileno( output ), O_BINARY );
+		fflush(output);
+		oldmode = _setmode(fileno(output), O_BINARY);
 #endif
 		fwrite(buf, 1, count, output);
 #ifdef __WIN32__
-		fflush( output );
-		_setmode( fileno( output ), oldmode );
+		fflush(output);
+		_setmode(fileno(output), oldmode);
 #endif
-		}
-
-	return( TRUE );
 	}
+	return( TRUE );
+}
+
+static int displayUTF8(const wchar_t wCh, const int level)
+{
+	char buf[4];
+	size_t count = 1;
+	wchar_t c = wCh;
+	buf[0] = (char)c;
+	if (buf[0] & 0x80)
+	{
+		if ((buf[0] & 0xC0) == 0x80)
+			buf[0] = '?';
+		else
+		{
+			c /= 256, buf[count++] = (char)c;
+			if (buf[0] & 0x20)
+			{
+				c /= 256, buf[count++] = (char)c;
+				if (buf[0] & 0x10)
+				{
+					c /= 256, buf[count++] = (char)c;
+					if (buf[0] & 0x08)
+						buf[count = 1] = '?';
+				}
+			}
+		}
+	}
+	// underflow?
+	if (count > sizeof(wchar_t))
+		count = 1, buf[0] = '.';
+
+	if (level < maxNestLevel)
+	{
+#ifdef __WIN32__
+		int oldmode;
+		fflush(output);
+		oldmode = _setmode(fileno(output), O_BINARY);
+#endif
+		fwrite(buf, 1, count, output);
+#ifdef __WIN32__
+		fflush(output);
+		_setmode(fileno(output), oldmode);
+#endif
+	}
+	return( TRUE );
+}
 
 /* Display an integer value */
 
@@ -1923,7 +2016,7 @@ static void displayString( FILE *inFile, long length, int level,
 				{
 				const wchar_t wCh = ( ch << 8 ) | getc( inFile );
 				
-				if( displayUnicode( wCh, level ) )
+				if( displayBMP( wCh, level ) )
 					{
 					lineLength++;
 					i++;	/* We've read two characters for a wchar_t */
