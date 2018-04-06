@@ -72,7 +72,7 @@
   \chapter*{\mbox{}\hfillПриложение~#1\hfill\mbox{}}%
   \vskip-10pt
   {\centering
-    {(#2)}\par
+    {\bf (#2)}\par
     {\large\bf #3}\par
   }
   \def\@currentlabel{#1}
@@ -89,10 +89,12 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%% Local %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\renewcommand\figurename{Рисунок}
-\renewcommand\tablename{Таблица}
-\renewcommand\contentsname{Содержание}
-\renewcommand{\bibname}{Библиография}
+\addto\captionsrussian{%
+  \renewcommand{\figurename}{Рисунок}
+  \renewcommand\tablename{Таблица}
+  \renewcommand\contentsname{Содержание}
+  \renewcommand{\bibname}{Библиография}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%% Ops %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

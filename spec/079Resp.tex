@@ -9,7 +9,7 @@ BPKIResp ::= SEQUENCE {
 \end{verbatim}
 
 Компонент \texttt{statusInfo} содержит статус обработки запроса.
-Тип \texttt{PKIStatusInfo} определен в СТБ 34.101.tsp. 
+Тип \texttt{PKIStatusInfo} определен в СТБ 34.101.82. 
 
 В случае успеха вложенные в~\texttt{statusInfo} 
 компоненты~\texttt{statusString} 
@@ -23,12 +23,12 @@ BPKIResp ::= SEQUENCE {
 %
 При других ошибках в~\texttt{status} должно быть выбрано 
 значение~\texttt{rejection}, в~\texttt{failInfo} должен быть указан один 
-из кодов ошибки, определенных в СТБ 34.101.tsp, а в~\texttt{statusString} 
+из кодов ошибки, определенных в СТБ 34.101.82, а в~\texttt{statusString} 
 ошибка может быть дополнительно прокомментирована.
 
 Компонент \texttt{requestId} содержит идентификатор запроса~--- 
 его хэш-значение, вычисляемое с помощью алгоритма \texttt{belt-hash} 
-(см. п.~\ref{CRYPTO.Hash}). 
+(см.~\ref{CRYPTO.Hash}). 
 
 Необязательный компонент~\texttt{nonce} содержит синхропосылку~---
 случайную строку октетов, которая делает ответы УЦ неповторяющимися даже 
