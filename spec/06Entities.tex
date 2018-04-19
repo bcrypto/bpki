@@ -169,7 +169,7 @@ TLS-сервер. Подчиняется РУЦ.
 Этим ролям зарезервирован диапазон кодов от~0 до~49.
 
 Операторам ПУД назначается два идентификатора роли: 
-идентификатор ЮП (основнй) и идентификатор ПУД. 
+идентификатор ЮП (основной) и идентификатор ПУД. 
 %
 Агентам ПУД также назначается два идентификатора: 
 идентификатор КА (основной) и идентификатор ПУД. 
@@ -243,7 +243,6 @@ TLS-сервер. Подчиняется РУЦ.
 \texttt{countryName} & \verb|{2 5 4 6}| & \texttt{PrintableString(SIZE (2))}\\
 \texttt{localityName} & \verb|{2 5 4 7}| & \texttt{UTF8String(SIZE (1..128))}\\
 \texttt{stateOrProvinceName} & \verb|{2 5 4 8}| & \texttt{UTF8String(SIZE (1..128))}\\
-\texttt{streetAddress} & \verb|{2 5 4 9}| & \texttt{UTF8String(SIZE (1..128))}\\
 \texttt{organizationName} & \verb|{2 5 4 10}| & \texttt{UTF8String(SIZE (1..64))}\\
 \texttt{organizationalUnitName} & \verb|{2 5 4 11}| & \texttt{UTF8String(SIZE (1..64))}\\
 \texttt{title} & \verb|{2 5 4 12}| & \texttt{UTF8String(SIZE (1..64))}\\
@@ -251,6 +250,11 @@ TLS-сервер. Подчиняется РУЦ.
 \hline                                      
 \end{tabular}
 \end{table}
+
+\if 0
+issue#17: -=
+\texttt{streetAddress} & \verb|{2 5 4 9}| & \texttt{UTF8String(SIZE (1..128))}\\
+\fi
 
 \begin{table}[bht]
 \caption{Идентификационные атрибуты ролей}
@@ -280,19 +284,24 @@ TLS-сервер. Подчиняется РУЦ.
   & + & + &   &   & + & +\\
 \texttt{stateOrProvinceName} & 
   & $\pm$ & $\pm$ &   &   & $\pm$ & $\pm$\\
-\texttt{streetAddress} & 
-  & + & + &   &   & + & +\\
 \texttt{organizationName} & 
   & + & + &   &   & + & +\\
 \texttt{organizationalUnitName} & 
   & $\pm$ & $\pm$ &   &   & $\pm$ & $\pm$\\
 \texttt{title} & 
-  &   &   &   &   & + & +\\
+  &   &   &   &   & + & \\
 \texttt{organizationIdentifier} & 
   & + & + &   &   & + & +\\
 \hline                                      
 \end{tabular}
 \end{table}
+
+\if 0
+issue#17: -= 
+\texttt{streetAddress} & 
+  & + & + &   &   & + & +\\
+\fi
+
 
 В таблице~\ref{Table.ENTITIES.AttrRole} определяются атрибуты,
 которые должны быть включены в идентификационные данные сторон 
@@ -429,16 +438,22 @@ DNS-имя. Примеры имен: \str{www.example.org}, \str{example.org}, \
 
 \subsection{Атрибуты адреса}\label{ENTITIES.Id.L}
 
-В атрибутах~\texttt{localityName}, \texttt{stateOrProvinceName} 
-и~\texttt{streetAddress} задается юридический адрес организации,
-которая владеет ПУД или TLS-сервером, или организации, которую 
-представляет ЮП.
+В атрибутах~\texttt{localityName} и~\texttt{stateOrProvinceName} 
+задается информация из юридического адреса организации,
+которая владеет ПУД или TLS-сервером, или организации, 
+которую представляет ЮП.
 %
 Адрес задается в соответствии с удостоверением организации. 
 
-В атрибуте~\texttt{localityName} указывается город (городской поселок, 
-село, деревня). Примеры: \str{г.~Каменец}, \str{д.~Каменюки}.
+В атрибуте~\texttt{localityName} указывается населенный пункт:
+город (\str{г.}), городской поселок (\str{г.п.}), 
+деревня (\str{д.}), поселок (\str{п.}), 
+агрогородок (\str{а.г.}) и др. 
+%
+Примеры: \str{г.~Каменец}, \str{д.~Каменюки}.
 
+\if 0
+issue#17: -=
 В атрибуте \texttt{streetAddress} указываются следующие реквизиты:
 название улицы (проспекта, бульвара, переулка), номер дома, 
 номер корпуса (строения), номер квартиры (кабинета, помещения, офиса). 
@@ -448,6 +463,7 @@ DNS-имя. Примеры имен: \str{www.example.org}, \str{example.org}, \
 Примеры: 
 \str{ул.~Снежная, д.~1, корп.~1, кв.~2},
 \str{3-й пер. Морозный, д.~5}.
+\fi
 
 В атрибуте~\texttt{stateOrProvinceName} указываются названия области и района.
 Атрибут не включается в идентификационные данные, если в~\texttt{localityName}
