@@ -17,14 +17,22 @@
 Если не оговорено противное, каждое из определяемых расширений является 
 обязательным для каждой роли владельца сертификата. 
 
-\addendum{Сертификаты, издаваемые ПУЦ, могут содержать расширения, 
+Сертификаты, издаваемые ПУЦ, могут содержать расширения, 
 дополнительные к перечисляемым ниже. Включение дополнительных расширений в 
-сертификаты, издаваемые КУЦ и РУЦ, запрещено.}
+сертификаты, издаваемые КУЦ и РУЦ, запрещено.
+
+\addendum{
+Названия расширений даются в соответствии с СТБ 34.101.19.
+Исключение составляют расширения~\texttt{CertificatePolicies},
+\texttt{ExtKeyUsage} и~\texttt{AuthorityInfoAccess},
+названные в СТБ 34.101.19 соответственно~\texttt{certificatePolicies}, 
+\texttt{ExtKeyUsageSyntax} и~\texttt{AuthorityInfoAccessSyntax}.
+}
 
 \subsection{Расширения \texttt{SubjectKeyIdentifier} и 
 \texttt{AuthorityKeyIdentifier}}\label{FMT.Ext.SKID} 
 
-Расширения \texttt{SubjectKeyIdentifier} и \texttt{authorityKeyIdentifier} 
+Расширения \texttt{SubjectKeyIdentifier} и \texttt{AuthorityKeyIdentifier} 
 описывают хэш-значения открытых ключей эмитента и субъекта сертификата 
 соответственно. 
 
@@ -105,12 +113,12 @@ TLS-сервер & + &  &  + & & \\
 % issue#1: сделать как в СТБ 34.101.67 -- сбросить keyCertSign 
 % и установить digitalSignature 
 
-\subsection{Расширение \texttt{ExtKeyUsageSyntax}}\label{FMT.Ext.EKU}
+\subsection{Расширение \texttt{ExtKeyUsage}}\label{FMT.Ext.EKU}
 
-Расширение \texttt{ExtKeyUsageSyntax} описывает область применения ключей 
+Расширение \texttt{ExtKeyUsage} описывает область применения ключей 
 сертификата. Описание представляет собой набор идентификаторов АСН.1. 
 
-Расширение \texttt{ExtKeyUsageSyntax} не должно включаться в сертификаты КУЦ
+Расширение \texttt{ExtKeyUsage} не должно включаться в сертификаты КУЦ
 и должно включаться в сертификаты остальных сторон.
 Расширение является критическим.
 
@@ -130,19 +138,19 @@ TLS-сервер & + &  &  + & & \\
 идентификатор \verb|id-kp-clientAuth|, определенный в СТБ 34.101.19.
 
 В сертификате стороны, которая выступает в роли сервера (клиента) 
-терминального режима, расширение \texttt{ExtKeyUsageSyntax} должно содержать 
+терминального режима, расширение \texttt{ExtKeyUsage} должно содержать 
 идентификатор \verb|bpki-eku-serverTM|  
 (\verb|bpki-eku-clientTM|). Идентификаторы определены в приложении~\ref{ASN1}.
 
 % issue#2: добавить emailProtection?
 
-\subsection{Расширение \texttt{certificatePolicies}}\label{FMT.Ext.CP}
+\subsection{Расширение \texttt{CertificatePolicies}}\label{FMT.Ext.CP}
 
-Расширение \texttt{certificatePolicies} описывают политику, в соответствии 
+Расширение \texttt{CertificatePolicies} описывают политику, в соответствии 
 с которой был выпущен сертификат, и цели, в которых сертификат может 
 использоваться. 
 
-Расширение~\texttt{certificatePolicies} не должно включаться в сертификаты
+Расширение~\texttt{CertificatePolicies} не должно включаться в сертификаты
 КУЦ и должно включаться в сертификаты остальных сторон. 
 Расширение является \addendum{некритическим}.
 
@@ -159,7 +167,7 @@ TLS-сервер & + &  &  + & & \\
 Расширение может включать пункты нескольких ролей.
 Например, в сертификате оператора РЦ указываются две роли: ЮП и РЦ.
 
-В сертификате конечного участника расширение~\texttt{certificatePolicies} 
+В сертификате конечного участника расширение~\texttt{CertificatePolicies} 
 может содержать дополнительные пункты, отличные от пунктов 
 ролей. Например, пункт политики, в соответствии с которой 
 проверялось владение TLS-сервером заявленным DNS-именем.
@@ -205,9 +213,9 @@ URI-адрес точки распространения (через выбор 
 варианта~\texttt{fullName}, а затем 
 варианта~\texttt{uniformResourceIdentifier}). 
 
-\subsection{Расширение \texttt{AuthorityInfoAccessSyntax}}
+\subsection{Расширение~\texttt{AuthorityInfoAccess}}
 
-Расширение \texttt{AuthorityInfoAccessSyntax} описывает расположение 
+Расширение~\texttt{AuthorityInfoAccess} описывает расположение 
 OCSP-сервера, к которому следует обратиться, чтобы получить информацию о 
 статусе сертификата.
 
