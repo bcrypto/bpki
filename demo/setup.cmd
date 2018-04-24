@@ -68,7 +68,7 @@ call decode out/ca0/csr > nul
 
 openssl x509 -req -extfile ./cfg/ca0.cfg -extensions exts ^
   -in out/ca0/csr -signkey out/ca0/privkey -passin pass:ca0ca0ca0 ^
-  -out out/ca0/cert
+  -out out/ca0/cert 2> nul
 
 call decode out/ca0/cert > nul
 
