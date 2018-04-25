@@ -30,14 +30,20 @@
 Каждый процесс представляет собой последовательность определенных процедур. 
 При ошибке в любой из процедур процесс также завершается с ошибкой.
 
-Процесс может включать процедуры отправки запроса УЦ и получения 
-соответствующего ответа. Форматы запросов и ответов схематически представлены 
+\addendum{
+В каждом процессе обязательно участвует УЦ: РУЦ или ПУЦ.
+Процесс включает процедуры отправки запроса УЦ и получения 
+соответствующего ответа. 
+}
+Форматы запросов и ответов схематически представлены 
 в таблице~\ref{Table.PROCESSES.Fmt}. Используются имена типов данных и их 
 компонентов, описанные в разделе~\ref{FMT}. Нижний индекс~C означает 
-субъекта сертификата, нижний индекс~опРЦ~--- оператора~РЦ.
-Нижний индекс у~\texttt{SignedData} указывает на подписанта,
-нижний индекс у~\texttt{EnvelopedData}~--- на получателя конвертованных 
-данных.
+субъекта сертификата, нижний индекс~опРЦ~--- оператора~РЦ,
+\addendum{нижний индекс~агУЦ~--- агента~УЦ}.
+%
+Нижний индекс у контейнера~\texttt{SignedData} указывает на подписанта,
+у контейнера~\texttt{EnvelopedData}~--- на получателя конвертованных данных,
+у других объектов~--- на их владельцев.
 
 \begin{table}[bht]
 \caption{Схемы форматов запросов~/ ответов}
@@ -61,7 +67,7 @@ $\texttt{EnvelopedData}_{\text{УЦ}}(
 Ответ &
 $\texttt{EnvelopedData}_{\text{РЦ~| опРЦ~| С}}(\texttt{Certificate}_{\text{С}})$ или\\
 &
-$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[6pt]
+$\texttt{SignedData}_{\text{агУЦ}}(\texttt{BPKIResp})$\\[6pt]
 \hline                                     
 \hline
 \multicolumn{2}{|c|}{Процессы \texttt{Reenroll} и \texttt{Spawn}}\\
@@ -78,7 +84,7 @@ $\texttt{EnvelopedData}_{\text{УЦ}}\Bigl(
 Ответ &
 $\texttt{EnvelopedData}_{\text{С}}(\texttt{Certificate}_{\text{С}})$ или\\
 &
-$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
+$\texttt{SignedData}_{\text{агУЦ}}(\texttt{BPKIResp})$\\[3pt]
 \hline                                     
 \hline
 \multicolumn{2}{|c|}{Процесс \texttt{Retrieve}}\\
@@ -93,7 +99,7 @@ $\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
 Ответ &
 $\texttt{EnvelopedData}_{\text{РЦ~| опРЦ~| С}}(\texttt{Certificate}_{\text{С}})$ или\\
 &
-$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
+$\texttt{SignedData}_{\text{агУЦ}}(\texttt{BPKIResp})$\\[3pt]
 \hline                                     
 \hline
 \multicolumn{2}{|c|}{Процесс \texttt{Chpwd}}\\
@@ -106,7 +112,7 @@ $\texttt{EnvelopedData}_{\text{УЦ}}(\texttt{revokePwd})$\\[3pt]
 %
 \rule{0pt}{15pt}
 Ответ &
-$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
+$\texttt{SignedData}_{\text{агУЦ}}(\texttt{BPKIResp})$\\[3pt]
 \hline                                     
 \hline
 \multicolumn{2}{|c|}{Процесс \texttt{Revoke}}\\
@@ -122,11 +128,11 @@ $\texttt{EnvelopedData}_{\text{УЦ}}(\texttt{BPKIRevoke})$\\[3pt]
 %
 \rule{0pt}{15pt}
 Ответ &
-$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
+$\texttt{SignedData}_{\text{агУЦ}}(\texttt{BPKIResp})$\\[3pt]
 \hline                                     
 \end{tabular}
 \end{table}
 
 Перечисленные в таблице запросы и ответы транспортируются в виде пакетов 
-HTTP. Правила транспорта определяются в разделе~\ref{TRANSPORT}.
+HTTP. Правила транспорта определяются в~\ref{TRANSPORT}.
 
