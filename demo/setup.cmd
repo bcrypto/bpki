@@ -152,6 +152,7 @@ call :Create dvcs 1825
 call :Create ids 1095
 call :Create tls 1095
 call :Create opra 730
+call :Create agca1 1095
 
 echo == 6 Revoking opra (for OCSP testing) ====================================
 
