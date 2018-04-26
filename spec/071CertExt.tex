@@ -21,14 +21,12 @@
 дополнительные к перечисляемым ниже. Включение дополнительных расширений в 
 сертификаты, издаваемые КУЦ и РУЦ, запрещено.
 
-\addendum{
 Названия расширений даются в соответствии с СТБ 34.101.19.
 Исключение составляют расширения~\texttt{CertificatePolicies},
 \texttt{ExtKeyUsage} и~\texttt{AuthorityInfoAccess},
-которые в СТБ 34.101.19 имеют разнородные названия~\texttt{certificatePolicies}, 
+которые в СТБ 34.101.19 имеют названия~\texttt{certificatePolicies}, 
 \texttt{ExtKeyUsageSyntax} и~\texttt{AuthorityInfoAccessSyntax}
 соответственно.
-}
 
 \subsection{Расширения \texttt{SubjectKeyIdentifier} и 
 \texttt{AuthorityKeyIdentifier}}\label{FMT.Ext.SKID} 
@@ -37,10 +35,9 @@
 описывают хэш-значения открытых ключей эмитента и субъекта сертификата 
 соответственно. 
 
-\addendum{
 Расширения являются обязательными за одним исключением:
 \texttt{AuthorityKeyIdentifier} не должно включаться в самоподписанные 
-сертификаты КУЦ.} Расширения являются некритическими. 
+сертификаты КУЦ. Расширения являются некритическими. 
  
 Хэш-значения должны вычисляться либо с помощью алгоритма~\texttt{belt-hash}, 
 определенного в СТБ 34.101.31, либо с помощью алгоритма~SHA-1,
@@ -143,10 +140,11 @@ TLS-сервер  & + &   & + &   &   \\
 идентификаторы~\verb|id-kp-clientAuth| и~\verb|id-kp-emailProtection|, 
 определенные в СТБ 34.101.19.
 
+\doubt{
 В сертификате стороны, которая выступает в роли сервера (клиента) 
 терминального режима, расширение \texttt{ExtKeyUsage} должно содержать 
-идентификатор \verb|bpki-eku-serverTM|  
-(\verb|bpki-eku-clientTM|). Идентификаторы определены в приложении~\ref{ASN1}.
+идентификатор} \verb|bpki-eku-serverTM| (\verb|bpki-eku-clientTM|). 
+Идентификаторы определены в приложении~\ref{ASN1}.
 
 \subsection{Расширение \texttt{CertificatePolicies}}\label{FMT.Ext.CP}
 
