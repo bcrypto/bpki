@@ -58,6 +58,11 @@ BEGIN
   --  client of Terminal Mode
   bpki-eku-clientTM OBJECT IDENTIFIER ::= {bpki-eku 2}
 
+  bpki-at OBJECT IDENTIFIER ::= {bpki 4}
+
+  -- certificate validity period
+  bpki-at-certificateValidity OBJECT IDENTIFIER ::= {bpki-at 1}
+
   BPKIRevokeReq ::= SEQUENCE {
     subject       Name,
     serialNumber  INTEGER,
