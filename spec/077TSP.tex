@@ -51,15 +51,18 @@
 учетом его конкретизации в~\ref{FMT.SignedData}.
 
 Контейнер~\texttt{SignedData} должен содержать ссылку на сертификат СШВ
-в виде подписанного атрибута~\texttt{SigningCertificate} или~\texttt{SigningCertificateV2}.
-Атрибуты определены в СТБ 34.101.80. 
+в виде подписанного атрибута~\texttt{SigningCertificate} 
+или~\texttt{SigningCertificateV2}. Атрибуты определены в СТБ 34.101.80. 
 %
-Во вложенных в~\texttt{SigningCertificate} контейнерах~\texttt{CertID} должны 
-опускаться компоненты~\texttt{issueAndSerialNumber}.
+В~\texttt{SigningCertificate} должен быть опущен 
+компонент~\texttt{policies}, должен быть вложен только один 
+контейнер~\texttt{ESSCertID} (ссылка на сертификат СШВ) и в этом 
+контейнере должен быть опущен компонент~\texttt{issueAndSerial}.
 %
-В атрибуте~\texttt{SigningCertificateV2} должен быть опущен 
-компонент~\texttt{policy}, а во вложенных контейнерах~\texttt{ESSCertIDv2} 
-должны опускаться компоненты~\texttt{issueAndSerial}.
+Аналогично, в~\texttt{SigningCertificateV2} должен быть опущен 
+компонент~\texttt{policies}, в единственном вложенном 
+контейнере~\texttt{ESSCertIDv2} должен быть опущен 
+компонент~\texttt{issueAndSerial}.
 
 В контейнере~\texttt{SignedData} непосредственно подписывается 
 значение типа~\texttt{TSTInfo}. Это значение инкапсулируется 
