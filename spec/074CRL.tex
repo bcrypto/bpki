@@ -3,34 +3,33 @@
 Формат запроса на отзыв сертификата определяется следующим типом АСН.1:
 \begin{verbatim}
 BPKIRevokeReq ::= SEQUENCE {
-  subject         Name,
+  issuer          Name,
   serialNumber    INTEGER,
-  reason          CRLReason,
   revokePwd       UTF8String,
-  comment         UTF8String }
+  reasonCode      CRLReason,
+  invalidityDate  GeneralizedTime OPTIONAL,
+  comment         UTF8String OPTIONAL }
 \end{verbatim}
 
-Компонент \texttt{subjectName} содержит идентификационные 
-данные стороны, чей сертификат требуется отозвать. 
+Компонент~\texttt{issuer} содержит идентификационные данные эмитента 
+отзываемого сертификата.
 
-Компонент \texttt{serialNumber} содержит серийный номер 
-сертификата, который требуется отозвать.
+Компонент~\texttt{serialNumber} содержит серийный номер отзыввемого 
+сертификата.
 
-Компонент \texttt{reason} содержит причину отзыва сертификата. 
-Тип \texttt{CRLReason} определен в СТБ 34.101.19.
-
-Компонент \texttt{revokePwd} содержит пароль на отзыв 
+Компонент \texttt{revokePwd} содержит пароль отзыва
 сертификата, который является действительным в 
 настоящий момент. Этот пароль может быть предварительно
 задан в атрибуте~\texttt{challengePassword} запроса на получение сертификата 
 (см.~\ref{FMT.CSR.CP}) или установлен с помощью процесса~\texttt{Setpwd} 
 (см.~\ref{PROCESSES.Setpwd}). 
 
-Запрос на отзыв может подписываться субъектом сертификата,
-и тогда компонент~\texttt{revokePwd} может принимать любое значение,
-\addendum{в том числе быть пустой строкой.}
+Компоненты \texttt{reasonCode} и~\texttt{invalidityDate}
+содержат рекомендации УЦ по заполнению записи об отзыве сертификата
+(см. описание одноименных компонентов в~\ref{FMT.CRL}).
+УЦ может учесть рекомендации или проигнорировать их.
 
-Компонент~\texttt{comment} содержит дополнительную информацию 
+Необязательный компонент~\texttt{comment} содержит дополнительную информацию 
 о причине отзыва.
  
 \section{Список отозванных сертификатов}\label{FMT.CRL}

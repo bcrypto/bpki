@@ -76,11 +76,12 @@ BEGIN
   bpki-ct-resp OBJECT IDENTIFIER ::= {bpki-ct 7}
 
   BPKIRevokeReq ::= SEQUENCE {
-    subject       Name,
-    serialNumber  INTEGER,
-    reason        CRLReason,
-    revokePwd     UTF8String,
-    comment       UTF8String }
+    issuer          Name,
+    serialNumber    INTEGER,
+    revokePwd       UTF8String,
+    reasonCode      CRLReason,
+    invalidityDate  GeneralizedTime OPTIONAL,
+    comment         UTF8String OPTIONAL }
 
   BPKIResp ::= SEQUENCE { 
     statusInfo  PKIStatusInfo,
