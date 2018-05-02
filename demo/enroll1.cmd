@@ -3,7 +3,7 @@ rem ===========================================================================
 rem \brief Процесc Enroll1
 rem \project bpki/demo
 rem \created 2018.01.10
-rem \version 2018.01.25
+rem \version 2018.05.02
 rem \params %1 -- конечный участник, %2 -- срок действия (дней).
 rem \pre Имеется конфигурационный файл ./cfg/%1.cfg.
 rem \post Сертификат out/%1/cert и промежуточные объекты.
@@ -49,8 +49,8 @@ echo -- 4 signing CSR(%1) by opRA
 
 openssl cms -sign -signer out/opra/cert ^
   -inkey out/opra/privkey -passin pass:opraopraopra ^
-  -in out/%1/csr.der -binary -econtent_type pkcs7-data ^
-  -out out/%1/signed_csr -outform pem -nodetach -noattr
+  -in out/%1/csr.der -binary -econtent_type bpki-ct-enroll1-req ^
+  -out out/%1/signed_csr -outform pem -nodetach -nosmimecap
 
 call decode out/%1/signed_csr > nul
 
@@ -96,9 +96,8 @@ echo -- 8 verifying Signed(CSR(%1))
 copy out\ca0\cert + out\ca1\cert out\%1\chain_opra > nul
 
 openssl cms -verify -in out/%1/recovered_signed_csr -inform pem ^
-  -CAfile out/%1/chain_opra -certfile out/ca1/cert ^
-  -signer out/%1/verified_cert_opra -out out/%1/verified_csr.der ^
-  -outform der -purpose any 2> nul
+  -CAfile out/%1/chain_opra -signer out/%1/verified_cert_opra ^
+  -out out/%1/verified_csr.der -outform der -purpose any
 
 echo -- 9 extracting CSR(%1) from Signed(CSR(%1))
 
@@ -162,7 +161,7 @@ echo stored in out/%1/tmp_cert.der
 echo -- 14 enveloping Cert(%1) for opRA 
 
 openssl cms -encrypt -in out/%1/tmp_cert.der -binary -inform der ^
-  -econtent_type pkcs7-data -belt-ctr256 -out out/%1/enveloped_cert ^
+  -belt-ctr256 -out out/%1/enveloped_cert ^
   -outform pem -recip out/opra/cert -keyid
 
 call decode out/%1/enveloped_cert > nul

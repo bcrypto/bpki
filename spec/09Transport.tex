@@ -6,7 +6,7 @@
 организовать сетевое взаимодействие с УЦ. Взаимодействие носит
 клиент-серверный характер. УЦ является сервером~--- к нему приходит запрос,
 он высылает ответ. В процессе  \texttt{Enroll} клиентом является РЦ,
-оператор РЦ или субъект. В процессах \texttt{Chpwd}, \texttt{Reenroll},
+оператор РЦ или субъект. В процессах \texttt{Setpwd}, \texttt{Reenroll},
 \texttt{Spawn}, \texttt{Revoke} клиентом является субъект. В процессе
 \texttt{Retrieve} (который является вспомогательным для основных процессов
 \texttt{Enroll}, \texttt{Reenroll}, \texttt{Spawn}) клиентом может быть РЦ,
@@ -28,7 +28,7 @@
 \texttt{/reenroll},
 \texttt{/spawn},
 \texttt{/retrieve},
-\texttt{/chpwd},
+\texttt{/setpwd},
 \texttt{/revoke}.
 %
 Могут быть выделены узлы четырех сценариев процесса \texttt{Enroll}:

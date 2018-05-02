@@ -1,21 +1,22 @@
 @echo off
 rem ===========================================================================
-rem \brief Процесc Enroll2
+rem \brief Процесc Enroll3
 rem \project bpki/demo
 rem \created 2018.01.10
-rem \version 2018.01.25
+rem \version 2018.05.02
 rem \params %1 -- конечный участник, %2 -- срок действия (дней).
 rem \pre Имеется конфигурационный файл ./cfg/%1.cfg.
 rem \post Сертификат out/%1/cert и промежуточные объекты.
+rem \remark Опция -econtent_type игнорируется в "openssl cms -encrypt".
 rem ===========================================================================
 
 set OPENSSL_CONF=openssl.cfg
 
+echo -- 1 preparing dirs 
+
 if .%1. equ .. goto Usage
 if not exist "./cfg/%1.cfg" goto Usage
 if .%2. equ .. goto Usage
-
-echo -- 1 preparing dirs 
 
 cd out
 md %1 2> nul
@@ -45,30 +46,18 @@ call decode out/%1/csr > nul
 
 echo stored in out/%1/csr.der
 
-echo -- 4 signing CSR(%1) by RA 
+echo -- 4 enveloping CSR(%1) for CA1 
 
-openssl cms -sign -signer out/ra/cert ^
-  -inkey out/ra/privkey -passin pass:rarara ^
-  -in out/%1/csr.der -binary -econtent_type pkcs7-data ^
-  -out out/%1/signed_csr -outform pem -nodetach -noattr
+openssl cms -encrypt -binary -in out/%1/csr.der -belt-cfb256 ^
+  -out out/%1/enveloped_csr -outform pem -recip out/ca1/cert -keyid
 
-call decode out/%1/signed_csr > nul
+call decode out/%1/enveloped_csr > nul
 
-echo stored in out/%1/signed_csr.der
+echo stored in out/%1/enveloped_csr.der
 
-echo -- 5 enveloping Signed(CSR(%1)) for CA1 
+echo -- 5 calculating reqid = hash(Enveloped(CSR(%1)))
 
-openssl cms -encrypt -in out/%1/signed_csr.der -inform der -binary ^
-  -belt-cfb256 -out out/%1/enveloped_signed_csr ^ -outform pem ^
-  -recip out/ca1/cert -keyid
-
-call decode out/%1/enveloped_signed_csr > nul
-
-echo stored in out/%1/enveloped_signed_csr.der
-
-echo -- 6 calculating reqid = hash(Enveloped(Signed(CSR(%1)))) 
-
-openssl dgst -belt-hash out/%1/enveloped_signed_csr.der ^
+openssl dgst -belt-hash out/%1/enveloped_csr.der ^
   -hex > out/%1/csr_reqid.txt 2> nul
 
 set /p reqid=< out/%1/csr_reqid.txt
@@ -78,50 +67,23 @@ echo %reqid% > out/%1/csr_reqid.txt
 
 echo stored in out/%1/csr_reqid.txt
 
-echo -- 7 recovering Enveloped(Signed(CSR(%1))) 
+echo -- 6 recovering Enveloped(CSR(%1))
 
-openssl cms -decrypt -in out/%1/enveloped_signed_csr -inform pem ^
-  -inkey out/ca1/privkey -out out/%1/recovered_signed_csr.der ^
-  -binary -passin pass:ca1ca1ca1
+openssl cms -decrypt -in out/%1/enveloped_csr -inform pem ^
+ -inkey out/ca1/privkey -out out/%1/recovered_csr.der -outform der ^
+ -passin pass:ca1ca1ca1
 
-openssl pkcs7 -in out/%1/recovered_signed_csr.der -inform der ^
-  -out out/%1/recovered_signed_csr -outform pem > nul
+openssl req -in out/%1/recovered_csr.der -inform der ^
+  -out out/%1/recovered_csr -outform pem > nul
 
-call decode out/%1/recovered_signed_csr > nul
+call decode out/%1/recovered_csr > nul
 
-echo stored in out/%1/recovered_signed_csr.der
+echo stored in out/%1/recovered_csr.der
 
-echo -- 8 verifying Signed(CSR(%1)) 
+echo -- 7 validating CSR(%1).challengePassword.epwd
 
-copy out\ca0\cert + out\ca1\cert out\%1\chain_ra > nul
-
-openssl cms -verify -in out/%1/recovered_signed_csr -inform pem ^
-  -CAfile out/%1/chain_ra -certfile out/ca1/cert ^
-  -signer out/%1/verified_cert_ra -out out/%1/verified_csr.der ^
-  -outform der -purpose any 2> nul
-
-echo -- 9 extracting CSR(%1) from Signed(CSR(%1))
-
-openssl req -in out/%1/verified_csr.der -inform der ^
-  -out out/%1/verified_csr -outform pem > nul
-
-echo stored in out/%1/verified_csr.der
-
-echo -- 10 extracting Cert(signer of Signed(CSR(%1))) 
-
-call decode out/%1/verified_cert_ra > nul
-
-echo stored in out/%1/verified_cert_ra.der
-
-echo -- 11 validating Cert(signer of Signed(CSR(%1))).CertificatePolicies 
-
-openssl x509 -in out/%1/verified_cert_ra -text -noout ^
-  | findstr /C:"bpki-role-ra"
-
-echo -- 12 processing CSR(%1).challengePassword.info
-
-openssl req -in out/%1/verified_csr -inform pem ^
- -text -noout | findstr /C:"challenge" > out/ca1/pwd_%1.txt
+openssl req -in out/%1/recovered_csr -text ^
+  -noout | findstr /C:"challenge" > out/ca1/pwd_%1.txt
 
 set /p pwd=< out/ca1/pwd_%1.txt
 
@@ -149,31 +111,31 @@ echo %pwd% > out/ca1/pwd_%1.txt
 
 echo stored in out/ca1/pwd_%1.txt
 
-echo -- 13 creating Cert(%1) 
+echo -- 8 creating Cert(%1)
 
-openssl ca -name ca1 -batch -in out/%1/verified_csr ^
-  -key ca1ca1ca1 -days %2 -extfile ./cfg/%1.cfg -extensions exts ^
-  -out out/%1/tmp_cert -notext -utf8 2> nul
+openssl ca -name ca1 -batch -in out/%1/recovered_csr -key ca1ca1ca1 ^
+  -days %2 -extfile ./cfg/%1.cfg -extensions exts -out out/%1/tmp_cert ^
+  -notext -utf8 2> nul
 
 call decode out/%1/tmp_cert > nul
 
 echo stored in out/%1/tmp_cert.der
 
-echo -- 14 enveloping Cert(%1) for RA 
+echo -- 9 enveloping Cert(%1) for %1
 
 openssl cms -encrypt -in out/%1/tmp_cert.der -binary -inform der ^
-  -econtent_type pkcs7-data -belt-ctr256 -out out/%1/enveloped_cert ^
-  -outform pem -recip out/ra/cert -keyid
+  -belt-ctr256 -out out/%1/enveloped_cert ^
+  -outform pem -recip out/%1/tmp_cert -keyid
 
 call decode out/%1/enveloped_cert > nul
 
 echo stored in out/%1/enveloped_cert.der
 
-echo -- 15 recovering Enveloped(Cert(%1)) 
+echo -- 10 recovering Enveloped(Cert(%1)) 
 
 openssl cms -decrypt -in out/%1/enveloped_cert -inform pem ^
- -inkey out/ra/privkey -out out/%1/cert.der -outform der ^
- -passin pass:rarara
+  -inkey out/%1/privkey -passin pass:%1%1%1 ^
+  -out out/%1/cert.der -outform der
 
 openssl x509 -in out/%1/cert.der -inform der ^
   -out out/%1/cert -outform pem > nul
@@ -187,7 +149,7 @@ rem ===========================================================================
 goto End
 
 :Usage
-echo Usage: enroll3.cmd ^<entity^> ^<days^> 
+echo Usage: enroll4.cmd ^<entity^> ^<days^> 
 echo   \pre ./cfg/entity.cfg exists
 
 :End

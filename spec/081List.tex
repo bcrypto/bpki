@@ -20,7 +20,7 @@
 получение сертификата, который был запрошен в процессах~\texttt{Enroll},
 \texttt{Reenroll}, \texttt{Spawn} и выпуск которого задерживается.
 \item
-\texttt{Chpwd}~--- 
+\texttt{Setpwd}~--- 
 установка (изменение) пароля отзыва сертификата.
 \item
 \texttt{Revoke}~--- 
@@ -75,9 +75,9 @@ $\texttt{SignedData}_{\text{агУЦ}}(\texttt{BPKIResp})$\\[6pt]
 \hline
 \rule{0pt}{15pt}
 Запрос &
-$\texttt{EnvelopedData}_{\text{УЦ}}\Bigl(
+$\texttt{EnvelopedData}_{\text{УЦ}}\bigl(
 \texttt{SignedData}_{\text{С}}
-(\texttt{CertificateRequest}_{\text{С}})\Bigr)$\\[3pt]
+(\texttt{CertificateRequest}_{\text{С}})\bigr)$\\[3pt]
 \hline                                      
 %
 \rule{0pt}{15pt}
@@ -102,12 +102,13 @@ $\texttt{EnvelopedData}_{\text{РЦ~| опРЦ~| С}}(\texttt{Certificate}_{\tex
 $\texttt{SignedData}_{\text{агУЦ}}(\texttt{BPKIResp})$\\[3pt]
 \hline                                     
 \hline
-\multicolumn{2}{|c|}{Процесс \texttt{Chpwd}}\\
+\multicolumn{2}{|c|}{Процесс \texttt{Setpwd}}\\
 \hline
 \hline
 \rule{0pt}{15pt}
 Запрос &
-$\texttt{EnvelopedData}_{\text{УЦ}}(\texttt{revokePwd})$\\[3pt]
+$\texttt{EnvelopedData}_{\text{УЦ}}\bigl(
+\texttt{SignedData}_{\text{C}}(\texttt{revokePwd})\bigr)$\\[3pt]
 \hline                                      
 %
 \rule{0pt}{15pt}
