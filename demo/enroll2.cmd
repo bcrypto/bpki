@@ -99,8 +99,6 @@ openssl cms -verify -in out/%1/recovered_signed_csr -inform pem ^
   -CAfile out/%1/chain_ra -signer out/%1/verified_cert_ra ^
   -out out/%1/verified_csr.der -outform der -purpose any
 
-pause
-
 echo -- 9 extracting CSR(%1) from Signed(CSR(%1))
 
 openssl req -in out/%1/verified_csr.der -inform der ^
