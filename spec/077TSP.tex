@@ -64,12 +64,12 @@
 В~\texttt{SigningCertificate} должен быть опущен 
 компонент~\texttt{policies}, должен быть вложен только один 
 контейнер~\texttt{ESSCertID} (ссылка на сертификат СШВ) и в этом 
-контейнере должен быть опущен компонент~\texttt{issueAndSerial}.
+контейнере должен быть опущен компонент~\texttt{issuerSerial}.
 %
 Аналогично, в~\texttt{SigningCertificateV2} должен быть опущен 
 компонент~\texttt{policies}, в единственном вложенном 
 контейнере~\texttt{ESSCertIDv2} должен быть опущен 
-компонент~\texttt{issueAndSerial}.
+компонент~\texttt{issuerSerial}.
 
 В контейнере~\texttt{SignedData} непосредственно подписывается 
 значение типа~\texttt{TSTInfo}. Это значение инкапсулируется 
