@@ -3,7 +3,7 @@ rem ===========================================================================
 rem \brief Процесc Setpwd
 rem \project bpki/demo
 rem \created 2018.01.23
-rem \version 2018.05.02
+rem \version 2018.05.07
 rem \params %1 -- конечный участник, %2 -- новый пароль.
 rem \pre Имеется действительный сертификат ./out/%1/cert.
 rem ===========================================================================
@@ -48,7 +48,7 @@ echo -- 4 enveloping Signed(ASN1(newpwd)) for CA1
 
 openssl cms -encrypt -in out/%1/signed_setpwd.der -inform der -binary ^
   -belt-cfb256 -out out/%1/enveloped_signed_setpwd ^ -outform pem ^
-  -recip out/ca1/cert -keyid
+  -recip out/ca1/cert
 
 call decode out/%1/enveloped_signed_setpwd > nul
 
