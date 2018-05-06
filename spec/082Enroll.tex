@@ -190,6 +190,10 @@
 \texttt{URI}, \texttt{IP} (см.~\ref{ENTITIES.SAN}).
 
 В~\texttt{Enroll2} запрос заверяет РЦ.
+\doubt{
+В сертификате РЦ расширение \texttt{ExtKeyUsage}  (см.~\ref{FMT.Ext.EKU})
+должно содержать идентификатор~\texttt{bpki-eku-serverTM}.
+}
 
 В~\texttt{Enroll3} запрос не заверяется.
 
@@ -256,6 +260,13 @@ cвязать открытый ключ из сертификата отправ
 проверить, что в контейнер~\texttt{SignedData} вложены данные типа 
 \texttt{bpki-ct-enroll1-req} (сценарий~\texttt{Enroll1}) или
 \texttt{bpki-ct-enroll2-req} (сценарий~\texttt{Enroll2});
+}
+\item                                                    
+\doubt{
+если в контейнер~\texttt{SignedData} вложены данные типа 
+\texttt{bpki-ct-enroll2-req}, то проверить, что расширение
+\texttt{ExtKeyUsage} сертификата отправителя содержит 
+идентификатор~\texttt{bpki-eku-serverTM}; 
 }
 \item
 проверить действительность подписи контейнера~\texttt{SignedData}
