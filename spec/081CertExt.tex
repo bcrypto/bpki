@@ -21,12 +21,10 @@
 дополнительные к перечисляемым ниже. Включение дополнительных расширений в 
 сертификаты, издаваемые КУЦ и РУЦ, запрещено.
 
-Названия расширений даются в соответствии с СТБ 34.101.19.
-Исключение составляют расширения~\texttt{CertificatePolicies},
-\texttt{ExtKeyUsage} и~\texttt{AuthorityInfoAccess},
-которые в СТБ 34.101.19 имеют названия~\texttt{certificatePolicies}, 
-\texttt{ExtKeyUsageSyntax} и~\texttt{AuthorityInfoAccessSyntax}
-соответственно.
+Названия расширений даются в соответствии с СТБ 34.101.19
+(с прописной буквы). Исключение составляют расширения~\texttt{ExtKeyUsage} 
+и~\texttt{AuthorityInfoAccess}, названия которых в СТБ 34.101.19 
+сопровождаются суффиксом~\texttt{Syntax}.
 
 \subsection{Расширения \texttt{SubjectKeyIdentifier} и 
 \texttt{AuthorityKeyIdentifier}}\label{FMT.Ext.SKID} 
@@ -111,9 +109,6 @@ TLS-сервер  & + &   & + &   &   \\
 \hline                                     
 \end{tabular}
 \end{table}
-
-% issue#1: сделать как в СТБ 34.101.67 -- сбросить keyCertSign 
-% и установить digitalSignature 
 
 \subsection{Расширение \texttt{ExtKeyUsage}}\label{FMT.Ext.EKU}
 

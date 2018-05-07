@@ -785,6 +785,7 @@
       {\csname label\@enumctr\endcsname}{
         \itemsep=0pt\parsep=0pt\parskip=0pt\topsep=0pt\partopsep=0pt
         \itemindent=\parindent
+        \listparindent=\parindent
         \addtolength{\itemindent}{14pt}
         \labelsep=6pt
         \labelwidth=\parindent
@@ -804,6 +805,7 @@
         \itemindent=\parindent
         \labelsep=6pt
         \labelwidth=\parindent
+        \listparindent=\parindent
         \addtolength{\labelwidth}{-\labelsep}
        \def\makelabel##1{\hss\llap{\upshape##1}}}%
   \fi
