@@ -20,34 +20,34 @@
 в~\texttt{encapContentInfo}) должен принимать одно из следующих значений:
 
 \begin{enumerate}
-\item[1)]
+\item
 \texttt{id-ct-TSTInfo}, если подписывается ответ СШВ (см.~\ref{FMT.TSP.Resp});
-\item[2)]
+\item
 \texttt{id-ct-DVCSResponseData}, если подписывается ответ СЗД 
 (см.~\ref{FMT.DVCS.Resp});
-\item[3)]
+\item
 \texttt{bpki-ct-enroll1-req}, если в сценарии~\texttt{Enroll1} 
 процесса~\texttt{Enroll} подписывается запрос на выпуск сертификата 
 (см.~\ref{PROCESSES.Enroll.Signed}); 
-\item[4)]
+\item
 \texttt{bpki-ct-enroll2-req}, если в сценарии~\texttt{Enroll2} 
 процесса~\texttt{Enroll} подписывается запрос на выпуск сертификата 
 (см.~\ref{PROCESSES.Enroll.Signed}); 
-\item[5)]
+\item
 \texttt{bpki-ct-reenroll-req}, если в процессе~\texttt{Reenroll} 
 подписывается запрос на выпуск сертификата 
 (см.~\ref{PROCESSES.Reenroll}); 
-\item[6)]
+\item
 \texttt{bpki-ct-spawn-req}, если в процессе~\texttt{Spawn} 
 подписывается запрос на выпуск сертификата 
 (см.~\ref{PROCESSES.Spawn}); 
-\item[7)]
+\item
 \texttt{bpki-ct-setpwd-req}, если в процессе~\texttt{Setpwd} 
 подписывается новый пароль (см.~\ref{PROCESSES.Setpwd}); 
-\item[8)]
+\item
 \texttt{bpki-ct-revoke-req}, если в процессе~\texttt{Revoke} 
 подписывается запрос на отзыв сертификата (см.~\ref{PROCESSES.Revoke}); 
-\item[9)]
+\item
 \texttt{bpki-ct-resp}, если подписывается ответ УЦ 
 (см.~\ref{FMT.BPKIResp}).
 \end{enumerate}
@@ -65,32 +65,31 @@
 Список данных о подписантах (компонент~\texttt{signerInfos}) должен 
 содержать единственный контейнер типа~\texttt{SignerInfo}, и этот 
 контейнер должен быть заполнен следующим образом: 
-
 \begin{enumerate}
-\item[1)]
+\item
 версия (компонент \texttt{version}) должна равняться~$1$;
-\item[2)]
+\item
 идентификатор подписанта (\texttt{sid}) должен быть задан через
 тип~\texttt{IssuerAndSerialNumber}. Компоненты~\texttt{issuer} 
 и~\texttt{serialNumber} этого типа должны повторять одноименные компоненты 
 сертификата подписанта;
-\item[3)] 
+\item
 идентификатор алгоритма хэширования (\texttt{digestAlgorithm}) должен 
 совпадать с идентификатором, указанным в 
 компоненте~\texttt{digestAlgorithms} основного  
 контейнера~\texttt{SignedData};
-\item[4)]
+\item
 идентификатор алгоритмов ЭЦП (\texttt{signatureAlgorithm}) должен 
 быть выбран из перечня, заданного в~\ref{CRYPTO.Sign}. 
 Алгоритмы ЭЦП должны соответствовать алгоритму хэширования
 из~\texttt{digestAlgorithm} и открытому ключу подписанта;
-\item[5)]
+\item
 в список подписанных атрибутов (\texttt{signedAttrs}) должны 
 быть включены атрибуты <<Тип содержимого>> (\texttt{ContentType}),
 <<Хэш-значение>> (\texttt{MessageDigest}) и может быть включен
 атрибут <<Время подписания>> (\texttt{SigningTime}). 
 Все атрибуты определены в СТБ 34.101.23;
-\item[6)]
+\item
 список неподписанных атрибутов (\texttt{unsignedAttrs}) должен быть пуст.
 \end{enumerate}
 \end{enumerate}
@@ -121,9 +120,9 @@
 Тип конвертуемых данных (компонент~\texttt{eContentType}, вложенный 
 в~\texttt{encryptedContentInfo}) должен принимать одно из следующих значений:
 \begin{enumerate}
-\item[1)]
+\item
 \texttt{id-signedData}, если конвертуются подписанные данные;
-\item[2)]
+\item
 \texttt{id-data}, если конвертуются неструктурированные данные:
 запрос на получение сертификата, сертификат, запрос на отзыв сертификата.
 \end{enumerate}

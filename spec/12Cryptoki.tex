@@ -59,11 +59,11 @@ Cryptoki оперирует такими понятиями, как механи
 структуре~\verb|CK_MECHANISM_INFO| должны быть установлены 
 следующие флаги: 
 \begin{itemize}
-\item[--]
+\item
 \verb|CKF_EC_F_P|~--- используется ЭК над простым полем;
-\item[--]
+\item
 \verb|CKF_EC_NAMEDCURVE|~--- параметры ЭК задаются идентификатором;
-\item[--]
+\item
 \verb|CKF_EC_UNCOMPRESS|~--- точки ЭК задаются в несжатом виде.
 \end{itemize}
 
@@ -346,35 +346,35 @@ CK_ATTRIBUTE template[] = {
 Дополнительно к описанным выше функциям криптографических механизмов 
 в библиотеке должны быть реализованы следующие функции:
 \begin{itemize}
-\item[--]
+\item
 \verb|C_Initialize|~--- инициализация библиотеки;
-\item[--] 
+\item
 \verb|C_GetInfo|~--- получение информации о библиотеке;
-\item[--] 
+\item
 \verb|C_GetFunctionList|~--- получение указателей на реализации функций;
-\item[--]
+\item
 \verb|C_GetSlotList|~--- перечисление слотов в системе;
-\item[--]
+\item
 \verb|C_GetSlotInfo|~--- получение информации о слоте;
-\item[--]
+\item
 \verb|C_GetTokenInfo|~--- получение информации о КТ, находящемся в 
 выбранном слоте;
-\item[--]
+\item
 \verb|C_GetMechanismList|~--- 
 получение списка механизмов, поддерживаемых КТ;
-\item[--]
+\item
 \verb|C_OpenSession|~--- открытие сеанса работы с КТ;
-\item[--]
+\item
 \verb|C_Login|~--- парольная аутентификация пользователя перед КТ;
-\item[--]
+\item
 \verb|C_FindObjectsInit|, \verb|C_FindObjects|, 
 \verb|C_FindObjectsFinal|~---
 поиск объекта на основании шаблона;
-\item[--]
+\item
 \verb|C_Logout|~--- завершение работы с критическими объектами КТ;
-\item[--]
+\item
 \verb|C_CloseSession|~-- завершение сеанса работы с КТ;
-\item[--]
+\item
 \verb|C_Finalize|~-- завершение работы с библиотекой.
 \end{itemize}
 

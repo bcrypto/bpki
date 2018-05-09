@@ -63,21 +63,21 @@ BPKIRevokeReq ::= SEQUENCE {
 
 В расширении~\texttt{reasonCode} могут использоваться следующие коды:
 \begin{itemize}
-\item[--]
+\item
 \texttt{unspecified}~--- неопределенная причина;
-\item[--]
+\item
 \texttt{keyCompromise}~--- компрометация личного ключа конечного участника 
 (кроме ЦАС); 
-\item[--]
+\item
 \texttt{cACompromise}~--- компрометация личного ключа УЦ;
-\item[--]
+\item
 \texttt{affiliationChanged}~--- смена идентификационных данных субъекта;
-\item[--]
+\item
 \texttt{superseded}~--- смена сертификата (с помощью~\texttt{Reenroll}, 
 см.~\ref{PROCESSES.Reenroll}); 
-\item[--]
+\item
 \texttt{cessationOfOperation}~--- закрытие УЦ;
-\item[--]
+\item
 \texttt{aACompromise}~--- компрометация личного ключа ЦАС.
 \end{itemize}
 
