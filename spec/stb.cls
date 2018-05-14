@@ -778,41 +778,6 @@
   July\or August\or September\or October\or November\or December\fi
   \space\number\day, \number\year}
 
-\renewenvironment{enumerate}{%
-  \ifnum \@enumdepth >3 \@toodeep\else
-      \advance\@enumdepth \@ne
-      \edef\@enumctr{enum\romannumeral\the\@enumdepth}\list
-      {\csname label\@enumctr\endcsname}{
-        \itemsep=0pt\parsep=0pt\parskip=0pt\topsep=0pt\partopsep=0pt
-        \itemindent=\parindent
-        \addtolength{\itemindent}{14pt}
-        \labelsep=6pt
-        \labelwidth=\parindent
-        \addtolength{\labelwidth}{-\labelsep}
-        \usecounter{\@enumctr}
-        \def\makelabel##1{\hss\llap{\upshape##1}}}\fi}
-{\endlist}
-
-\let\endenumerate=\endlist % for efficiency
-
-\renewenvironment{itemize}{%
-  \ifnum\@itemdepth>3 \@toodeep
-  \else \advance\@itemdepth\@ne
-    \edef\@itemitem{labelitem\romannumeral\the\@itemdepth}%
-    \list{\csname\@itemitem\endcsname}{
-        \itemsep=0pt\parsep=0pt\parskip=0pt\topsep=0pt\partopsep=0pt
-        \itemindent=\parindent
-        \labelsep=6pt
-        \labelwidth=\parindent
-        \addtolength{\labelwidth}{-\labelsep}
-       \def\makelabel##1{\hss\llap{\upshape##1}}}%
-  \fi
-}{%
-  \endlist
-}
-\let\enditemize=\endlist % for efficiency
-
-
 \newenvironment{note}{
   \list{}{
     \labelwidth=0pt\topsep=0pt\partopsep=0pt\parskip=0pt\parsep=0pt

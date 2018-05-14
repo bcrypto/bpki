@@ -1,0 +1,148 @@
+\section{Подписанные данные}\label{FMT.SignedData}
+
+Формат подписанных данных задается типом \texttt{SignedData}, 
+который определен в СТБ 34.101.23. 
+
+Контейнер~\texttt{SignedData} заполняется по правилам СТБ~34.101.23
+со следующими уточнениями.
+
+\begin{enumerate}
+\item
+Версия синтаксиса (компонент \texttt{version}) должна равняться~$1$.
+
+\item
+Список идентификаторов алгоритмов хэширования (компонент 
+\texttt{digestAlgorithms}) должен содержать единственный элемент, и этот 
+элемент должен быть выбран из перечня, заданного в~\ref{CRYPTO.Hash}.
+
+\item
+Тип подписываемых данных (компонент~\texttt{eContentType}, вложенный 
+в~\texttt{encapContentInfo}) должен принимать одно из следующих значений:
+
+\begin{enumerate}
+\item
+\texttt{id-ct-TSTInfo}, если подписывается ответ СШВ (см.~\ref{FMT.TSP.Resp});
+\item
+\texttt{id-ct-DVCSResponseData}, если подписывается ответ СЗД 
+(см.~\ref{FMT.DVCS.Resp});
+\item
+\texttt{bpki-ct-enroll1-req}, если в сценарии~\texttt{Enroll1} 
+процесса~\texttt{Enroll} подписывается запрос на выпуск сертификата 
+(см.~\ref{PROCESSES.Enroll.Signed}); 
+\item
+\texttt{bpki-ct-enroll2-req}, если в сценарии~\texttt{Enroll2} 
+процесса~\texttt{Enroll} подписывается запрос на выпуск сертификата 
+(см.~\ref{PROCESSES.Enroll.Signed}); 
+\item
+\texttt{bpki-ct-reenroll-req}, если в процессе~\texttt{Reenroll} 
+подписывается запрос на выпуск сертификата 
+(см.~\ref{PROCESSES.Reenroll}); 
+\item
+\texttt{bpki-ct-spawn-req}, если в процессе~\texttt{Spawn} 
+подписывается запрос на выпуск сертификата 
+(см.~\ref{PROCESSES.Spawn}); 
+\item
+\texttt{bpki-ct-setpwd-req}, если в процессе~\texttt{Setpwd} 
+подписывается новый пароль (см.~\ref{PROCESSES.Setpwd}); 
+\item
+\texttt{bpki-ct-revoke-req}, если в процессе~\texttt{Revoke} 
+подписывается запрос на отзыв сертификата (см.~\ref{PROCESSES.Revoke}); 
+\item
+\texttt{bpki-ct-resp}, если подписывается ответ УЦ 
+(см.~\ref{FMT.BPKIResp}).
+\end{enumerate}
+
+Первый идентификатор определен в СТБ 34.101.81, второй~--- в СТБ 
+34.101.82, остальные~--- в приложении~\ref{ASN1}.
+
+\item
+Опциональный компонент~\texttt{certificates} должен присутствовать и 
+должен содержать единственный сертификат~--- сертификат подписанта.
+%
+Опциональный компонент~\texttt{crls} должен быть опушен.
+
+\item
+Список данных о подписантах (компонент~\texttt{signerInfos}) должен 
+содержать единственный контейнер типа~\texttt{SignerInfo}, и этот 
+контейнер должен быть заполнен следующим образом: 
+\begin{enumerate}
+\item
+версия (компонент \texttt{version}) должна равняться~$1$;
+\item
+идентификатор подписанта (\texttt{sid}) должен быть задан через
+тип~\texttt{IssuerAndSerialNumber}. Компоненты~\texttt{issuer} 
+и~\texttt{serialNumber} этого типа должны повторять одноименные компоненты 
+сертификата подписанта;
+\item
+идентификатор алгоритма хэширования (\texttt{digestAlgorithm}) должен 
+совпадать с идентификатором, указанным в 
+компоненте~\texttt{digestAlgorithms} основного  
+контейнера~\texttt{SignedData};
+\item
+идентификатор алгоритмов ЭЦП (\texttt{signatureAlgorithm}) должен 
+быть выбран из перечня, заданного в~\ref{CRYPTO.Sign}. 
+Алгоритмы ЭЦП должны соответствовать алгоритму хэширования
+из~\texttt{digestAlgorithm} и открытому ключу подписанта;
+\item
+в список подписанных атрибутов (\texttt{signedAttrs}) должны 
+быть включены атрибуты <<Тип содержимого>> (\texttt{ContentType}),
+<<Хэш-значение>> (\texttt{MessageDigest}) и может быть включен
+атрибут <<Время подписания>> (\texttt{SigningTime}). 
+Все атрибуты определены в СТБ 34.101.23;
+\item
+список неподписанных атрибутов (\texttt{unsignedAttrs}) должен быть пуст.
+\end{enumerate}
+\end{enumerate}
+
+\section{Конвертованные данные}\label{FMT.EnvelopedData}
+
+Формат конвертованных данных задается типом~\texttt{EnvelopedData}, который
+определен в СТБ 34.101.23. 
+
+Контейнер~\texttt{EnvelopedData} заполняется по правилам СТБ~34.101.23
+со следующими уточнениями.
+
+\begin{enumerate}
+\item
+Версия синтаксиса (компонент~\texttt{version}) должна равняться~$2$. 
+
+\item
+Опциональные компоненты~\texttt{originatorInfo} и 
+\texttt{unprotectedAttrs} должны быть опущены. 
+
+\item
+Идентификатор алгоритмов шифрования 
+(компонент~\texttt{contentEncryptionAlgorithm}, вложенный  
+в~\texttt{encryptedContentInfo}) должен быть выбран из перечня, 
+заданного в~\ref{CRYPTO.Encr}.
+
+\item
+Тип конвертуемых данных (компонент~\texttt{eContentType}, вложенный 
+в~\texttt{encryptedContentInfo}) должен принимать одно из следующих значений:
+\begin{enumerate}
+\item
+\texttt{id-signedData}, если конвертуются подписанные данные;
+\item
+\texttt{id-data}, если конвертуются неструктурированные данные:
+запрос на получение сертификата, сертификат, запрос на отзыв сертификата.
+\end{enumerate}
+
+\item
+Список сведений о получателях (компонент~\texttt{recipientInfos})
+должен содержать единственный контейнер~\texttt{RecipientInfo}, 
+и в этом контейнере должен быть выбран компонент~\texttt{ktri} 
+типа~\texttt{KeyTransRecipientInfo}. 
+
+Компонент~\texttt{ktri} должен формироваться следующим образом:
+\begin{enumerate}
+\item
+версия применяемого синтаксиса (компонент~\texttt{version})
+должна равняться~2;
+\item
+идентификатор получателя (\texttt{rid}) должен задаваться через выбор 
+варианта~\texttt{issuerAndSerialNumber};
+\item
+в~\texttt{keyEncryptionAlgortithm} должен быть установлен идентификатор
+алгоритмов~\texttt{bign-keytransport}, описанных в~\ref{CRYPTO.Transport}.
+\end{enumerate}
+\end{enumerate}

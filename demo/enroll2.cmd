@@ -3,7 +3,7 @@ rem ===========================================================================
 rem \brief Процесc Enroll2
 rem \project bpki/demo
 rem \created 2018.01.10
-rem \version 2018.01.25
+rem \version 2018.05.07
 rem \params %1 -- конечный участник, %2 -- срок действия (дней).
 rem \pre Имеется конфигурационный файл ./cfg/%1.cfg.
 rem \post Сертификат out/%1/cert и промежуточные объекты.
@@ -49,8 +49,8 @@ echo -- 4 signing CSR(%1) by RA
 
 openssl cms -sign -signer out/ra/cert ^
   -inkey out/ra/privkey -passin pass:rarara ^
-  -in out/%1/csr.der -binary -econtent_type pkcs7-data ^
-  -out out/%1/signed_csr -outform pem -nodetach -noattr
+  -in out/%1/csr.der -binary -econtent_type bpki-ct-enroll2-req ^
+  -out out/%1/signed_csr -outform pem -nodetach -nosmimecap
 
 call decode out/%1/signed_csr > nul
 
@@ -60,7 +60,7 @@ echo -- 5 enveloping Signed(CSR(%1)) for CA1
 
 openssl cms -encrypt -in out/%1/signed_csr.der -inform der -binary ^
   -belt-cfb256 -out out/%1/enveloped_signed_csr ^ -outform pem ^
-  -recip out/ca1/cert -keyid
+  -recip out/ca1/cert
 
 call decode out/%1/enveloped_signed_csr > nul
 
@@ -96,9 +96,8 @@ echo -- 8 verifying Signed(CSR(%1))
 copy out\ca0\cert + out\ca1\cert out\%1\chain_ra > nul
 
 openssl cms -verify -in out/%1/recovered_signed_csr -inform pem ^
-  -CAfile out/%1/chain_ra -certfile out/ca1/cert ^
-  -signer out/%1/verified_cert_ra -out out/%1/verified_csr.der ^
-  -outform der -purpose any 2> nul
+  -CAfile out/%1/chain_ra -signer out/%1/verified_cert_ra ^
+  -out out/%1/verified_csr.der -outform der -purpose any
 
 echo -- 9 extracting CSR(%1) from Signed(CSR(%1))
 
@@ -162,8 +161,8 @@ echo stored in out/%1/tmp_cert.der
 echo -- 14 enveloping Cert(%1) for RA 
 
 openssl cms -encrypt -in out/%1/tmp_cert.der -binary -inform der ^
-  -econtent_type pkcs7-data -belt-ctr256 -out out/%1/enveloped_cert ^
-  -outform pem -recip out/ra/cert -keyid
+  -belt-ctr256 -out out/%1/enveloped_cert ^
+  -outform pem -recip out/ra/cert
 
 call decode out/%1/enveloped_cert > nul
 

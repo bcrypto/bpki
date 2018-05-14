@@ -20,7 +20,7 @@
 получение сертификата, который был запрошен в процессах~\texttt{Enroll},
 \texttt{Reenroll}, \texttt{Spawn} и выпуск которого задерживается.
 \item
-\texttt{Chpwd}~--- 
+\texttt{Setpwd}~--- 
 установка (изменение) пароля отзыва сертификата.
 \item
 \texttt{Revoke}~--- 
@@ -30,14 +30,20 @@
 Каждый процесс представляет собой последовательность определенных процедур. 
 При ошибке в любой из процедур процесс также завершается с ошибкой.
 
-Процесс может включать процедуры отправки запроса УЦ и получения 
-соответствующего ответа. Форматы запросов и ответов схематически представлены 
+В каждом процессе обязательно участвует УЦ: РУЦ или ПУЦ.
+Процесс включает процедуры отправки запроса УЦ и получения 
+соответствующего ответа. Сторона, отправляющая запрос, должна располагать 
+сертификатом УЦ.
+
+Форматы запросов и ответов схематически представлены 
 в таблице~\ref{Table.PROCESSES.Fmt}. Используются имена типов данных и их 
 компонентов, описанные в разделе~\ref{FMT}. Нижний индекс~C означает 
-субъекта сертификата, нижний индекс~опРЦ~--- оператора~РЦ.
-Нижний индекс у~\texttt{SignedData} указывает на подписанта,
-нижний индекс у~\texttt{EnvelopedData}~--- на получателя конвертованных 
-данных.
+субъекта сертификата, нижний индекс~опРЦ~--- оператора~РЦ,
+нижний индекс~агУЦ~--- агента~УЦ.
+%
+Нижний индекс у контейнера~\texttt{SignedData} указывает на подписанта,
+у контейнера~\texttt{EnvelopedData}~--- на получателя конвертованных данных,
+у других объектов~--- на их владельцев.
 
 \begin{table}[bht]
 \caption{Схемы форматов запросов~/ ответов}
@@ -61,7 +67,7 @@ $\texttt{EnvelopedData}_{\text{УЦ}}(
 Ответ &
 $\texttt{EnvelopedData}_{\text{РЦ~| опРЦ~| С}}(\texttt{Certificate}_{\text{С}})$ или\\
 &
-$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[6pt]
+$\texttt{SignedData}_{\text{агУЦ}}(\texttt{BPKIResp})$\\[6pt]
 \hline                                     
 \hline
 \multicolumn{2}{|c|}{Процессы \texttt{Reenroll} и \texttt{Spawn}}\\
@@ -69,16 +75,16 @@ $\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[6pt]
 \hline
 \rule{0pt}{15pt}
 Запрос &
-$\texttt{EnvelopedData}_{\text{УЦ}}\Bigl(
+$\texttt{EnvelopedData}_{\text{УЦ}}\bigl(
 \texttt{SignedData}_{\text{С}}
-(\texttt{CertificateRequest}_{\text{С}})\Bigr)$\\[3pt]
+(\texttt{CertificateRequest}_{\text{С}})\bigr)$\\[3pt]
 \hline                                      
 %
 \rule{0pt}{15pt}
 Ответ &
 $\texttt{EnvelopedData}_{\text{С}}(\texttt{Certificate}_{\text{С}})$ или\\
 &
-$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
+$\texttt{SignedData}_{\text{агУЦ}}(\texttt{BPKIResp})$\\[3pt]
 \hline                                     
 \hline
 \multicolumn{2}{|c|}{Процесс \texttt{Retrieve}}\\
@@ -93,20 +99,21 @@ $\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
 Ответ &
 $\texttt{EnvelopedData}_{\text{РЦ~| опРЦ~| С}}(\texttt{Certificate}_{\text{С}})$ или\\
 &
-$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
+$\texttt{SignedData}_{\text{агУЦ}}(\texttt{BPKIResp})$\\[3pt]
 \hline                                     
 \hline
-\multicolumn{2}{|c|}{Процесс \texttt{Chpwd}}\\
+\multicolumn{2}{|c|}{Процесс \texttt{Setpwd}}\\
 \hline
 \hline
 \rule{0pt}{15pt}
 Запрос &
-$\texttt{EnvelopedData}_{\text{УЦ}}(\texttt{revokePwd})$\\[3pt]
+$\texttt{EnvelopedData}_{\text{УЦ}}\bigl(
+\texttt{SignedData}_{\text{C}}(\texttt{revokePwd})\bigr)$\\[3pt]
 \hline                                      
 %
 \rule{0pt}{15pt}
 Ответ &
-$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
+$\texttt{SignedData}_{\text{агУЦ}}(\texttt{BPKIResp})$\\[3pt]
 \hline                                     
 \hline
 \multicolumn{2}{|c|}{Процесс \texttt{Revoke}}\\
@@ -122,11 +129,11 @@ $\texttt{EnvelopedData}_{\text{УЦ}}(\texttt{BPKIRevoke})$\\[3pt]
 %
 \rule{0pt}{15pt}
 Ответ &
-$\texttt{SignedData}_{\text{УЦ}}(\texttt{BPKIResp})$\\[3pt]
+$\texttt{SignedData}_{\text{агУЦ}}(\texttt{BPKIResp})$\\[3pt]
 \hline                                     
 \end{tabular}
 \end{table}
 
 Перечисленные в таблице запросы и ответы транспортируются в виде пакетов 
-HTTP. Правила транспорта определяются в разделе~\ref{TRANSPORT}.
+HTTP. Правила транспорта определяются в~\ref{TRANSPORT}.
 
