@@ -76,10 +76,19 @@ Cryptoki оперирует такими понятиями, как ключев
 
 \item
 Атрибут~\verb|CKA_TOKEN| должен принимать значение~\verb|CK_TRUE|,
-если ключ является \addendum{объектом} КТ. 
+если ключ является \addendum{объектом} КТ и доступен всем приложениям,
+подключенным к КТ. 
 %
-\addendum{Иначе ключ считается внешним объектом, который загружается в КТ
-на время выполнения определенных криптографических операций}.
+\addendum{Иначе ключ считается сеансовым объектом, который доступен только
+приложению, создавшему его, и удаляется автоматически при закрытии сеанса}.
+%Также сеансовые объекты можно модифицировать в сеансе ``только для чтения''.
+%https://www.cryptsoft.com/pkcs11doc/v100/group__SEC__7__GENERAL__OVERVIEW.html
+%Objects are also classified according to their lifetime and visibility.
+%"Token objects" are visible to all applications connected to the token,
+%and remain in the token after the "session" or connection between
+%an application and the token is closed. "Session objects" are visible
+%only to the application that creates them, and are destroyed
+%automatically when the session is closed.
 
 \item
 В атрибуте~\verb|CKA_EC_PARAMS| должен быть задан идентификатор связанных 
@@ -163,10 +172,11 @@ CK_ATTRIBUTE template[] = {
 
 \item
 Атрибут~\verb|CKA_TOKEN| должен принимать значение~\verb|CK_TRUE|,
-если ключ является \addendum{объектом} КТ. 
+если ключ является \addendum{объектом} КТ и доступен всем приложениям,
+подключенным к КТ. 
 %
-\addendum{Иначе ключ считается внешним объектом, который загружается в КТ
-на время выполнения определенных криптографических операций}.
+\addendum{Иначе ключ считается сеансовым объектом, который доступен только
+приложению, создавшему его, и удаляется автоматически при закрытии сеанса}.
 
 \item
 В атрибуте~\verb|CKA_EC_PARAMS| должен быть задан идентификатор связанных
@@ -309,6 +319,7 @@ CK_ATTRIBUTE template[] = {
 \verb|CKR_FUNCTION_NOT_SUPPORTED|.
 %
 % Q: правильно выбран код?
+% A: да
 
 \subsection{Механизм CKM\_BIGN\_HBELT}\label{CRYPTOKI.SignHBelt}
 
@@ -350,6 +361,7 @@ CK_ATTRIBUTE template[] = {
 \verb|CKR_FUNCTION_NOT_SUPPORTED|.
 %
 % Q: правильно выбран код?
+% A: да
 
 \subsection{Механизм CKM\_BIGN\_BASH}\label{CRYPTOKI.SignBash}
 
@@ -417,6 +429,7 @@ CK_ATTRIBUTE template[] = {
 \verb|CKR_FUNCTION_NOT_SUPPORTED|.
 %
 % Q: правильно выбран код?
+% A: да
 
 \section{Программная библиотека}\label{CRYPTOKI.Lib}
 
