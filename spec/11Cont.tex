@@ -148,7 +148,7 @@ UTF-8~\cite{UTF8}.
 
 Тип~\texttt{PrivateKeyInfo} определен в~\cite{PKCS8}.
 В настоящем стандарте он конкретизируется следующим образом.
-
+%
 \begin{verbatim}
 PrivateKeyInfo ::= SEQUENCE {
   version                  INTEGER(0),
@@ -202,7 +202,7 @@ BelsAlgorithmIdentifier ::= SEQUENCE {
 
 Тип~\texttt{EncryptedPrivateKeyInfo} определен в~\cite{PKCS5}. В настоящем
 стандарте он конкретизируется следующим образом.
-
+%
 \begin{verbatim}
 EncryptedPrivateKeyInfo ::= SEQUENCE {
   encryptionAlgorithm  EncryptionAlgorithmIdentifier,
@@ -232,7 +232,6 @@ PBKDF2-params ::= SEQUENCE {
 PrfAlgorithmIdentifier ::= SEQUENCE {
   algorithm OBJECT IDENTIFIER(hmac-hbelt), 
   params    NULL }
-
 \end{verbatim}
 
 Компонент~\texttt{encryptedData} типа \texttt{EncryptedPrivateKeyInfo}
