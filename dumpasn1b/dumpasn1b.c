@@ -3,7 +3,7 @@
 \file dumpasn1b.c
 \brief dumpasn1b: A local version of dumpasn1
 \created 2018.01.15
-\version 2018.01.25
+\version 2019.07.12
 \thanks dumpasn1 is writen by (c) Peter Gutmann <pgut001@cs.auckland.ac.nz>
 *******************************************************************************
 */
@@ -13,7 +13,7 @@
 [dumpasn1](http://www.cs.auckland.ac.nz/~pgut001/dumpasn1.c) --
 это популярная программа дампа контейнеров АСН.1. К сожалению, dumpasn1 не 
 справляется с отображением русских и белорусских символов в строках типа 
-UTF8String. 
+UTF8String и BMPString. 
 
 Мы решили проблему, немного подправив dumpasn1. Новую редакцию программы
 назвали dumpasn1b. В dumpasn1b дамп выводится не на консоль, а в файл, имя 
@@ -3343,8 +3343,8 @@ int main( int argc, char *argv[] )
 	/* Skip the program name */
 	argv++; argc--;
 
-	/* Display usage if no args given */
-	if( argc < 2 )
+	/* Display usage if <file> <out> are not given */
+	if( argc < 2 || argv[argc - 1][0] == '-' || argv[argc - 2][0] == '-')
 		usageExit();
 	output = fopen(argv[argc - 1], "w");
 	if (output == NULL)
@@ -3353,7 +3353,7 @@ int main( int argc, char *argv[] )
 		return 1;
 	}
 	argc--;
-	/* Get the output width.  Under Unix there's no safe way to do this, so 
+	/* Get the output width.  Under		Unix there's no safe way to do this, so 
 	   we default to 80 columns */
 #ifdef __WIN32__
 	if( GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), 
