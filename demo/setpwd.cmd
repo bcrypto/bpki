@@ -70,7 +70,7 @@ echo -- 6 recovering Enveloped(Signed(ASN1(newpwd)))
 
 openssl cms -decrypt -in out/%1/enveloped_signed_setpwd -inform pem ^
   -inkey out/ca1/privkey -out out/%1/recovered_signed_setpwd.der ^
-  -binary -passin pass:ca1ca1ca1
+  -binary -passin pass:ca1ca1ca1 -debug_decrypt
 
 openssl pkcs7 -in out/%1/recovered_signed_setpwd.der -inform der ^
   -out out/%1/recovered_signed_setpwd -outform pem > nul

@@ -3,7 +3,7 @@ rem ===========================================================================
 rem \brief Процесc Enroll1
 rem \project bpki/demo
 rem \created 2018.01.10
-rem \version 2018.05.07
+rem \version 2019.07.15
 rem \params %1 -- конечный участник, %2 -- срок действия (дней).
 rem \pre Имеется конфигурационный файл ./cfg/%1.cfg.
 rem \post Сертификат out/%1/cert и промежуточные объекты.
@@ -82,7 +82,7 @@ echo -- 7 recovering Enveloped(Signed(CSR(%1)))
 
 openssl cms -decrypt -in out/%1/enveloped_signed_csr -inform pem ^
   -inkey out/ca1/privkey -out out/%1/recovered_signed_csr.der ^
-  -binary -passin pass:ca1ca1ca1
+  -binary -passin pass:ca1ca1ca1 -debug_decrypt
 
 openssl pkcs7 -in out/%1/recovered_signed_csr.der -inform der ^
   -out out/%1/recovered_signed_csr -outform pem > nul
@@ -172,7 +172,7 @@ echo -- 15 recovering Enveloped(Cert(%1))
 
 openssl cms -decrypt -in out/%1/enveloped_cert -inform pem ^
  -inkey out/opra/privkey -out out/%1/cert.der -outform der ^
- -passin pass:opraopraopra
+ -passin pass:opraopraopra -debug_decrypt
 
 openssl x509 -in out/%1/cert.der -inform der ^
   -out out/%1/cert -outform pem > nul
