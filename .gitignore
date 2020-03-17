@@ -18,4 +18,5 @@
 
 # Concrete files
 support
-clear.bat
+spec/*.pdf
+clear.cmd
