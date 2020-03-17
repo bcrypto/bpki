@@ -1,4 +1,4 @@
-# Travis-CI Build for bpki
+# Travis-CI build for bpki
 # see travis-ci.org for details
 
 language: generic

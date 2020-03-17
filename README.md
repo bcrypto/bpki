@@ -45,3 +45,8 @@ BPKI -- это профиль инфраструктуры открытых кл
 На вкладке [Issues](https://github.com/bcrypto/bpki/issues)
 фиксируются замечания и предложения. 
 
+Ссылки
+------
+
+BPKI разработан в связке с [BTOK](http://github.com/bcrypto/btok).
+
