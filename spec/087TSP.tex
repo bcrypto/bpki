@@ -29,16 +29,16 @@
 
 Статус обработки запроса указывается в компоненте~\texttt{status}.
 %
-В случае успеха вложенные в~\texttt{status} компоненты~\texttt{statusInfo} 
+В случае успеха вложенные в~\texttt{status} компоненты~\texttt{statusString} 
 и~\texttt{failInfo} должны быть опущены, а вложенный
 компонент~\texttt{status} должен принимать значение~\texttt{granted}.
 %
 Если ошибка произошла по причине загруженности сервера, 
-то~\texttt{statusInfo} и~\texttt{failInfo} также должны быть опущены, 
+то~\texttt{statusString} и~\texttt{failInfo} также должны быть опущены, 
 а~\texttt{status} должен принимать значение~\texttt{waiting}.
 %
 При других ошибках в~\texttt{status} должно быть выбрано 
-значение~\texttt{rejection}, компонент~\texttt{statusInfo}
+значение~\texttt{rejection}, компонент~\texttt{statusString}
 должен быть опущен, а в~\texttt{failInfo} должен быть указан один из 
 кодов ошибки, определенных в СТБ 34.101.82.
 
