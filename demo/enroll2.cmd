@@ -3,7 +3,7 @@ rem ===========================================================================
 rem \brief Процесc Enroll2
 rem \project bpki/demo
 rem \created 2018.01.10
-rem \version 2019.07.15
+rem \version 2020.11.23
 rem \params %1 -- конечный участник, %2 -- срок действия (дней).
 rem \pre Имеется конфигурационный файл ./cfg/%1.cfg.
 rem \post Сертификат out/%1/cert и промежуточные объекты.
@@ -58,9 +58,9 @@ echo stored in out/%1/signed_csr.der
 
 echo -- 5 enveloping Signed(CSR(%1)) for CA1 
 
-openssl cms -encrypt -in out/%1/signed_csr.der -inform der -binary ^
-  -belt-cfb256 -out out/%1/enveloped_signed_csr ^ -outform pem ^
-  -recip out/ca1/cert
+openssl cms -encrypt -binary -in out/%1/signed_csr.der -inform der ^
+  -recip out/ca1/cert -belt-cfb256 ^
+  -out out/%1/enveloped_signed_csr -outform pem
 
 call decode out/%1/enveloped_signed_csr > nul
 
@@ -161,8 +161,8 @@ echo stored in out/%1/tmp_cert.der
 echo -- 14 enveloping Cert(%1) for RA 
 
 openssl cms -encrypt -in out/%1/tmp_cert.der -binary -inform der ^
-  -belt-ctr256 -out out/%1/enveloped_cert ^
-  -outform pem -recip out/ra/cert
+  -recip out/ra/cert -belt-ctr256 ^
+  -out out/%1/enveloped_cert -outform pem
 
 call decode out/%1/enveloped_cert > nul
 
