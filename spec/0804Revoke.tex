@@ -1,0 +1,32 @@
+﻿\section{Запрос на отзыв сертификата}\label{FMT.BPKIRevokeReq}
+
+Формат запроса на отзыв сертификата определяется следующим типом АСН.1:
+\begin{verbatim}
+BPKIRevokeReq ::= SEQUENCE {
+  issuer          Name,
+  serialNumber    INTEGER,
+  revokePwd       UTF8String,
+  reasonCode      CRLReason,      
+  invalidityDate  GeneralizedTime OPTIONAL,
+  comment         UTF8String OPTIONAL }
+\end{verbatim}
+
+Компонент~\texttt{issuer} содержит идентификационные данные эмитента 
+отзываемого сертификата.
+
+Компонент~\texttt{serialNumber} содержит серийный номер отзываемого 
+сертификата.
+
+Компонент \texttt{revokePwd} содержит пароль отзыва
+сертификата, который является действительным в 
+настоящий момент. Этот пароль должен быть предварительно
+установлен с помощью процесса~\texttt{Setpwd} (см.~\ref{PROCESSES.Setpwd}). 
+
+Компоненты \texttt{reasonCode} и~\texttt{invalidityDate}
+содержат рекомендации УЦ по заполнению записи об отзыве сертификата
+(см. описание одноименных компонентов в~\ref{FMT.CRL}).
+УЦ может учесть рекомендации или проигнорировать их.
+
+Опциональный компонент~\texttt{comment} содержит дополнительную информацию 
+о причине отзыва.
+ 

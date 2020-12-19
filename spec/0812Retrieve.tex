@@ -1,0 +1,18 @@
+\section{Повторный запрос}\label{FMT.BPKIRetrieveReq}
+
+Если получен ответ УЦ со статусом~\texttt{waiting}, то этот ответ можно 
+уточнить, обратившись к УЦ повторно. Формат повторного запроса 
+определяется следующим типом АСН.1:
+\begin{verbatim}
+BPKIRetrieveReq ::= SEQUENCE { 
+  requestId   OCTET STRING(SIZE(32)),
+  nonce       OCTET STRING(SIZE(8))}
+\end{verbatim}
+
+Компонент~\texttt{requestId} содержит идентификатор первоначального 
+запроса, компонент~\texttt{nonce}~--- синхропосылку. Синхропосылка 
+выбирается случайно отправителем повторного запроса. 
+
+При обработке повторного запроса~\texttt{BPKIRetrieveReq} УЦ
+переносит его компоненты в свой ответ~\texttt{BPKIResp}.
+
