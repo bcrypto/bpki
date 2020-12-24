@@ -22,14 +22,11 @@
 
 \item
 Тип конвертуемых данных (компонент~\texttt{eContentType}, вложенный 
-в~\texttt{encryptedContentInfo}) должен принимать одно из следующих значений:
-\begin{enumerate}
-\item
-\texttt{id-signedData}, если конвертуются подписанные данные;
-\item
-\texttt{id-data}, если конвертуются неструктурированные данные:
-запрос на получение сертификата, сертификат, запрос на отзыв сертификата.
-\end{enumerate}
+в~\texttt{encryptedContentInfo}) должен принимать значение~\texttt{id-data}. 
+Перед конвертованием подписанных данных они должны быть вложены в контейнер 
+\texttt{EncapsulatedContentInfo} (определен в СТБ 34.101.23), причем компонент 
+\texttt{eContentType} этого контейнера должен принимать значение 
+\texttt{id-signedData}.
 
 \item
 Список сведений о получателях (компонент~\texttt{recipientInfos})
