@@ -1,11 +1,13 @@
 \clearpage
-\chapter*{\mbox{}\hfill Поправка к официальной редакции\hfill\mbox{}}
+\chapter*{\mbox{}\hfill Поправка к официальной редакции\footnote{
+Синим цветом выделены корректировки, пока не принятые официально.
+}\hfill\mbox{}}
 
 \mbox{}
 
 {\small
 \begin{center}
-\begin{tabular}{|p{3cm}|p{6.3cm}|p{6.4cm}|}
+\begin{tabular}{|p{2.9cm}|p{6.3cm}|p{6.5cm}|}
 \hline
 В каком месте & Напечатано & Должно быть\\
 \hline
@@ -61,16 +63,33 @@
 34.101.81, остальные~--- в приложении~\ref{ASN1}.
 \\
 \hline
-Подраздел~\ref{FMT.EnvelopedData},\par 
-пункт 1
+\addendum{Подраздел~\ref{FMT.EnvelopedData}},\par 
+\addendum{пункт 1}
 &
 Версия синтаксиса (компонент~\texttt{version}) должна равняться~$2$. 
 &
 Версия синтаксиса (компонент~\texttt{version}) должна равняться~$0$. 
 \\
 \hline
-Подраздел~\ref{FMT.EnvelopedData},\par 
-пункт 5.1
+\addendum{Подраздел~\ref{FMT.EnvelopedData}},\par 
+\addendum{пункт 4}
+&
+Тип конвертуемых данных (компонент~\texttt{eContentType}, вложенный 
+в~\texttt{encryptedContentInfo}) должен принимать одно из следующих 
+значений: 1)~\texttt{id-signedData}, если конвертуются подписанные данные;
+2)~\texttt{id-data}, если конвертуются неструктурированные данные:
+запрос на получение сертификата, сертификат, запрос на отзыв сертификата.
+&
+Тип конвертуемых данных (компонент~\texttt{eContentType}, вложенный 
+в~\texttt{encryptedContentInfo}) должен принимать значение~\texttt{id-data}. 
+Перед конвертованием подписанных данных они должны быть вложены в контейнер 
+\texttt{EncapsulatedContentInfo} (определен в СТБ 34.101.23), причем компонент 
+\texttt{eContentType} этого контейнера должен принимать значение 
+\texttt{id-signedData}.
+\\
+\hline
+\addendum{Подраздел~\ref{FMT.EnvelopedData}},\par 
+\addendum{пункт 5.1}
 &
 версия применяемого синтаксиса (компонент~\texttt{version}) должна 
 равняться~$2$;
