@@ -1,7 +1,7 @@
 BPKI: профиль инфраструктуры открытых ключей
 ============================================
 
-[![Build Status](https://travis-ci.org/bcrypto/bpki.svg?branch=master)](https://travis-ci.org/bcrypto/bpki)
+[![Build Status](https://travis-ci.com/bcrypto/bpki.svg?branch=master)](https://travis-ci.com/bcrypto/bpki)
 
 Что такое BPKI?
 ---------------
