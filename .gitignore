@@ -16,6 +16,15 @@
 *.bak
 *.backup
 
+# Python cache
+__pycache__/
+
+# Python virtual env dir
+env/
+
+# Idea files
+.idea/
+
 # Concrete files
 support
 spec/*.pdf

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <fieldset class="row">
+        <div class="col">
+            <h2>Timestamp</h2>
+            <form>
+                <fieldset class="form-group">
+                    <div class="row">
+                      <legend class="col-form-label col-sm-2 pt-0">Hash</legend>
+                      <div class="col-sm-10">
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="hash" id="bash256" value="bash256" checked>
+                          <label class="form-check-label" for="bash256">
+                            bash256
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="hash" id="bash384" value="bash384">
+                          <label class="form-check-label" for="bash384">
+                            bash384
+                          </label>
+                        </div>
+                        <div class="form-check disabled">
+                          <input class="form-check-input" type="radio" name="hash" id="bash512" value="bash512">
+                          <label class="form-check-label" for="bash512">
+                            bash512
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                </fieldset>
+
+                <div class="form-group row">
+                    <label for="file" class="col-sm-2 col-form-label">Filename</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="file" placeholder="Filename">
+                    </div>
+                </div>
+
+                <fieldset class="form-group">
+                    <div class="row">
+                      <legend class="col-form-label col-sm-2 pt-0">Nonce</legend>
+                      <div class="col-sm-10">
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="nonce" id="true_" value="True" checked>
+                          <label class="form-check-label" for="true_">
+                            True
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="nonce" id="false_" value="False">
+                          <label class="form-check-label" for="false_">
+                            False
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                </fieldset>
+
+                <div class="form-group row">
+                    <div class="col-sm-10">
+                      <button type="submit" class="btn btn-primary" OnClick="req_ts_()">Отправить запрос</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+      </fieldset>
+
+      <fieldset class="row">
+        <div class="col">
+          <form>
+            <h2>Enroll1. Upload Request File</h2>
+
+            <div style="padding: 16px">
+              <input
+                class="form-control form-control-lg"
+                id="selectConfig"
+                type="file"
+              />
+            </div>
+
+            <div class="form-group row">
+               <div class="col-sm-10">
+                  <button type="submit" class="btn btn-primary" OnClick="enroll1()">Отправить запрос</button>
+                </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <h6>File Preview:</h6>
+                <textarea id="textAreaPreview" rows="30" cols="50"></textarea>
+              </div>
+              <div class="col">
+                <h6>Base64 Output</h6>
+                <textarea id="textArea" rows="30" cols="50"></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+      </fieldset>
+</div>
+{% endblock %}
