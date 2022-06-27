@@ -1,7 +1,7 @@
 CREATE TABLE "user" (
   id SERIAL PRIMARY KEY,
-  req_id VARCHAR,
+  req_id VARCHAR UNIQUE,
   info_pwd VARCHAR,
   e_pwd VARCHAR,
-  cert VARCHAR
+  cert BYTEA
 );

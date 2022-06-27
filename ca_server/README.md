@@ -11,7 +11,7 @@ Copy https url from ngrok and paste it in `./app/bpki/static/js/index.js` (varia
 
 Make sure postgresql is running.
 ```
-$ gunicorn -w 4 --bind 0.0.0.0:5000
+$ gunicorn -w 4 --bind 0.0.0.0:5000 wsgi:app
 ```
 
 Open in browser url from ngrok.

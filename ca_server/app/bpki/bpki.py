@@ -21,9 +21,6 @@ bpki_bp = Blueprint('bpki_bp', __name__,
 
 counter = 0
 
-# upload_folder = os.path.join(bpki_bp.config['UPLOAD_FOLDER'])
-
-
 @bpki_bp.route('/bpki', methods=['GET'])
 def bpki():
     return render_template('bpki.html')
@@ -37,14 +34,6 @@ def tsa():
     tsa_.tsa_req(file_, hash_, nonce_ == 'True')
     return send_file('/flask_app/out/tsa/resp.tsr')
 
-
-# @bpki_bp.route('/bpki/test_psql', methods=['POST'])
-# def test_psql():
-#     egor = User("Egor", "1234567")
-#     db.session.add(product)
-#     pass
-
-
 @bpki_bp.route('/bpki/ocsp', methods=['GET'])
 def ocsp():
     pass
@@ -52,15 +41,8 @@ def ocsp():
 
 @bpki_bp.route('/bpki/enroll1', methods=['POST'])
 def enroll1():
-    # req = request.files['file']
-    # if req.filename == '':
-    #     flash('No selected file')
-    #     return redirect(request.url)
-    # return process_enroll1(req)
-    # handle the POST request
-    data = request.get_json()
-    # return '''<h1>The data value is: {}</h1>'''.format(data["config"])
-    req = base64.b64decode(data["request"].split(",")[1])
+    data = request.get_data()
+    req = base64.b64decode(data)
     tmpdirname = tempfile.mkdtemp()
     proc = Enroll1(file=req, req_dir=tmpdirname)
     proc.recover()
@@ -75,7 +57,7 @@ def enroll1():
     db.session.commit()
     send_file(f"{tmpdirname}/tmp_cert.der")
     shutil.rmtree(tmpdirname)
-    return render_template('bpki.html')
+    return base64.b64encode(proc.cert)
 
 
 @bpki_bp.route('/bpki/enroll2', methods=['GET', 'POST'])

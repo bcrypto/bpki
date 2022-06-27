@@ -15,15 +15,13 @@ class Req:
         with open(f"{self.path}/enveloped_signed_csr", 'wb') as f:
             f.write(file)
         cmd = f"dgst -belt-hash {self.path}/enveloped_signed_csr"
-        print(cmd)
         _, id_, err_ = openssl(cmd)
         print(err_, id_)
         id_ = id_.decode("utf-8").split('=')[1].strip()
         self.req_id = id_
-        print(id_)
 
     def recover_enveloped(self, container, out):
-        cmd = (f"cms -decrypt -in {self.path}/{container} -inform pem"
+        cmd = (f"cms -decrypt -in {self.path}/{container} -inform der"
                f"-inkey {out_path}/ca1/privkey -out {self.path}/{out}"
                f"-binary -passin pass:ca1ca1ca1 -debug_decrypt")
         openssl(cmd)
@@ -49,7 +47,7 @@ class Enroll1(Req):
     # recovering Enveloped(Signed(CSR(%1)))
     def recover(self):
         cmd = (
-            f"cms -decrypt -in {self.path}/enveloped_signed_csr -inform pem "
+            f"cms -decrypt -in {self.path}/enveloped_signed_csr -inform der "
             f"-inkey {out_path}/ca1/privkey -out {self.path}/recovered_signed_csr "
             f"-outform der -binary -passin pass:ca1ca1ca1 -debug_decrypt")
         _, out_, err_ =  openssl(cmd)
@@ -71,7 +69,7 @@ class Enroll1(Req):
     def extract_csr(self):
         cmd = (f"req -in {self.path}/verified_csr.der -inform pem "
                f"-out {self.path}/verified_csr -outform pem ")
-        _, out_, _ = openssl(cmd)
+        _, out_, err_ = openssl(cmd)
 
     # extracting Cert(signer of Signed(CSR(%1)))
     def extract_cert(self):
@@ -89,24 +87,20 @@ class Enroll1(Req):
     def process_csr_chall_pwd(self):
         cmd = (f"req -in {self.path}/verified_csr "
                f"-inform pem -text -noout")
-        _, out_, _ = openssl(cmd)
+        _, out_, err_ = openssl(cmd)
         out_ = out_.decode("utf-8")
-        res = re.search(r"challengePassword.*(\n)?", out_).group(0)
-        challenge_pwd = res.split(':', maxsplit=1)[1].strip()
-        res_info_pwd = re.search(r"/INFO([^\/])*", challenge_pwd)
-        if res_info_pwd:
-            info_pwd = res_info_pwd.group(0).split(':')[1]
-            print(info_pwd)
-            self.info_pwd = info_pwd
-        res_e_pwd = re.search(r"/EPWD([^/])*", challenge_pwd)
-        if res_e_pwd:
-            e_pwd = res_e_pwd.group(0).split(':')[1]
-            print(e_pwd)
-            self.e_pwd = e_pwd
-        # TODO!: parse pwd
-        # pwd_pos = out.decode("utf-8").find('challengePassword')
-
-        # return pwd_pos
+        res = re.search(r"challengePassword.*(\n)?", out_)
+        if res:
+            res = res.group(0)
+            challenge_pwd = res.split(':', maxsplit=1)[1].strip()
+            res_info_pwd = re.search(r"/INFO([^\/])*", challenge_pwd)
+            if res_info_pwd:
+                info_pwd = res_info_pwd.group(0).split(':')[1]
+                self.info_pwd = info_pwd
+            res_e_pwd = re.search(r"/EPWD([^/])*", challenge_pwd)
+            if res_e_pwd:
+                e_pwd = res_e_pwd.group(0).split(':')[1]
+                self.e_pwd = e_pwd
 
     # creating Cert(%1)
     def create_cert(self):

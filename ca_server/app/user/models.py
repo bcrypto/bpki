@@ -5,8 +5,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     req_id = db.Column(db.String)
     info_pwd = db.Column(db.String)
-    e_pwd = db.Column(db.String)
-    cert = db.Column(db.String)
+    e_pwd = db.Column(db.String);
+    cert = db.Column(db.LargeBinary)
 
     def __init__(self, req_id_, info_pwd, e_pwd, cert):
         self.req_id = req_id_
