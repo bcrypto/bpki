@@ -20,13 +20,13 @@ Preparations
 ------------
 
 ### Building Bee2evp. 
-See instructions in [github.com/bcrypto/bee2evp](https://github.com/bcrupto/bee2evp).
+See instructions in [github.com/bcrypto/bee2evp](https://github.com/bcrypto/bee2evp).
 
 ### Install gunicorn. 
-See instructions in [github.com/agievich/bee2](https://github.com/bcrupto/bee2evp).
+See instructions in [docs.gunicorn.org](https://docs.gunicorn.org/en/stable/install.html).
 
 ### Install ngrok. 
-See instructions in [github.com/agievich/bee2](https://github.com/bcrupto/bee2evp).
+See instructions in [ngrok.com](https://ngrok.com).
 
 ### Python $\ge$ 3.6
 ```
