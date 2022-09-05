@@ -2,3 +2,5 @@ flask
 requests
 flask-bootstrap
 flask-sqlalchemy
+gunicorn
+psycopg2-binary

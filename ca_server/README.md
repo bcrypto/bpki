@@ -50,3 +50,22 @@ Run `./app/user/up.sql` script for creating table.
 ```
 $ bash setup.sh
 ```
+
+### Docker
+Install docker and docker-compose
+- Linux
+```commandline
+$ sudo apt install docker-compose
+```
+Build docker image:
+```
+$ docker-compose build bpki_ca
+```
+Start server:
+```
+$ docker-compose up bpki_ca
+```
+Connect to docker image with terminal:
+```commandline
+docker run -it ca_server_bpki_ca bash
+```

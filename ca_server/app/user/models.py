@@ -1,7 +1,7 @@
 from app import db
 
 
-class User(db.Model):
+class Certificate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     req_id = db.Column(db.String)
     info_pwd = db.Column(db.String)

@@ -1,4 +1,4 @@
-CREATE TABLE "user" (
+CREATE TABLE "certificates" (
   id SERIAL PRIMARY KEY,
   req_id VARCHAR UNIQUE,
   info_pwd VARCHAR,

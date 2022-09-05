@@ -8,7 +8,7 @@ from .enroll import Enroll1
 # from enroll import Enroll1
 import tempfile, shutil
 from app import db
-from app.user.models import User
+from app.user.models import Certificate
 
 home = expanduser("~")
 bpki_path = os.getcwd() + '/app/bpki/'
@@ -52,7 +52,7 @@ def enroll1():
     proc.process_csr_chall_pwd()
     proc.create_cert()
     proc.envelope_cert()
-    user = User(proc.req_id, proc.info_pwd, proc.e_pwd, proc.cert)
+    user = Certificate(proc.req_id, proc.info_pwd, proc.e_pwd, proc.cert)
     db.session.add(user)
     db.session.commit()
     send_file(f"{tmpdirname}/tmp_cert.der")

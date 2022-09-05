@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  bpki_ca:
+    build: .
+    restart: "no"
+    command: bash "start.sh"
+    volumes:
+      - ./out:/out
+      - .:/app
+    ports:
+      - "5000:80"
+      - "5432:5432"
+    env_file:
+      - .service.env
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
