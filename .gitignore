@@ -30,5 +30,7 @@ support
 spec/*.pdf
 clear.cmd
 
-# DB files
-/ca_server/db/*
+# Folders for test and output files
+ca_server/out/*
+client_test/out/*
+client_test/answers/*
