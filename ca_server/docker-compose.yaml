@@ -8,11 +8,11 @@ services:
     volumes:
       - ./out:/out
       - .:/app
-      - ./db/data:/var/lib/postgresql
-      - ./db/logs:/var/log/postgresql
-      - ./db/config:/etc/postgresql
+#      - ./db/data:/var/lib/postgresql
+#      - ./db/logs:/var/log/postgresql
+#      - ./db/config:/etc/postgresql
     ports:
-      - "5000:80"
+      - "0.0.0.0:5000:80"
       - "5432:5432"
     env_file:
       - .service.env

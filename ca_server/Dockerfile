@@ -13,19 +13,18 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 RUN pip3 install --no-cache-dir -r requirements.txt
 
+#RUN service postgresql start
 
 # Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3`` package when it was ``apt-get installed``
-USER postgres
+#USER postgres
 
 # Create a PostgreSQL role named ``docker`` with ``docker`` as the password and
 # then create a database `docker` owned by the ``docker`` role.
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
-RUN    /etc/init.d/postgresql start &&\
-    psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" &&\
-    createdb -O docker docker
-
-USER root
+RUN    service postgresql start &&\
+  runuser -u postgres -- psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" &&\
+    runuser -u postgres -- createdb -O docker docker
 
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
@@ -38,7 +37,7 @@ RUN echo "listen_addresses='*'" >> /etc/postgresql/12/main/postgresql.conf
 EXPOSE 5432
 
 # Add VOLUMEs to allow backup of config, logs and databases
-#VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
+VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 
 #CMD    /etc/init.d/postgresql start
 
