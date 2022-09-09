@@ -29,3 +29,6 @@ env/
 support
 spec/*.pdf
 clear.cmd
+
+# DB files
+/ca_server/db/*
