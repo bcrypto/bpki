@@ -1,14 +1,17 @@
-from flask import Blueprint, render_template, request, send_file
+from flask import Blueprint, render_template, request, send_file, current_app
 from . import tsa as tsa_
 import base64
 import re
 import os
 from os.path import expanduser
 from .enroll import Enroll1
+from .openssl import openssl
 # from enroll import Enroll1
-import tempfile, shutil
+import tempfile
+import shutil
 from app import db
 from app.user.models import Certificate
+
 
 home = expanduser("~")
 bpki_path = os.getcwd() + '/app/bpki/'
@@ -21,9 +24,34 @@ bpki_bp = Blueprint('bpki_bp', __name__,
 
 counter = 0
 
+
+@bpki_bp.before_request
+def log_request_info():
+    current_app.logger.debug('Headers: %s', request.headers)   # app.logger ?
+    current_app.logger.debug('Body: %s', request.get_data())
+
+
 @bpki_bp.route('/bpki', methods=['GET'])
 def bpki():
     return render_template('bpki.html')
+
+
+@bpki_bp.route('/bpki/healthcheck', methods=['GET'])
+def healthcheck():
+    cmd = "version"
+    ret_1, version, err_ = openssl(cmd)
+    current_app.logger.debug(err_)
+    current_app.logger.debug(version)
+    cmd = "version -d"
+    ret_2, id_, err_ = openssl(cmd)
+    current_app.logger.debug(err_)
+    current_app.logger.debug(id_)
+    cmd = "engine -c -t bee2evp"
+    ret_3, id_, err_ = openssl(cmd)
+    current_app.logger.debug(err_)
+    current_app.logger.debug(id_)
+    return {"OpenSSL version": str(version),
+            "bee2evp support": bool(ret_3)}
 
 
 @bpki_bp.route('/bpki/tsa', methods=['GET'])
@@ -34,6 +62,7 @@ def tsa():
     tsa_.tsa_req(file_, hash_, nonce_ == 'True')
     return send_file('/flask_app/out/tsa/resp.tsr')
 
+
 @bpki_bp.route('/bpki/ocsp', methods=['GET'])
 def ocsp():
     pass
@@ -41,6 +70,7 @@ def ocsp():
 
 @bpki_bp.route('/bpki/enroll1', methods=['POST'])
 def enroll1():
+    current_app.logger.info(request.get_data())
     data = request.get_data()
     req = base64.b64decode(data)
     tmpdirname = tempfile.mkdtemp()

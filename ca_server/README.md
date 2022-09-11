@@ -51,6 +51,11 @@ Run `./app/user/up.sql` script for creating table.
 $ bash setup.sh
 ```
 
+### Local debug server
+```commandline
+$ python wsgi.py
+```
+
 ### Docker
 Install docker and docker-compose
 - Linux

@@ -15,8 +15,8 @@ from os.path import expanduser
 
 home = expanduser("~")
 
-os.environ['OPENSSL_CONF'] = os.getcwd() + '/openssl.cfg'
-OPENSSL_EXE_PATH = '/opt/usr/local/openssl'
+# os.environ['OPENSSL_CONF'] = os.getcwd() + '/openssl.cfg'
+OPENSSL_EXE_PATH = '/opt/usr/local/bin/openssl'
 
 
 def openssl(cmd, prefix='', echo=False, type_=0):

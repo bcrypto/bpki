@@ -1,10 +1,11 @@
 from .openssl import openssl
+from flask import current_app
 import os
 from os.path import expanduser
 import re
 
 home = expanduser("~")
-bpki_path = os.getcwd() # + "/../../"
+bpki_path = os.getcwd()  # + "/../../"
 out_path = bpki_path + '/out'
 enroll1_path = out_path + '/enroll1/'
 
@@ -16,13 +17,15 @@ class Req:
             f.write(file)
         cmd = f"dgst -belt-hash {self.path}/enveloped_signed_csr"
         _, id_, err_ = openssl(cmd)
-        print(err_, id_)
+        current_app.logger.debug(err_)
+        current_app.logger.debug(id_)
         id_ = id_.decode("utf-8").split('=')[1].strip()
         self.req_id = id_
 
     def recover_enveloped(self, container, out):
+        server_key = current_app.config['SERVER_KEY']
         cmd = (f"cms -decrypt -in {self.path}/{container} -inform der"
-               f"-inkey {out_path}/ca1/privkey -out {self.path}/{out}"
+               f"-inkey {server_key} -out {self.path}/{out}"
                f"-binary -passin pass:ca1ca1ca1 -debug_decrypt")
         openssl(cmd)
 
@@ -46,11 +49,12 @@ class Enroll1(Req):
 
     # recovering Enveloped(Signed(CSR(%1)))
     def recover(self):
+        server_key = current_app.config['SERVER_KEY']
         cmd = (
             f"cms -decrypt -in {self.path}/enveloped_signed_csr -inform der "
-            f"-inkey {out_path}/ca1/privkey -out {self.path}/recovered_signed_csr "
+            f"-inkey {server_key} -out {self.path}/recovered_signed_csr "
             f"-outform der -binary -passin pass:ca1ca1ca1 -debug_decrypt")
-        _, out_, err_ =  openssl(cmd)
+        _, out_, err_ = openssl(cmd)
 
     # verifying Signed(CSR(%1))
     def verify(self):

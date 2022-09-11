@@ -13,7 +13,7 @@ services:
 #      - ./db/config:/etc/postgresql
     ports:
       - "0.0.0.0:5000:80"
-      - "5432:5432"
+      - "54321:5432"
     env_file:
       - .service.env
     logging:
