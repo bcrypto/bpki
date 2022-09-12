@@ -145,6 +145,8 @@ bash ./create.sh tls 1095
 bash ./create.sh opra 730
 bash ./create.sh agca1 1095
 
+echo 00 > ./out/tsa/tsaserial
+
 echo "== 6 Revoking opra (for OCSP testing) ===================================="
 
 cp -f out/opra/cert out/opra/cert0 > /dev/null
