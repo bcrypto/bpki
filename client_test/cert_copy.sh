@@ -11,7 +11,7 @@ echo "== 1 Copy Params =========================================================
 
 cp -f ../ca_server/out/params256 out/params256 2> /dev/null
 cp -f ../ca_server/out/params384 out/params384 2> /dev/null
-cp -f ../ca_server/out/params384 out/params384 2> /dev/null
+cp -f ../ca_server/out/params512 out/params512 2> /dev/null
 
 echo "== 2 Copy CA0 certificate (Root CA) ======================================"
 

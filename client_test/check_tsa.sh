@@ -26,15 +26,15 @@ echo == Testing TSA Services ==================================================
 
 export OPENSSL_CONF=openssl.cfg
 mkdir out/tsa 2> /dev/null
-#copy out\ca1\cert + out\tsa\cert out\tsa\chain > /dev/null
+cat out/ca1/cert out/tsa/cert > out/tsa/chain
 
-echo -- 1 TSA Request1 ---------------------
+#echo -- 1 TSA Request1 ---------------------
 
-openssl ts -query -data tsa.sh -bash256 -out out/tsa/req1.tsq -no_nonce
+#openssl ts -query -data tsa.sh -bash256 -out out/tsa/req1.tsq -no_nonce
 
 #dumpasn1b -z -cdumpasn1by.cfg out/tsa/req1.tsq out/tsa/req1.txt 2> /dev/null
 
-echo stored in out/tsa/req1.tsq
+#echo stored in out/tsa/req1.tsq
 
 #echo -- 2 TSA Response1 --------------------
 
@@ -46,18 +46,18 @@ echo stored in out/tsa/req1.tsq
 
 #echo stored in out/tsa/resp1.tsr
 
-#echo -- 3 TSA Verify1 ----------------------
+echo -- 3 TSA Verify1 ----------------------
 
-#openssl ts -verify -queryfile out/tsa/req1.tsq -in out/tsa/resp1.tsr \
-#  -CAfile out/ca0/cert -untrusted out/tsa/chain 2> /dev/null
+openssl ts -verify -queryfile out/tsa/req1.tsq -in answers/tsa/resp1.tsr \
+  -CAfile out/ca0/cert -untrusted out/tsa/chain
 
-echo -- 4 TSA Request2 ---------------------
+#echo -- 4 TSA Request2 ---------------------
 
-openssl ts -query -data tsa.sh -bash512 -out out/tsa/req2.tsq -cert > /dev/null
+#openssl ts -query -data tsa.sh -bash512 -out out/tsa/req2.tsq -cert > /dev/null
 
 #dumpasn1b -z -cdumpasn1by.cfg out/tsa/req2.tsq out/tsa/req2.txt 2> /dev/null
 
-echo stored in out/tsa/req2.tsq
+#echo stored in out/tsa/req2.tsq
 
 #echo -- 5 TSA Response2 --------------------
 
@@ -69,12 +69,12 @@ echo stored in out/tsa/req2.tsq
 
 #echo stored in out/tsa/resp2.tsr
 
-#echo -- 6 TSA Verify2 ----------------------
+echo -- 6 TSA Verify2 ----------------------
 
-#openssl ts -verify -data tsa.sh -bash512 -in out/tsa/resp2.tsr \
-#  -CAfile out/ca0/cert -untrusted out/ca1/cert 2> /dev/null
+openssl ts -verify -data tsa.sh -bash512 -in answers/tsa/resp2.tsr \
+  -CAfile out/ca0/cert -untrusted out/ca1/cert #2> /dev/null
 
-#openssl ts -verify -queryfile out/tsa/req2.tsq -in out/tsa/resp2.tsr \
-#  -CAfile out/ca0/cert -untrusted out/ca1/cert 2> /dev/null
+openssl ts -verify -queryfile out/tsa/req2.tsq -in answers/tsa/resp2.tsr \
+  -CAfile out/ca0/cert -untrusted out/ca1/cert #2> /dev/null
 
 #echo == End ===================================================================

@@ -63,6 +63,14 @@ def tsa():
     return base64.b64encode(answer)
 
 
+@bpki_bp.route('/bpki/tsa2', methods=['POST'])
+def tsa2():
+    data = request.get_data()
+    req = base64.b64decode(data)
+    answer = tsa_req(req, no_nonce=False)
+    return base64.b64encode(answer)
+
+
 @bpki_bp.route('/bpki/ocsp', methods=['GET'])
 def ocsp():
     pass
