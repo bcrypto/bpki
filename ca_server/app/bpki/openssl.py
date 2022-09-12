@@ -21,6 +21,8 @@ OPENSSL_EXE_PATH = 'openssl'
 
 def openssl(cmd, prefix='', echo=False, type_=0):
     cmd = "{} {} {}".format(prefix, OPENSSL_EXE_PATH, cmd)
+    env1 = os.environ.copy()
+    env1['OPENSSL_CONF'] = os.getcwd() + '/app_openssl.cfg'
     if echo:
         print(cmd)
 
@@ -30,7 +32,7 @@ def openssl(cmd, prefix='', echo=False, type_=0):
                              stderr=subprocess.PIPE,
                              stdin=subprocess.PIPE,
                              executable='/bin/bash',
-                             env=os.environ.copy(),
+                             env=env1,
                              shell=True
                              )
 
