@@ -16,11 +16,11 @@ from os.path import expanduser
 home = expanduser("~")
 
 # os.environ['OPENSSL_CONF'] = os.getcwd() + '/openssl.cfg'
-OPENSSL_EXE_PATH = '/opt/usr/local/bin/openssl'
+OPENSSL_EXE_PATH = 'openssl'
 
 
 def openssl(cmd, prefix='', echo=False, type_=0):
-    cmd = '{} {} {}'.format(prefix, OPENSSL_EXE_PATH, cmd)
+    cmd = "{} {} {}".format(prefix, OPENSSL_EXE_PATH, cmd)
     if echo:
         print(cmd)
 
@@ -29,7 +29,10 @@ def openssl(cmd, prefix='', echo=False, type_=0):
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              stdin=subprocess.PIPE,
-                             shell=True)
+                             executable='/bin/bash',
+                             env=os.environ.copy(),
+                             shell=True
+                             )
 
         out, err_out = p.communicate()
         retcode = p.poll()

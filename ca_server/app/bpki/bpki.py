@@ -38,6 +38,7 @@ def bpki():
 
 @bpki_bp.route('/bpki/healthcheck', methods=['GET'])
 def healthcheck():
+    current_app.logger.debug(os.environ)
     cmd = "version"
     ret_1, version, err_ = openssl(cmd)
     current_app.logger.debug(err_)
