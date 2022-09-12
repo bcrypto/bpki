@@ -3,7 +3,7 @@ rem ===========================================================================
 rem \brief Запрос и ответ TSA = TimeStamp Authority
 rem \project bpki/demo
 rem \created 2018.01.10
-rem \version 2018.01.23
+rem \version 2022.09.12
 rem \pre Выполнен скрипт setup.cmd.
 rem \remark ТSA = СШВ = Служба штампов времени
 rem \remark Выпускаются две пары "запрос - ответ": лаконичная и подробная.
@@ -53,7 +53,7 @@ openssl ts -verify -queryfile out/tsa/req1.tsq -in out/tsa/resp1.tsr ^
 
 echo -- 4 TSA Request2 ---------------------
 
-openssl ts -query -data tsa.cmd -bash512 -out out/tsa/req2.tsq -cert > nul
+openssl ts -query -data tsa.cmd -bash512 -out out/tsa/req2.tsq -cert 2> nul
 
 dumpasn1b -z -cdumpasn1by.cfg out/tsa/req2.tsq out/tsa/req2.txt 2> nul
 

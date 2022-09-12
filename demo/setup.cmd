@@ -3,7 +3,7 @@ rem ===========================================================================
 rem \brief Создание модельных УЦ и выпуск модельных сертификатов
 rem \project bpki/demo
 rem \created 2018.01.09
-rem \version 2020.11.25
+rem \version 2022.09.12
 rem \remark Контейнеры с личными ключами конфигурируются по правилам BPKI.
 rem \thanks[GeneralizedTime] https://stackoverflow.com/questions/203090/
 rem how-do-i-get-rem current-datetime-on-the-windows-command-line-in-a-
@@ -162,6 +162,8 @@ call :Create ids 1095
 call :Create tls 1095
 call :Create opra 730
 call :Create agca1 1095
+
+echo 00 > out\tsa\tsaserial
 
 echo == 6 Revoking opra (for OCSP testing) ====================================
 
