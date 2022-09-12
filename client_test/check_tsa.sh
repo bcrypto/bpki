@@ -22,7 +22,7 @@
 #rem SigningCertificate, а SigningCertificateV2.
 #rem ===========================================================================
 
-echo == Testing TSA Services ==================================================
+echo == Verify TSA answers ==================================================
 
 export OPENSSL_CONF=openssl.cfg
 mkdir out/tsa 2> /dev/null
