@@ -1,25 +1,25 @@
-# from app.openssl import openssl
 import os
-from os.path import expanduser
+import tempfile
+import shutil
 
-home = expanduser("~")
-bpki_path = os.getcwd() + '/app/bpki/'
-out_path = bpki_path + 'out/'
-tsa_path = out_path + 'tsa/'
+from flask import current_app
+
+from .openssl import openssl
 
 
-def tsa_req(file_, hash='bash256', nonce=True):
-    if not nonce:
-        cmd = (f'ts -query -data {file_} -{hash}'
-               '-out ./out/tsa/req.tsq -no_nonce')
-    else:
-        cmd = f'ts -query -data {file_} -{hash} -out ./out/tsa/req.tsq -cert'
+def tsa_req(req):
+    tmpdirname = tempfile.mkdtemp()
+    with open(f"{tmpdirname}/req.tsq", "wb") as f:
+        f.write(req)
+    current_app.logger.debug(f"File is saved to: {tmpdirname}/req1.tsq")
+    cmd = (f"ts -reply -queryfile {tmpdirname}/req.tsq -signer ./out/tsa/cert"
+           " -passin pass:tsatsatsa -inkey ./out/tsa/privkey"
+           f" -out {tmpdirname}/resp.tsr -no_nonce")
+    current_app.logger.debug(cmd)
     retcode, block, er__ = openssl(cmd)
-    print(file_, hash, nonce, os.getcwd())
-    print(er__)
-    cmd = (f"ts -reply -queryfile ./out/tsa/req.tsq -signer ./out/tsa/cert"
-           "-passin pass:tsatsatsa -inkey ./out/tsa/privkey"
-           "-out ./out/tsa/resp.tsr -no_nonce")
-    retcode, block, er__ = openssl(cmd)
-    print(er__)
-    return retcode
+    current_app.logger.debug(er__)
+    with open(f"{tmpdirname}/resp.tsr", "rb") as f:
+        data = f.read()
+    current_app.logger.debug(f"File is read from: {tmpdirname}/resp.tsr")
+    shutil.rmtree(tmpdirname)
+    return data

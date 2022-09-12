@@ -36,7 +36,7 @@ openssl ts -query -data tsa.sh -bash256 -out out/tsa/req1.tsq -no_nonce
 
 echo stored in out/tsa/req1.tsq
 
-echo -- 2 TSA Response1 --------------------
+#echo -- 2 TSA Response1 --------------------
 
 #openssl ts -reply -queryfile out/tsa/req1.tsq ^
 #  -signer out/tsa/cert -passin pass:tsatsatsa -inkey out/tsa/privkey ^
@@ -44,22 +44,22 @@ echo -- 2 TSA Response1 --------------------
 
 #dumpasn1b -z -cdumpasn1by.cfg out/tsa/resp1.tsr out/tsa/resp1.txt 2> nul
 
-echo stored in out/tsa/resp1.tsr
+#echo stored in out/tsa/resp1.tsr
 
-echo -- 3 TSA Verify1 ----------------------
+#echo -- 3 TSA Verify1 ----------------------
 
 #openssl ts -verify -queryfile out/tsa/req1.tsq -in out/tsa/resp1.tsr ^
 #  -CAfile out/ca0/cert -untrusted out/tsa/chain 2> nul
 
-echo -- 4 TSA Request2 ---------------------
+#echo -- 4 TSA Request2 ---------------------
 
 #openssl ts -query -data tsa.cmd -bash512 -out out/tsa/req2.tsq -cert > nul
 
 #dumpasn1b -z -cdumpasn1by.cfg out/tsa/req2.tsq out/tsa/req2.txt 2> nul
 
-echo stored in out/tsa/req2.tsq
+#echo stored in out/tsa/req2.tsq
 
-echo -- 5 TSA Response2 --------------------
+#echo -- 5 TSA Response2 --------------------
 
 #openssl ts -reply -queryfile out/tsa/req2.tsq ^
 #  -signer out/tsa/cert -passin pass:tsatsatsa -inkey out/tsa/privkey ^
@@ -67,9 +67,9 @@ echo -- 5 TSA Response2 --------------------
 
 #dumpasn1b -z -cdumpasn1by.cfg out/tsa/resp2.tsr out/tsa/resp2.txt 2> nul
 
-echo stored in out/tsa/resp2.tsr
+#echo stored in out/tsa/resp2.tsr
 
-echo -- 6 TSA Verify2 ----------------------
+#echo -- 6 TSA Verify2 ----------------------
 
 #openssl ts -verify -data tsa.cmd -bash512 -in out/tsa/resp2.tsr ^
 #  -CAfile out/ca0/cert -untrusted out/ca1/cert 2> nul
@@ -77,4 +77,4 @@ echo -- 6 TSA Verify2 ----------------------
 #openssl ts -verify -queryfile out/tsa/req2.tsq -in out/tsa/resp2.tsr ^
 #  -CAfile out/ca0/cert -untrusted out/ca1/cert 2> nul
 
-echo == End ===================================================================
+#echo == End ===================================================================

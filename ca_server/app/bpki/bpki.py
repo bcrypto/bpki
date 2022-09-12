@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, send_file, current_app
-from . import tsa as tsa_
+from .tsa import tsa_req
 import base64
 import re
 import os
@@ -55,13 +55,12 @@ def healthcheck():
             "bee2evp support": bool(ret_3)}
 
 
-@bpki_bp.route('/bpki/tsa', methods=['GET'])
+@bpki_bp.route('/bpki/tsa', methods=['POST'])
 def tsa():
-    file_ = request.args.get('file', type=str).strip()
-    hash_ = request.args.get('hash', type=str).strip()
-    nonce_ = request.args.get('nonce', type=str).strip()
-    tsa_.tsa_req(file_, hash_, nonce_ == 'True')
-    return send_file('/flask_app/out/tsa/resp.tsr')
+    data = request.get_data()
+    req = base64.b64decode(data)
+    answer = tsa_req(req)
+    return base64.b64encode(answer)
 
 
 @bpki_bp.route('/bpki/ocsp', methods=['GET'])
