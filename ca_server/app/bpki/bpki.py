@@ -1,7 +1,7 @@
 import base64
 import os
 
-from flask import Blueprint, render_template, request, send_file, current_app
+from flask import Blueprint, render_template, request, current_app
 
 from app import db
 from app.user.models import Certificate
@@ -36,17 +36,11 @@ def bpki():
 def healthcheck():
     current_app.logger.debug(os.environ)
     cmd = "version"
-    ret_1, version, err_ = openssl(cmd)
-    current_app.logger.debug(err_)
-    current_app.logger.debug(version)
+    _, version, _ = openssl(cmd)
     cmd = "version -d"
-    ret_2, id_, err_ = openssl(cmd)
-    current_app.logger.debug(err_)
-    current_app.logger.debug(id_)
+    _, _, _ = openssl(cmd)
     cmd = "engine -c -t bee2evp"
-    ret_3, id_, err_ = openssl(cmd)
-    current_app.logger.debug(err_)
-    current_app.logger.debug(id_)
+    ret_3, _, _ = openssl(cmd)
     return {"OpenSSL version": str(version),
             "bee2evp support": bool(ret_3)}
 
@@ -74,7 +68,6 @@ def ocsp():
 
 @bpki_bp.route('/bpki/enroll1', methods=['POST'])
 def enroll1():
-    current_app.logger.info(request.get_data())
     data = request.get_data()
     req = base64.b64decode(data)
 
@@ -91,7 +84,7 @@ def enroll1():
     db.session.add(user)
     db.session.commit()
 
-    return base64.b64encode(proc.cert)
+    return base64.b64encode(proc.enveloped_cert)
 
 
 @bpki_bp.route('/bpki/enroll2', methods=['GET', 'POST'])

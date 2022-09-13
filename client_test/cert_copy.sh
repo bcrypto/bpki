@@ -22,6 +22,7 @@ echo "== 3 Copy CA1 certificate (Republican CA) ================================
 
 mkdir out/ca1 2> /dev/null
 cp -f ../ca_server/out/ca1/cert out/ca1/cert  2> /dev/null
+cp -f ../ca_server/out/ca1/chain out/ca1/chain  2> /dev/null
 
 #echo "== 4 Copy CA2 certificate  (Subordinate CA) ============================="
 

@@ -187,6 +187,9 @@ openssl x509 -in answers/$1/cert.der -inform der \
 #
 echo stored in answers/$1/cert
 #
+
+echo "-- 16 Verify Cert($1)"
+openssl verify -CAfile out/ca1/chain answers/lr/cert
 #rem ===========================================================================
 #
 #goto End

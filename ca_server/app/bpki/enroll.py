@@ -50,6 +50,7 @@ class Enroll1(Req):
     def __init__(self, file, days=365):
         super().__init__(file, days)
         self.cert = None
+        self.enveloped_cert = None
         self.e_pwd = None
         self.info_pwd = None
 
@@ -123,8 +124,10 @@ class Enroll1(Req):
         cmd = (
             f"cms -encrypt -in {self.path}/tmp_cert.der -binary -inform der "
             f"-recip {out_path}/opra/cert -belt-ctr256 "
-            f"-out {self.path}/enveloped_cert -outform pem ")
+            f"-out {self.path}/enveloped_cert.der -outform der ")
         _, out_, err_ = openssl(cmd)
+        with open(f"{self.path}/enveloped_cert.der", "rb") as f:
+            self.enveloped_cert = f.read()
 
     # recovering Enveloped(Cert(%1))
     def recover_env_cert(self):
