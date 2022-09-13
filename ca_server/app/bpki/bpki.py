@@ -1,19 +1,15 @@
-from flask import Blueprint, render_template, request, send_file, current_app
-from .tsa import tsa_req
 import base64
-import re
 import os
-from os.path import expanduser
-from .enroll import Enroll1
-from .openssl import openssl
-# from enroll import Enroll1
-import tempfile
-import shutil
+
+from flask import Blueprint, render_template, request, send_file, current_app
+
 from app import db
 from app.user.models import Certificate
+from .tsa import tsa_req
+from .enroll import Enroll1
+from .openssl import openssl
 
 
-home = expanduser("~")
 bpki_path = os.getcwd() + '/app/bpki/'
 out_path = bpki_path + 'out/'
 enroll1_path = out_path + 'enroll1/'
@@ -81,8 +77,8 @@ def enroll1():
     current_app.logger.info(request.get_data())
     data = request.get_data()
     req = base64.b64decode(data)
-    tmpdirname = tempfile.mkdtemp()
-    proc = Enroll1(file=req, req_dir=tmpdirname)
+
+    proc = Enroll1(file=req)
     proc.recover()
     proc.verify()
     proc.extract_csr()
@@ -90,11 +86,11 @@ def enroll1():
     proc.process_csr_chall_pwd()
     proc.create_cert()
     proc.envelope_cert()
+
     user = Certificate(proc.req_id, proc.info_pwd, proc.e_pwd, proc.cert)
     db.session.add(user)
     db.session.commit()
-    send_file(f"{tmpdirname}/tmp_cert.der")
-    shutil.rmtree(tmpdirname)
+
     return base64.b64encode(proc.cert)
 
 

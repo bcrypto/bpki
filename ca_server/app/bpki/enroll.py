@@ -1,18 +1,21 @@
-from .openssl import openssl
-from flask import current_app
 import os
-from os.path import expanduser
 import re
+import tempfile
+import shutil
 
-home = expanduser("~")
+from flask import current_app
+
+from .openssl import openssl
+
 bpki_path = os.getcwd()  # + "/../../"
 out_path = bpki_path + '/out'
 enroll1_path = out_path + '/enroll1/'
 
+
 class Req:
-    def __init__(self, file, req_dir, days_=365):
+    def __init__(self, file, days_=365):
         self.days = days_
-        self.path = req_dir
+        self.path = tempfile.mkdtemp()
         with open(f"{self.path}/enveloped_signed_csr", 'wb') as f:
             f.write(file)
         cmd = f"dgst -belt-hash {self.path}/enveloped_signed_csr"
@@ -21,58 +24,55 @@ class Req:
         current_app.logger.debug(id_)
         id_ = id_.decode("utf-8").split('=')[1].strip()
         self.req_id = id_
+        current_app.logger.debug(self.req_id)
+
+    def __del(self):
+        shutil.rmtree(self.path)
 
     def recover_enveloped(self, container, out):
-        server_key = current_app.config['SERVER_KEY']
         cmd = (f"cms -decrypt -in {self.path}/{container} -inform der"
-               f"-inkey {server_key} -out {self.path}/{out}"
+               f"-inkey {out_path}/ca1/privkey -out {self.path}/{out}"
                f"-binary -passin pass:ca1ca1ca1 -debug_decrypt")
         openssl(cmd)
 
-    def convert_format(self, input, output, to="pem"):
+    def convert_format(self, inputfile, outputfile, to="pem"):
         if to == "pem":
-            cmd = (f"pkcs7 -in out/{self.id}/{input} -inform der"
-                   f"-out out/{self.id}/{output} -outform pem")
+            cmd = (f"pkcs7 -in out/{self.req_id}/{inputfile} -inform der"
+                   f"-out out/{self.req_id}/{outputfile} -outform pem")
             openssl(cmd)
         elif to == "der":
-            cmd = (f"pkcs7 -in out/{self.id}/{input} -inform pem"
-                   f"-out out/{self.id}/{output} -outform der")
+            cmd = (f"pkcs7 -in out/{self.req_id}/{inputfile} -inform pem"
+                   f"-out out/{self.req_id}/{outputfile} -outform der")
             openssl(cmd)
 
 
 class Enroll1(Req):
-    def __init__(self, file, req_dir, days=365):
-        super().__init__(file, req_dir, days)
+    def __init__(self, file, days=365):
+        super().__init__(file, days)
         self.cert = None
         self.e_pwd = None
         self.info_pwd = None
 
     # recovering Enveloped(Signed(CSR(%1)))
     def recover(self):
-        server_key = current_app.config['SERVER_KEY']
         cmd = (
             f"cms -decrypt -in {self.path}/enveloped_signed_csr -inform der "
-            f"-inkey {server_key} -out {self.path}/recovered_signed_csr "
+            f"-inkey {out_path}/ca1/privkey -out {self.path}/recovered_signed_csr "
             f"-outform der -binary -passin pass:ca1ca1ca1 -debug_decrypt")
         _, out_, err_ = openssl(cmd)
 
     # verifying Signed(CSR(%1))
     def verify(self):
-        with open(f"{out_path}/ca0/cert", 'rb') as ca0:
-            with open(f"{out_path}/ca1/cert", 'rb') as ca1:
-                with open(f"{self.path}/chain_opra", 'wb') as f:
-                    f.write(ca0.read() + ca1.read())
-
-        cmd = (f"cms -verify -in {self.path}/recovered_signed_csr -inform pem "
-               f"-CAfile {self.path}/chain_opra "
-               f"-signer {self.path}/verified_cert_opra "
+        cmd = (f"cms -verify -in {self.path}/recovered_signed_csr -inform der "
+               f"-CAfile {out_path}/ca1/chain "
+               f"-signer {out_path}/opra/cert "
                f"-out {self.path}/verified_csr.der -outform der -purpose any")
         _, out_, err_ = openssl(cmd)
 
     # extracting CSR(%1) from Signed(CSR(%1))
     def extract_csr(self):
-        cmd = (f"req -in {self.path}/verified_csr.der -inform pem "
-               f"-out {self.path}/verified_csr -outform pem ")
+        cmd = (f"req -in {self.path}/verified_csr.der -inform der "
+               f"-out {self.path}/csr -outform pem ")
         _, out_, err_ = openssl(cmd)
 
     # extracting Cert(signer of Signed(CSR(%1)))
@@ -82,22 +82,21 @@ class Enroll1(Req):
 
     # validating Cert(signer of Signed(CSR(%1))).CertificatePolicies
     def validate_cert_pol(self):
-        cmd = (
-            f"x509 -in {self.path}/verified_cert_opra -text -noout")
+        cmd = f"x509 -in {self.path}/verified_cert_opra -text -noout"
         _, out_, err_ = openssl(cmd)
-        print(out_.decode("utf-8").find('bpki-role-ra'))
+        current_app.logger.debug(out_.decode("utf-8").find('bpki-role-ra'))
 
     # processing CSR(%1).challengePassword
     def process_csr_chall_pwd(self):
-        cmd = (f"req -in {self.path}/verified_csr "
-               f"-inform pem -text -noout")
+        cmd = (f"req -in {self.path}/csr "
+               f"-inform der -text -noout")
         _, out_, err_ = openssl(cmd)
         out_ = out_.decode("utf-8")
         res = re.search(r"challengePassword.*(\n)?", out_)
         if res:
             res = res.group(0)
             challenge_pwd = res.split(':', maxsplit=1)[1].strip()
-            res_info_pwd = re.search(r"/INFO([^\/])*", challenge_pwd)
+            res_info_pwd = re.search(r"/INFO([^\\/])*", challenge_pwd)
             if res_info_pwd:
                 info_pwd = res_info_pwd.group(0).split(':')[1]
                 self.info_pwd = info_pwd
@@ -108,12 +107,12 @@ class Enroll1(Req):
 
     # creating Cert(%1)
     def create_cert(self):
-        cmd = (f"ca -name ca1 -batch -in {self.path}/verified_csr "
+        cmd = (f"ca -name ca1 -batch -in {self.path}/csr "
                f"-key ca1ca1ca1 -days {self.days} "
                # f"-extfile ./cfg/{self.path}.cfg -extensions exts"
                f"-out {self.path}/tmp_cert -notext -utf8 ")
         _, out_, err_ = openssl(cmd)
-        cmd = (f"x509 -outform der -in {self.path}/tmp_cert -out {self.path}/tmp_cert.der")
+        cmd = f"x509 -outform der -in {self.path}/tmp_cert -out {self.path}/tmp_cert.der"
         _, out_, err_ = openssl(cmd)
         with open(f"{self.path}/tmp_cert.der", "rb") as f:
             cert = f.read()

@@ -11,9 +11,8 @@
 
 import subprocess
 import os
-from os.path import expanduser
 
-home = expanduser("~")
+from flask import current_app
 
 # os.environ['OPENSSL_CONF'] = os.getcwd() + '/openssl.cfg'
 OPENSSL_EXE_PATH = 'openssl'
@@ -25,6 +24,7 @@ def openssl(cmd, prefix='', echo=False, type_=0):
     env1['OPENSSL_CONF'] = os.getcwd() + '/app_openssl.cfg'
     if echo:
         print(cmd)
+    current_app.logger.debug(cmd)
 
     if type_ == 0:
         p = subprocess.Popen(cmd,
@@ -38,6 +38,8 @@ def openssl(cmd, prefix='', echo=False, type_=0):
 
         out, err_out = p.communicate()
         retcode = p.poll()
+        current_app.logger.debug(out)
+        current_app.logger.debug(err_out)
         return retcode ^ 1, out, err_out
 
     if type_ == 1:
