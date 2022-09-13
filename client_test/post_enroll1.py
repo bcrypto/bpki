@@ -8,7 +8,7 @@ entity = sys.argv[1]
 if not os.path.exists(f"answers/{entity}"):
     os.mkdir(f"answers/{entity}")
 
-print(f"-- 7-14 Processing on server{entity}")
+print(f"-- 7-14 Processing on server {entity}")
 with open(f"out/{entity}/enveloped_signed_csr.der", "rb") as f:
     req = f.read()
 req_str = base64.b64encode(req.strip())
