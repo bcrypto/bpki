@@ -1,9 +1,9 @@
 import requests
-import argparse
 import base64
 import os
+import sys
 
-entity = "lr"
+entity = sys.argv[1]
 
 if not os.path.exists(f"answers/{entity}"):
     os.mkdir(f"answers/{entity}")
