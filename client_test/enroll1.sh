@@ -59,7 +59,7 @@ echo stored in out/$1/signed_csr.der
 echo "-- 5 enveloping Signed(CSR($1)) for CA1"
 
 openssl cms -encrypt -binary -in out/$1/signed_csr.der -inform der \
-  -recip ca_cert256.pem -belt-cfb256 \
+  -recip out/ca1/cert -belt-cfb256 \
   -out out/$1/enveloped_signed_csr -outform pem
 
 source decode.sh out/$1/enveloped_signed_csr > /dev/null
@@ -72,7 +72,7 @@ openssl dgst -belt-hash out/$1/enveloped_signed_csr.der \
   -hex > out/$1/csr_reqid.txt 2> /dev/null
 
 # cat out/$1/csr_reqid.txt
-sed -iE s/.*=\ // out/$1/csr_reqid.txt
+sed -iE "s/.*=\ //" "out/$1/csr_reqid.txt"
 cat out/$1/csr_reqid.txt
 
 #set /p reqid=< out/$1/csr_reqid.txt
@@ -80,9 +80,9 @@ cat out/$1/csr_reqid.txt
 #
 #echo %reqid% > out/$1/csr_reqid.txt
 #
-#echo stored in out/$1/csr_reqid.txt
+echo stored in out/$1/csr_reqid.txt
 #
-#echo -- 7 recovering Enveloped(Signed(CSR($1)))
+#echo "-- 7 recovering Enveloped(Signed(CSR($1)))"
 #
 #openssl cms -decrypt -in out/$1/enveloped_signed_csr -inform pem \
 #  -inkey out/ca1/privkey -out out/$1/recovered_signed_csr.der \
