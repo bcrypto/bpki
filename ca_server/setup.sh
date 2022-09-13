@@ -146,6 +146,7 @@ bash ./create.sh opra 730
 bash ./create.sh agca1 1095
 
 echo 00 > ./out/tsa/tsaserial
+cat out/ca0/cert out/ca1/cert > out/ca1/chain
 
 echo "== 6 Revoking opra (for OCSP testing) ===================================="
 
