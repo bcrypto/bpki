@@ -34,3 +34,9 @@ clear.cmd
 ca_server/out/*
 client_test/out/*
 client_test/answers/*
+
+# Python package files
+*.egg-info/
+bdist.*/
+lib.*/
+temp.*/
