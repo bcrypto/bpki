@@ -37,3 +37,32 @@ char* BPKIRevokeReq_get_issuer(BPKIRevokeReq *req)
 {
     return X509_NAME_oneline(req->issuer, NULL, -1);
 }
+
+PyObject *parse_revoke(PyObject *self, PyObject *args)
+{
+    const unsigned char* in = NULL;
+    int len;
+    if (!PyArg_ParseTuple(args, "y#", &in, &len))
+    {
+        return NULL;
+    }
+    BPKIRevokeReq* req = d2i_BPKIRevokeReq(NULL, &in, len);
+    printf("%d\n", len);
+    for(int i = 0; i<len; i++)
+        printf("%x", in[i]);
+    printf("\n");
+    char* serial = BPKIRevokeReq_get_serial(req);
+    printf("%s\n", serial);
+    OPENSSL_free(serial);
+    char* pwd = BPKIRevokeReq_get_revoke_pwd(req);
+    printf("%s\n", pwd);
+    OPENSSL_free(pwd);
+    char* nm = BPKIRevokeReq_get_issuer(req);
+    printf("%s\n", nm);
+    OPENSSL_free(nm);
+    long reason = BPKIRevokeReq_get_reason(req);
+    printf("%ld\n", reason);
+    PyObject* result = Py_BuildValue("i", len);
+    BPKIRevokeReq_free(req);
+    return result;
+}

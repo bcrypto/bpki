@@ -14,7 +14,7 @@ module1 = Extension(
 
 setup(
     name="bpkipy",
-    version="0.0.30",
+    version="0.0.31",
     author="Mikhail Mitskevich",
     author_email="mitskevichmn@gmail.com",
     description="Extensions for BPKI formats",
