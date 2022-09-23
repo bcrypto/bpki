@@ -1,12 +1,12 @@
 #include "bpki_ext.h"
+#include "bpki_resp.h"
 
 char bpki_func_docs[] = "Hello world description.";
+char bpki_resp_docs[] = "BPKIResp object creation.";
 
 PyMethodDef bpkipy_funcs[] = {
-	{	"hello",
-		(PyCFunction)hello,
-		METH_NOARGS,
-		bpki_func_docs},
+	{	"hello", (PyCFunction)hello, METH_NOARGS, bpki_func_docs},
+	{	"create_response", (PyCFunction)create_response, METH_VARARGS | METH_KEYWORDS, bpki_resp_docs},
 	{	NULL}
 };
 

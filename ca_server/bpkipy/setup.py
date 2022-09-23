@@ -8,13 +8,13 @@ module1 = Extension(
     include_dirs=['/usr/local/include'],
     libraries=['crypto'],
     library_dirs=['/usr/local/lib'],
-    sources=['src/bpki_ext.c', 'src/bind.c'],
+    sources=['src/bpki_ext.c', 'src/bpki_resp.c', 'src/bind.c'],
 )
 
 
 setup(
     name="bpkipy",
-    version="0.0.4",
+    version="0.0.30",
     author="Mikhail Mitskevich",
     author_email="mitskevichmn@gmail.com",
     description="Extensions for BPKI formats",
