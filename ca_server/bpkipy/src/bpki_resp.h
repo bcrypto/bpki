@@ -1,6 +1,8 @@
 #ifndef __BPKI_RESP_H__
 #define __BPKI_RESP_H__
 
+#define PY_SSIZE_T_CLEAN
+
 #include <Python.h>
 #include <openssl/asn1t.h>
 #include <openssl/ts.h>

@@ -17,26 +17,22 @@ ASN1_SEQUENCE(BPKIResp) = {
 IMPLEMENT_ASN1_FUNCTIONS(BPKIResp);
 
 
-int BPKIResp_set_status(BPKIResp *resp, int i)
-{
+int BPKIResp_set_status(BPKIResp *resp, int i) {
     return ASN1_INTEGER_set(resp->statusInfo->status, i);
 }
 
-int BPKIResp_set_request_id(BPKIResp *resp, unsigned char* req_id)
-{
+int BPKIResp_set_request_id(BPKIResp *resp, unsigned char* req_id) {
     return ASN1_OCTET_STRING_set(resp->requestId, req_id, BPKI_REQ_ID_LENGTH);
 }
 
-int BPKIResp_set_nonce(BPKIResp *resp, unsigned char* nonce)
-{
+int BPKIResp_set_nonce(BPKIResp *resp, unsigned char* nonce) {
     if(resp->nonce == NULL
         && (resp->nonce = ASN1_OCTET_STRING_new()) == NULL)
         return 1;
     return ASN1_OCTET_STRING_set(resp->nonce, nonce, BPKI_NONCE_LENGTH);
 }
 
-int BPKIResp_push_status_string(BPKIResp *resp, const char *text)
-{
+int BPKIResp_push_status_string(BPKIResp *resp, const char *text) {
     PKIStatusInfo *si = resp->statusInfo;
     ASN1_UTF8STRING *utf8_text = NULL;
     int ret = 0;
@@ -58,8 +54,7 @@ int BPKIResp_push_status_string(BPKIResp *resp, const char *text)
     return ret;
 }
 
-int BPKIResp_set_failure_info(BPKIResp *resp, int failure)
-{
+int BPKIResp_set_failure_info(BPKIResp *resp, int failure) {
     PKIStatusInfo *si = resp->statusInfo;
     if (si->failInfo == NULL
         && (si->failInfo = ASN1_BIT_STRING_new()) == NULL)
@@ -71,13 +66,12 @@ int BPKIResp_set_failure_info(BPKIResp *resp, int failure)
     return 0;
 }
 
-PyObject *create_response(PyObject *self, PyObject *args, PyObject *kwargs)
-{
+PyObject *create_response(PyObject *self, PyObject *args, PyObject *kwargs) {
     int status = -1;
     unsigned char *req_id = NULL;
-    int req_id_len = -1;
+    Py_ssize_t req_id_len = -1;
     unsigned char *nonce = NULL;
-    int nonce_len = -1;
+    Py_ssize_t nonce_len = -1;
     int failure_info = -1;
     PyObject* error_list = NULL;
 
