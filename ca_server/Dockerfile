@@ -7,11 +7,15 @@ RUN apt-get update \
         gcc \
         postgresql \
         libpq-dev \
+        libssl-dev \
         python3-dev \
         python3-pip \
     && apt-get autoremove --purge \
     && rm -rf /var/lib/apt/lists/*
 RUN pip3 install --no-cache-dir -r requirements.txt
+
+COPY bpkipy/ ./bpkipy/
+RUN python3 -m pip install ./bpkipy
 
 #RUN service postgresql start
 
@@ -30,7 +34,7 @@ RUN    service postgresql start &&\
 # database are possible.
 RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/12/main/pg_hba.conf
 
-# And add ``listen_addresses`` to ``/etc/postgresql/9.3/main/postgresql.conf``
+# And add ``listen_addresses`` to ``/etc/postgresql/12/main/postgresql.conf``
 RUN echo "listen_addresses='*'" >> /etc/postgresql/12/main/postgresql.conf
 
 # Expose the PostgreSQL port

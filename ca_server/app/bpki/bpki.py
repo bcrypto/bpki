@@ -8,6 +8,7 @@ from app.user.models import Certificate
 from .tsa import tsa_req
 from .enroll import Enroll1
 from .openssl import openssl
+import bpkipy
 
 
 bpki_path = os.getcwd() + '/app/bpki/'
@@ -70,21 +71,25 @@ def ocsp():
 def enroll1():
     data = request.get_data()
     req = base64.b64decode(data)
+    result = None
+    try:
+        proc = Enroll1(file=req)
+        proc.recover()
+        proc.verify()
+        proc.extract_csr()
+        proc.validate_cert_pol()
+        proc.process_csr_chall_pwd()
+        proc.create_cert()
+        proc.envelope_cert()
 
-    proc = Enroll1(file=req)
-    proc.recover()
-    proc.verify()
-    proc.extract_csr()
-    proc.validate_cert_pol()
-    proc.process_csr_chall_pwd()
-    proc.create_cert()
-    proc.envelope_cert()
+        user = Certificate(proc.req_id, proc.info_pwd, proc.e_pwd, proc.cert)
+        db.session.add(user)
+        db.session.commit()
+        result = proc.enveloped_cert
+    except Exception as e:
+        result = bpkipy.create_response(status=3, req_id=bytes.fromhex(proc.req_id))
 
-    user = Certificate(proc.req_id, proc.info_pwd, proc.e_pwd, proc.cert)
-    db.session.add(user)
-    db.session.commit()
-
-    return base64.b64encode(proc.enveloped_cert)
+    return base64.b64encode(result)
 
 
 @bpki_bp.route('/bpki/enroll2', methods=['GET', 'POST'])

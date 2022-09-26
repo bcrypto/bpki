@@ -1,5 +1,6 @@
 # 0 Copy relevant certificates
 bash cert_copy.sh
+bash dumpasn1b.sh
 
 # 1 Healthcheck
 python3 healthcheck.py
