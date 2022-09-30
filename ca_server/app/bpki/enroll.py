@@ -140,3 +140,14 @@ class Enroll1(Req):
         cmd = (f"openssl x509 -in {self.path}/cert.der "
                f"-inform der -out {self.path}/cert -outform pem")
         openssl(cmd)
+
+    # sign response
+    def sign_response(self, response):
+        with open(f"{self.path}/response") as rf:
+            rf.write(response)
+        cmd = (f"cms -sign -in {self.path}/response "
+               f"-signer {out_path}/ca1/cert "
+               f"-inkey {out_path}/ca1/privkey -passin pass:ca1ca1ca1"
+               f"-binary -econtent_type bpki-ct-resp "
+               f"-out {self.path}/signed_response.der -outform der -nodetach -nosmimecap")
+        _, out_, err_ = openssl(cmd)
