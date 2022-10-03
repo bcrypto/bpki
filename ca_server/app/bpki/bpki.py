@@ -71,18 +71,19 @@ def ocsp():
 def enroll1():
     data = request.get_data()
     req = base64.b64decode(data)
-    result = None
+    # result = None
     try:
         proc = Enroll1(file=req)
         proc.recover()
         proc.verify()
         proc.extract_csr()
-        proc.validate_cert_pol()
+        # proc.validate_cert_pol()
         proc.process_csr_chall_pwd()
         proc.create_cert()
         proc.envelope_cert()
+        reg_data = proc.reg_data()
 
-        user = Certificate(proc.req_id, proc.info_pwd, proc.e_pwd, proc.cert)
+        user = Certificate(*reg_data)
         db.session.add(user)
         db.session.commit()
         result = proc.enveloped_cert

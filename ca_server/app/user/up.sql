@@ -1,7 +1,8 @@
 CREATE TABLE "certificates" (
   id SERIAL PRIMARY KEY,
-  req_id VARCHAR UNIQUE,
+  revoke_pwd VARCHAR,
   info_pwd VARCHAR,
-  e_pwd VARCHAR,
+  serial_num BYTEA,
+  req_id BYTEA,
   cert BYTEA
 );

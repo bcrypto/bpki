@@ -17,19 +17,19 @@ def get_users():
     res = {}
     for user in rows:
         res[user.id] = {
-            'req_id': user.req_id,
+            'revoke_pwd': user.revoke_pwd,
             'info_pwd': user.info_pwd,
-            'e_pwd': user.e_pwd,
+            'serial': user.serial_num,
+            'req_id': user.req_id,
             'cert': user.cert
         }
     return jsonify(res)
 
+
 @users.route('/create_user', methods=['POST', 'GET'])
 def create_user():
-    user1 = Certificate("1234567")
-    user1.info_pwd = "info"
-    user1.e_pwd = "epwd"
-    user1.cert = "cert"
+    user1 = Certificate("1234567", "info", "12345", "cert")
+    user1.revoke_pwd = "epwd"
     db.session.add(user1)
     db.session.commit()
     return 'Product created.'

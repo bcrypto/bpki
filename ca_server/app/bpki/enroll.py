@@ -50,6 +50,7 @@ class Enroll1(Req):
     def __init__(self, file, days=365):
         super().__init__(file, days)
         self.cert = None
+        self.serial = None
         self.enveloped_cert = None
         self.e_pwd = None
         self.info_pwd = None
@@ -90,7 +91,7 @@ class Enroll1(Req):
     # processing CSR(%1).challengePassword
     def process_csr_chall_pwd(self):
         cmd = (f"req -in {self.path}/csr "
-               f"-inform der -text -noout")
+               f"-inform pem -text -noout")
         _, out_, err_ = openssl(cmd)
         out_ = out_.decode("utf-8")
         res = re.search(r"challengePassword.*(\n)?", out_)
@@ -101,10 +102,10 @@ class Enroll1(Req):
             if res_info_pwd:
                 info_pwd = res_info_pwd.group(0).split(':')[1]
                 self.info_pwd = info_pwd
-            res_e_pwd = re.search(r"/EPWD([^/])*", challenge_pwd)
-            if res_e_pwd:
-                e_pwd = res_e_pwd.group(0).split(':')[1]
-                self.e_pwd = e_pwd
+            # res_e_pwd = re.search(r"/EPWD([^/])*", challenge_pwd)
+            # if res_e_pwd:
+            #    e_pwd = res_e_pwd.group(0).split(':')[1]
+            #    self.e_pwd = e_pwd
 
     # creating Cert(%1)
     def create_cert(self):
@@ -113,6 +114,10 @@ class Enroll1(Req):
                # f"-extfile ./cfg/{self.path}.cfg -extensions exts"
                f"-out {self.path}/tmp_cert -notext -utf8 ")
         _, out_, err_ = openssl(cmd)
+        # Extract serial number from certificate
+        cmd = f"x509 -noout -serial -in {self.path}/tmp_cert"
+        _, out_, err_ = openssl(cmd)
+        self.serial = bytes.fromhex(out_.decode("utf-8").strip().split('=')[1])
         cmd = f"x509 -outform der -in {self.path}/tmp_cert -out {self.path}/tmp_cert.der"
         _, out_, err_ = openssl(cmd)
         with open(f"{self.path}/tmp_cert.der", "rb") as f:
@@ -151,3 +156,11 @@ class Enroll1(Req):
                f"-binary -econtent_type bpki-ct-resp "
                f"-out {self.path}/signed_response.der -outform der -nodetach -nosmimecap")
         _, out_, err_ = openssl(cmd)
+
+    def reg_data(self):
+        return [
+            self.serial,
+            self.info_pwd,
+            self.req_id,
+            self.cert
+        ]
