@@ -88,7 +88,11 @@ def enroll1():
         db.session.commit()
         result = proc.enveloped_cert
     except Exception as e:
-        result = bpkipy.create_response(status=3, req_id=bytes.fromhex(proc.req_id))
+        current_app.logger.error('Enroll1: ' + str(e))
+        error_list = [str(e)]
+        result = bpkipy.create_response(
+            status=3, req_id=bytes.fromhex(proc.req_id), error_list=error_list
+        )
 
     return base64.b64encode(result)
 
