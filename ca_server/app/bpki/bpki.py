@@ -83,6 +83,7 @@ def enroll1():
         proc.envelope_cert()
         reg_data = proc.reg_data()
 
+        current_app.logger.debug('Add item to table: %s', str(reg_data))
         user = Certificate(*reg_data)
         db.session.add(user)
         db.session.commit()

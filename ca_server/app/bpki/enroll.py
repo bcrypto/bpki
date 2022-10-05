@@ -161,6 +161,6 @@ class Enroll1(Req):
         return [
             self.serial,
             self.info_pwd,
-            self.req_id,
+            bytes.fromhex(self.req_id),
             self.cert
         ]

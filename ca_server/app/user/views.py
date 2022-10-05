@@ -17,11 +17,10 @@ def get_users():
     res = {}
     for user in rows:
         res[user.id] = {
+            'serial': user.serial_num.hex(),
             'revoke_pwd': user.revoke_pwd,
             'info_pwd': user.info_pwd,
-            'serial': user.serial_num,
-            'req_id': user.req_id,
-            'cert': user.cert
+            'req_id': user.req_id.hex()
         }
     return jsonify(res)
 
