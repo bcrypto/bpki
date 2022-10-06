@@ -2,6 +2,7 @@ import os
 import re
 import tempfile
 import shutil
+import datetime
 
 from flask import current_app
 
@@ -25,6 +26,7 @@ class Req:
         id_ = id_.decode("utf-8").split('=')[1].strip()
         self.req_id = id_
         current_app.logger.debug(self.req_id)
+        # TODO: add req_id checking for duplicated requests
 
     def __del(self):
         shutil.rmtree(self.path)
@@ -158,9 +160,20 @@ class Enroll1(Req):
         _, out_, err_ = openssl(cmd)
 
     def reg_data(self):
+        # Extract serial number from certificate
+        cmd = f"x509 -noout -dates -in {self.path}/tmp_cert"
+        _, out_, err_ = openssl(cmd)
+
+        def str_date(s):      # Oct  6 11:05:08 2023 GMT
+            return datetime.datetime.strptime(s, "%b %d %H:%M:%S %Y GMT")
+
+        dates = {k.strip(): str_date(v) for i in out_.decode("utf-8").strip().split('\n') for k, v in [i.split('=')]}
+        current_app.logger.debug(dates)
         return [
             self.serial,
             self.info_pwd,
             bytes.fromhex(self.req_id),
-            self.cert
+            self.cert,
+            dates['notBefore'],
+            dates['notAfter']
         ]

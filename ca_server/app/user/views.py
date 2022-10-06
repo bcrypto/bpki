@@ -18,6 +18,9 @@ def get_users():
     for user in rows:
         res[user.id] = {
             'serial': user.serial_num.hex(),
+            'date_from': user.date_from,
+            'date_to': user.date_to,
+            'status': user.status,
             'revoke_pwd': user.revoke_pwd,
             'info_pwd': user.info_pwd,
             'req_id': user.req_id.hex()
@@ -25,10 +28,10 @@ def get_users():
     return jsonify(res)
 
 
-@users.route('/create_user', methods=['POST', 'GET'])
-def create_user():
-    user1 = Certificate("1234567", "info", "12345", "cert")
-    user1.revoke_pwd = "epwd"
-    db.session.add(user1)
-    db.session.commit()
-    return 'Product created.'
+# @users.route('/create_user', methods=['POST', 'GET'])
+# def create_user():
+#     user1 = Certificate("1234567", "info", "12345", "cert")
+#     user1.revoke_pwd = "epwd"
+#     db.session.add(user1)
+#     db.session.commit()
+#     return 'Product created.'

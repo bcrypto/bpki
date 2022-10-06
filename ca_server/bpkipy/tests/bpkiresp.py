@@ -7,5 +7,3 @@ errors = ["Error1", "Error2"]
 print(bpkipy.create_response(status=3, req_id=request_id, nonce=nonce, error_list=errors, failure=4))
 
 help(bpkipy)
-
-

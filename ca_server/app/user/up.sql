@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS certificates;
-CREATE TABLE certificates (
+DROP TABLE IF EXISTS certificate;
+CREATE TABLE certificate (
   id SERIAL PRIMARY KEY,
   status VARCHAR,
   date_from TIMESTAMP,
