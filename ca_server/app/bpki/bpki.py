@@ -7,6 +7,7 @@ from app import db
 from app.user.models import Certificate
 from .tsa import tsa_req
 from .enroll import Enroll1
+from .revoke import Revoke
 from .openssl import openssl
 import bpkipy
 
@@ -74,8 +75,8 @@ def enroll1():
     # result = None
     try:
         proc = Enroll1(file=req)
-        proc.recover()
-        proc.verify()
+        proc.decrypt("enveloped_signed_csr", "recovered_signed_csr")
+        proc.verify("recovered_signed_csr", "verified_csr.der")
         proc.extract_csr()
         # proc.validate_cert_pol()
         proc.process_csr_chall_pwd()
@@ -91,9 +92,10 @@ def enroll1():
     except Exception as e:
         current_app.logger.error('Enroll1: ' + str(e))
         error_list = [str(e)]
-        result = bpkipy.create_response(
+        resp = bpkipy.create_response(
             status=3, req_id=bytes.fromhex(proc.req_id), error_list=error_list
         )
+        result = proc.sign_response(resp)
 
     return base64.b64encode(result)
 
@@ -130,4 +132,34 @@ def setpwd():
 
 @bpki_bp.route('/bpki/revoke', methods=['GET', 'POST'])
 def revoke():
-    pass
+    data = request.get_data()
+    req = base64.b64decode(data)
+    try:
+        proc = Revoke(file=req)
+        proc.decrypt("enveloped_signed_csr", "recovered_signed_csr")
+        proc.verify("recovered_signed_csr", "verified_csr.der")
+        proc.parse("verified_csr.der")
+        # TODO: check issuer
+
+        account = db.session.query(Certificate).filter_by(serial_num=bytes.fromhex(proc.rev_data['serial'][2:])).first()
+        current_app.logger.error('Status: ' + account.status)
+        if account.status == 'Actual':
+            account.status = 'Revoked'
+            db.session.commit()
+            # TODO: revoke certificate with OpenSSL command
+            current_app.logger.error('Revoke completed.')
+            result = bpkipy.create_response(
+                status=0, req_id=bytes.fromhex(proc.req_id), error_list=["Revoked successfully."]
+            )
+        else:
+            result = bpkipy.create_response(
+                status=2, req_id=bytes.fromhex(proc.req_id), error_list=["Certificate had been revoked."]
+            )
+    except Exception as e:
+        current_app.logger.error('Revoke: ' + str(e))
+        error_list = [str(e)]
+        result = bpkipy.create_response(
+            status=2, req_id=bytes.fromhex(proc.req_id), error_list=error_list
+        )
+
+    return base64.b64encode(proc.sign_response(result))

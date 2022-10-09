@@ -14,66 +14,71 @@ enroll1_path = out_path + '/enroll1/'
 
 
 class Req:
-    def __init__(self, file, days_=365):
-        self.days = days_
+    def __init__(self, file):
         self.path = tempfile.mkdtemp()
         with open(f"{self.path}/enveloped_signed_csr", 'wb') as f:
             f.write(file)
         cmd = f"dgst -belt-hash {self.path}/enveloped_signed_csr"
         _, id_, err_ = openssl(cmd)
-        current_app.logger.debug(err_)
-        current_app.logger.debug(id_)
         id_ = id_.decode("utf-8").split('=')[1].strip()
         self.req_id = id_
         current_app.logger.debug(self.req_id)
-        # TODO: add req_id checking for duplicated requests
 
     def __del(self):
         shutil.rmtree(self.path)
 
-    def recover_enveloped(self, container, out):
-        cmd = (f"cms -decrypt -in {self.path}/{container} -inform der"
-               f"-inkey {out_path}/ca1/privkey -out {self.path}/{out}"
-               f"-binary -passin pass:ca1ca1ca1 -debug_decrypt")
+    # recovering Enveloped(Signed(CSR(%1)))
+    def decrypt(self, input_name, output_name):
+        cmd = (f"cms -decrypt -in {self.path}/{input_name} -inform der "
+               f"-inkey {out_path}/ca1/privkey -out {self.path}/{output_name} "
+               f"-outform der -binary -passin pass:ca1ca1ca1 -debug_decrypt")
         openssl(cmd)
+
+    # verifying Signed(CSR(%1)) and extract message
+    def verify(self, input_name, output_name):
+        cmd = (f"cms -verify -in {self.path}/{input_name} -inform der "
+               f"-CAfile {out_path}/ca1/chain "
+               f"-signer {self.path}/cert "
+               f"-out {self.path}/{output_name} -outform der -purpose any")
+        _, out_, err_ = openssl(cmd)
 
     def convert_format(self, inputfile, outputfile, to="pem"):
         if to == "pem":
-            cmd = (f"pkcs7 -in out/{self.req_id}/{inputfile} -inform der"
+            cmd = (f"pkcs7 -in out/{self.req_id}/{inputfile} -inform der "
                    f"-out out/{self.req_id}/{outputfile} -outform pem")
             openssl(cmd)
         elif to == "der":
-            cmd = (f"pkcs7 -in out/{self.req_id}/{inputfile} -inform pem"
+            cmd = (f"pkcs7 -in out/{self.req_id}/{inputfile} -inform pem "
                    f"-out out/{self.req_id}/{outputfile} -outform der")
             openssl(cmd)
+
+    # sign response
+    def sign_response(self, response):
+        with open(f"{self.path}/response", 'wb') as rf:
+            rf.write(response)
+        cmd = (f"cms -sign -in {self.path}/response "
+               f"-signer {out_path}/ca1/cert "
+               f"-inkey {out_path}/ca1/privkey -passin pass:ca1ca1ca1 "
+               f"-binary -econtent_type bpki-ct-resp "
+               f"-out {self.path}/signed_response.der -outform der -nodetach -nosmimecap ")
+        _, out_, err_ = openssl(cmd)
+        with open(f"{self.path}/signed_response.der", 'rb') as rf:
+            resp = rf.read()
+        return resp
 
 
 class Enroll1(Req):
     def __init__(self, file, days=365):
-        super().__init__(file, days)
+        super().__init__(file)
+        self.days = days
         self.cert = None
         self.serial = None
         self.enveloped_cert = None
         self.e_pwd = None
         self.info_pwd = None
+        # TODO: add req_id checking for duplicated requests
 
-    # recovering Enveloped(Signed(CSR(%1)))
-    def recover(self):
-        cmd = (
-            f"cms -decrypt -in {self.path}/enveloped_signed_csr -inform der "
-            f"-inkey {out_path}/ca1/privkey -out {self.path}/recovered_signed_csr "
-            f"-outform der -binary -passin pass:ca1ca1ca1 -debug_decrypt")
-        _, out_, err_ = openssl(cmd)
-
-    # verifying Signed(CSR(%1))
-    def verify(self):
-        cmd = (f"cms -verify -in {self.path}/recovered_signed_csr -inform der "
-               f"-CAfile {out_path}/ca1/chain "
-               f"-signer {out_path}/opra/cert "
-               f"-out {self.path}/verified_csr.der -outform der -purpose any")
-        _, out_, err_ = openssl(cmd)
-
-    # extracting CSR(%1) from Signed(CSR(%1))
+    # convert from CSR(%1)-DER to CSR(%1)-PEM
     def extract_csr(self):
         cmd = (f"req -in {self.path}/verified_csr.der -inform der "
                f"-out {self.path}/csr -outform pem ")
@@ -135,29 +140,6 @@ class Enroll1(Req):
         _, out_, err_ = openssl(cmd)
         with open(f"{self.path}/enveloped_cert.der", "rb") as f:
             self.enveloped_cert = f.read()
-
-    # recovering Enveloped(Cert(%1))
-    def recover_env_cert(self):
-        cmd = (
-            f"openssl cms -decrypt -in {self.path}/enveloped_cert -inform pem "
-            f"-inkey {out_path}/opra/privkey -out {self.path}/cert.der -outform der "
-            f"-passin pass:opraopraopra -debug_decrypt")
-        openssl(cmd)
-
-        cmd = (f"openssl x509 -in {self.path}/cert.der "
-               f"-inform der -out {self.path}/cert -outform pem")
-        openssl(cmd)
-
-    # sign response
-    def sign_response(self, response):
-        with open(f"{self.path}/response") as rf:
-            rf.write(response)
-        cmd = (f"cms -sign -in {self.path}/response "
-               f"-signer {out_path}/ca1/cert "
-               f"-inkey {out_path}/ca1/privkey -passin pass:ca1ca1ca1"
-               f"-binary -econtent_type bpki-ct-resp "
-               f"-out {self.path}/signed_response.der -outform der -nodetach -nosmimecap")
-        _, out_, err_ = openssl(cmd)
 
     def reg_data(self):
         # Extract serial number from certificate
