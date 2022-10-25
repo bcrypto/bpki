@@ -13,3 +13,6 @@ bash check_tsa.sh
 # 3 Enroll1
 bash test_enroll1.sh lr
 
+# 4 Bad Enroll1
+python post_bad_enroll1.py
+bash check_bad_enroll.sh
