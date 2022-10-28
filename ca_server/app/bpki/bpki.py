@@ -74,14 +74,14 @@ def enroll1():
     req = base64.b64decode(data)
     # result = None
     try:
-        proc = Enroll1(file=req)
+        proc = Enroll1(message=req, tmp_name="enveloped_signed_csr")
         proc.decrypt("enveloped_signed_csr", "recovered_signed_csr")
         proc.verify("recovered_signed_csr", "verified_csr.der")
         proc.extract_csr()
         # proc.validate_cert_pol()
         proc.process_csr_chall_pwd()
         proc.create_cert()
-        proc.envelope_cert()
+        proc.envelope_cert(recip_cert=f"{out_path}/opra/cert")
         reg_data = proc.reg_data()
 
         current_app.logger.debug('Add item to table: %s', str(reg_data))
@@ -93,7 +93,7 @@ def enroll1():
         current_app.logger.error('Enroll1: ' + str(e))
         error_list = [str(e)]
         resp = bpkipy.create_response(
-            status=3, req_id=bytes.fromhex(proc.req_id), error_list=error_list
+            status=2, req_id=bytes.fromhex(proc.req_id), error_list=error_list
         )
         result = proc.sign_response(resp)
 
@@ -105,9 +105,35 @@ def enroll2():
     pass
 
 
-@bpki_bp.route('/bpki/enroll3', methods=['GET', 'POST'])
+@bpki_bp.route('/bpki/enroll3', methods=['POST'])
 def enroll3():
-    pass
+    data = request.get_data()
+    req = base64.b64decode(data)
+    # result = None
+    try:
+        proc = Enroll1(message=req, tmp_name="enveloped_csr")
+        proc.decrypt("enveloped_csr", "verified_csr.der")
+        proc.extract_csr()
+        # proc.validate_cert_pol()
+        # TODO: extract and check EPWD like process_csr_chall_pwd()
+        proc.create_cert()
+        proc.envelope_cert()
+        reg_data = proc.reg_data()
+
+        current_app.logger.debug('Add item to table: %s', str(reg_data))
+        user = Certificate(*reg_data)
+        db.session.add(user)
+        db.session.commit()
+        result = proc.enveloped_cert
+    except Exception as e:
+        current_app.logger.error('Enroll3: ' + str(e))
+        error_list = [str(e)]
+        resp = bpkipy.create_response(
+            status=2, req_id=bytes.fromhex(proc.req_id), error_list=error_list
+        )
+        result = proc.sign_response(resp)
+
+    return base64.b64encode(result)
 
 
 @bpki_bp.route('/bpki/reenroll', methods=['GET', 'POST'])
@@ -135,7 +161,7 @@ def revoke():
     data = request.get_data()
     req = base64.b64decode(data)
     try:
-        proc = Revoke(file=req)
+        proc = Revoke(message=req, tmp_name="enveloped_signed_csr")
         proc.decrypt("enveloped_signed_csr", "recovered_signed_csr")
         proc.verify("recovered_signed_csr", "verified_csr.der")
         proc.parse("verified_csr.der")
