@@ -11,10 +11,7 @@ from .revoke import Revoke
 from .openssl import openssl
 import bpkipy
 
-
-bpki_path = os.getcwd() + '/app/bpki/'
-out_path = bpki_path + 'out/'
-enroll1_path = out_path + 'enroll1/'
+out_path = os.getcwd() + '/out/'
 
 bpki_bp = Blueprint('bpki_bp', __name__,
                     template_folder='../templates',
@@ -81,7 +78,7 @@ def enroll1():
         # proc.validate_cert_pol()
         proc.process_csr_chall_pwd()
         proc.create_cert()
-        proc.envelope_cert(recip_cert=f"{out_path}/opra/cert")
+        proc.envelope_cert(recip_cert=f"{out_path}opra/cert")
         reg_data = proc.reg_data()
 
         current_app.logger.debug('Add item to table: %s', str(reg_data))

@@ -1,5 +1,6 @@
 import requests
 import base64
+from config import HOSTNAME
 
 rev_req = bytes.fromhex(
     "306d30223113301106035504030c0a425920526f6f74204341310b30090603550406130242"
@@ -7,7 +8,7 @@ rev_req = bytes.fromhex(
     "6f72640a0103180f31393835313130363231303632375a0c0c6e6f626f6479206b6e6f7773"
 )
 req_str = base64.b64encode(rev_req)
-r = requests.post('http://127.0.0.1:5000/bpki/enroll1', data=req_str)
+r = requests.post(f'http://{HOSTNAME}/bpki/enroll1', data=req_str)
 print(r.status_code)
 print(r.text)
 with open(f"answers/bpki_resp.der", "wb") as f:

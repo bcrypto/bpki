@@ -173,6 +173,8 @@ export OPENSSL_CONF=openssl.cfg
 #echo stored in out/$1/enveloped_cert.der
 #
 echo "-- 15 recovering Enveloped(Cert($1))"
+
+bash dump.sh answers/$1/enveloped_cert.der
 #
 openssl cms -decrypt -in answers/$1/enveloped_cert.der -inform der \
  -inkey out/opra/privkey -out answers/$1/cert.der -outform der \
