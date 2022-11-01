@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, request, current_app
 from app import db
 from app.user.models import Certificate
 from .tsa import tsa_req
+from .ocsp import ocsp_req
 from .enroll import Enroll1
 from .revoke import Revoke
 from .openssl import openssl
@@ -60,9 +61,12 @@ def tsa2():
     return base64.b64encode(answer)
 
 
-@bpki_bp.route('/bpki/ocsp', methods=['GET'])
+@bpki_bp.route('/bpki/ocsp', methods=['POST'])
 def ocsp():
-    pass
+    data = request.get_data()
+    req = base64.b64decode(data)
+    answer = ocsp_req(req)
+    return base64.b64encode(answer)
 
 
 @bpki_bp.route('/bpki/enroll1', methods=['POST'])
