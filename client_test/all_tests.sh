@@ -14,5 +14,6 @@ bash check_tsa.sh
 bash test_enroll1.sh lr
 
 # 4 Bad Enroll1
+echo "--- BPKIResp test on BAD request for Enroll1"
 python post_bad_enroll1.py
 bash check_bad_enroll.sh

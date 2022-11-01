@@ -43,6 +43,7 @@ cp -f ../ca_server/out/tsa/cert out/tsa/cert 2> /dev/null
 mkdir out/opra 2> /dev/null
 cp -f ../ca_server/out/opra/cert out/opra/cert 2> /dev/null
 cp -f ../ca_server/out/opra/privkey out/opra/privkey 2> /dev/null
+cp -f ../ca_server/out/opra/privkey.der out/opra/privkey.der 2> /dev/null
 cp -f ../ca_server/out/opra/privkey_plain out/opra/privkey_plain 2> /dev/null
 #bash ./create.sh agca1 1095
 
