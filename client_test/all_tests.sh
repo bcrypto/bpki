@@ -18,4 +18,8 @@ python post_bad_enroll1.py
 bash check_bad_enroll.sh
 
 # 5 OCSP
-bash test_ocsp.sh
+bash test_ocsp.sh lr
+
+# 6 CRL
+python get_crl.py
+bash dump.sh answers/crl.der

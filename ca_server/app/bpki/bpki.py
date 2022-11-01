@@ -2,6 +2,7 @@ import base64
 import os
 
 from flask import Blueprint, render_template, request, current_app
+from flask import send_file
 
 from app import db
 from app.user.models import Certificate
@@ -67,6 +68,19 @@ def ocsp():
     req = base64.b64decode(data)
     answer = ocsp_req(req)
     return base64.b64encode(answer)
+
+
+@bpki_bp.route('/bpki/crl', methods=['GET'])
+def crl():
+    cmd = (f"ca -gencrl -name ca1 -key ca1ca1ca1 -crldays 1 -crlhours 6 "
+            f" -crlexts crlexts -out {out_path}current_crl -batch")
+    openssl(cmd)
+    cmd = f"crl -in {out_path}current_crl -outform DER -out {out_path}current_crl.der"
+    openssl(cmd)
+    try:
+        return send_file(f'{out_path}/current_crl.der', download_name='crl')
+    except Exception as e:
+        return str(e)
 
 
 @bpki_bp.route('/bpki/enroll1', methods=['POST'])
