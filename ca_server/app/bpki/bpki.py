@@ -185,9 +185,10 @@ def revoke():
         account = db.session.query(Certificate).filter_by(serial_num=bytes.fromhex(proc.rev_data['serial'][2:])).first()
         current_app.logger.error('Status: ' + account.status)
         if account.status == 'Actual':
+            # TODO: revoke certificate with OpenSSL command
+
             account.status = 'Revoked'
             db.session.commit()
-            # TODO: revoke certificate with OpenSSL command
             current_app.logger.error('Revoke completed.')
             result = bpkipy.create_response(
                 status=0, req_id=bytes.fromhex(proc.req_id), error_list=["Revoked successfully."]

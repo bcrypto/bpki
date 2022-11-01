@@ -1,4 +1,5 @@
 import os
+import datetime
 
 from flask import current_app
 
@@ -32,3 +33,14 @@ class Revoke(Req):
                f"-signer {out_path}/opra/cert "
                f"-out {self.path}/verified_csr.der -outform der -purpose any")
         _, out_, err_ = openssl(cmd)
+
+    def revoke(self, cert, crl_reason):
+        with open(f"{self.path}/cert", 'wb') as f:
+            f.write(cert)
+            # ca -revoke out/opra/cert0 -name ca1 -key ca1ca1ca1 \
+            #   -crl_reason keyCompromise -crl_compromise $ldt -batch
+        custom_option = ""
+        "-crl_compromise {time}"
+        cmd = (f"ca -revoke {self.path}/cert -name ca1 -key ca1ca1ca1"
+               f" -crl_reason {crl_reason} {custom_option} -batch")
+        openssl(cmd)
