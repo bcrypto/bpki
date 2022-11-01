@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "-- 1 dump Signed(Revoke($1))"
 
 bash dump.sh out/$1/revoke.csr

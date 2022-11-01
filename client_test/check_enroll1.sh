@@ -1,5 +1,5 @@
 #!/bin/bash
-##@echo off
+
 ##rem ===========================================================================
 ##rem \brief Процесc Enroll1
 #rem \project bpki/demo

@@ -1,4 +1,5 @@
 #!/bin/bash
+
 echo "== Creating End Entity $1"
 cd out
 mkdir $1 2> /dev/null
