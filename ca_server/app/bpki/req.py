@@ -1,8 +1,6 @@
 import os
-import re
 import tempfile
 import shutil
-import datetime
 
 from flask import current_app
 
