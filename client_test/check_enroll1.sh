@@ -185,6 +185,7 @@ echo stored in answers/$1/cert.der
 openssl x509 -in answers/$1/cert.der -inform der \
   -out answers/$1/cert -outform pem > /dev/null
 
+source dump.sh answers/$1/cert.der
 #source decode.sh out/$1/cert > /dev/null
 #
 echo stored in answers/$1/cert

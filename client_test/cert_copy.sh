@@ -18,12 +18,15 @@ echo "== 2 Copy CA0 certificate (Root CA) ======================================
 
 mkdir out/ca0 2> /dev/null
 cp -f ../ca_server/out/ca0/cert out/ca0/cert  2> /dev/null
+cp -f ../ca_server/out/ca0/cert.der out/ca0/cert.der  2> /dev/null
 
 echo "== 3 Copy CA1 certificate (Republican CA) ================================"
 
 mkdir out/ca1 2> /dev/null
 cp -f ../ca_server/out/ca1/cert out/ca1/cert  2> /dev/null
+cp -f ../ca_server/out/ca1/cert.der out/ca1/cert.der  2> /dev/null
 cp -f ../ca_server/out/ca1/chain out/ca1/chain  2> /dev/null
+cat out/ca0/cert.der out/ca1/cert.der > out/ca1/chain.der
 
 #echo "== 4 Copy CA2 certificate  (Subordinate CA) ============================="
 
