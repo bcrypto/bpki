@@ -72,7 +72,7 @@ openssl ts -verify -queryfile out/tsa/req1.tsq -in answers/tsa/resp1.tsr \
 
 echo -- 6 TSA Verify2 ----------------------
 
-openssl ts -verify -data tsa.sh -bash512 -in answers/tsa/resp2.tsr \
+openssl ts -verify -data gen_tsa.sh -bash512 -in answers/tsa/resp2.tsr \
   -CAfile out/ca0/cert -untrusted out/ca1/cert #2> /dev/null
 
 openssl ts -verify -queryfile out/tsa/req2.tsq -in answers/tsa/resp2.tsr \
