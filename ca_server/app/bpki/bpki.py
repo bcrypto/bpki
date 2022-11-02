@@ -2,10 +2,12 @@ import base64
 import os
 
 from flask import Blueprint, render_template, request, current_app
+from flask import send_file
 
 from app import db
 from app.user.models import Certificate
 from .tsa import tsa_req
+from .ocsp import ocsp_req
 from .enroll import Enroll1
 from .revoke import Revoke
 from .openssl import openssl
@@ -60,9 +62,25 @@ def tsa2():
     return base64.b64encode(answer)
 
 
-@bpki_bp.route('/bpki/ocsp', methods=['GET'])
+@bpki_bp.route('/bpki/ocsp', methods=['POST'])
 def ocsp():
-    pass
+    data = request.get_data()
+    req = base64.b64decode(data)
+    answer = ocsp_req(req)
+    return base64.b64encode(answer)
+
+
+@bpki_bp.route('/bpki/crl', methods=['GET'])
+def crl():
+    cmd = (f"ca -gencrl -name ca1 -key ca1ca1ca1 -crldays 1 -crlhours 6 "
+            f" -crlexts crlexts -out {out_path}current_crl -batch")
+    openssl(cmd)
+    cmd = f"crl -in {out_path}current_crl -outform DER -out {out_path}current_crl.der"
+    openssl(cmd)
+    try:
+        return send_file(f'{out_path}/current_crl.der', download_name='crl')
+    except Exception as e:
+        return str(e)
 
 
 @bpki_bp.route('/bpki/enroll1', methods=['POST'])
@@ -167,9 +185,10 @@ def revoke():
         account = db.session.query(Certificate).filter_by(serial_num=bytes.fromhex(proc.rev_data['serial'][2:])).first()
         current_app.logger.error('Status: ' + account.status)
         if account.status == 'Actual':
+            # TODO: revoke certificate with OpenSSL command
+
             account.status = 'Revoked'
             db.session.commit()
-            # TODO: revoke certificate with OpenSSL command
             current_app.logger.error('Revoke completed.')
             result = bpkipy.create_response(
                 status=0, req_id=bytes.fromhex(proc.req_id), error_list=["Revoked successfully."]

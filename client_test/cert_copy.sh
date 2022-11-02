@@ -1,4 +1,5 @@
 #!/bin/bash
+
 echo "== Initializing PKI ======================================================"
 
 mkdir out 2> /dev/null
@@ -33,6 +34,8 @@ echo "== 5 Copy End Entities data ==============================================
 #bash ./create.sh aa 1825
 #bash ./create.sh ra 1825
 #bash ./create.sh ocsp 1095
+mkdir out/ocsp 2> /dev/null
+cp -f ../ca_server/out/ocsp/cert out/ocsp/cert 2> /dev/null
 #bash ./create.sh tsa 1825
 mkdir out/tsa 2> /dev/null
 cp -f ../ca_server/out/tsa/cert out/tsa/cert 2> /dev/null

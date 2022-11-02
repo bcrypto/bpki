@@ -1,4 +1,5 @@
-#@echo off
+#!/bin/bash
+
 #rem ===========================================================================
 #rem \brief Запрос и ответ TSA = TimeStamp Authority
 #rem \project bpki/demo
@@ -71,7 +72,7 @@ echo stored in out/tsa/req2.tsq
 
 #echo -- 6 TSA Verify2 ----------------------
 
-#openssl ts -verify -data tsa.sh -bash512 -in out/tsa/resp2.tsr \
+#openssl ts -verify -data gen_tsa.sh -bash512 -in out/tsa/resp2.tsr \
 #  -CAfile out/ca0/cert -untrusted out/ca1/cert 2> /dev/null
 
 #openssl ts -verify -queryfile out/tsa/req2.tsq -in out/tsa/resp2.tsr \

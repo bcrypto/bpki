@@ -1,3 +1,5 @@
+#!/bin/bash
+
 export OPENSSL_CONF=openssl.cfg
 
 echo "--1  Decode Signed(Response)"
