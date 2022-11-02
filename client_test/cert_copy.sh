@@ -36,15 +36,18 @@ echo "== 5 Copy End Entities data ==============================================
 #bash ./create.sh ocsp 1095
 mkdir out/ocsp 2> /dev/null
 cp -f ../ca_server/out/ocsp/cert out/ocsp/cert 2> /dev/null
+cp -f ../ca_server/out/ocsp/cert.der out/ocsp/cert.der 2> /dev/null
 #bash ./create.sh tsa 1825
 mkdir out/tsa 2> /dev/null
 cp -f ../ca_server/out/tsa/cert out/tsa/cert 2> /dev/null
+cp -f ../ca_server/out/tsa/cert.der out/tsa/cert.der 2> /dev/null
 #bash ./create.sh dvcs 1825
 #bash ./create.sh ids 1095
 #bash ./create.sh tls 1095
 #bash ./create.sh opra 730
 mkdir out/opra 2> /dev/null
 cp -f ../ca_server/out/opra/cert out/opra/cert 2> /dev/null
+cp -f ../ca_server/out/opra/cert.der out/opra/cert.der 2> /dev/null
 cp -f ../ca_server/out/opra/privkey out/opra/privkey 2> /dev/null
 cp -f ../ca_server/out/opra/privkey.der out/opra/privkey.der 2> /dev/null
 cp -f ../ca_server/out/opra/privkey_plain out/opra/privkey_plain 2> /dev/null

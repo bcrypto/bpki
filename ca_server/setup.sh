@@ -46,7 +46,7 @@ openssl pkcs8 -in out/ca0/privkey_plain -topk8 \
 
 openssl pkey -in out/ca0/privkey -passin pass:ca0ca0ca0 -noout -check
 
-# call decode out/ca0/privkey > nul
+source decode.sh out/ca0/privkey
 
 openssl req -new -utf8 -nameopt multiline,utf8 -config ./cfg/ca0.cfg \
   -key out/ca0/privkey -passin pass:ca0ca0ca0 -out out/ca0/csr -batch
@@ -57,7 +57,7 @@ openssl x509 -req -extfile ./cfg/ca0.cfg -extensions exts \
   -in out/ca0/csr -signkey out/ca0/privkey -passin pass:ca0ca0ca0 \
   -out out/ca0/cert 2> /dev/null
 
-# call decode out/ca0/cert > nul
+source decode.sh out/ca0/cert
 
 echo ok
 
@@ -83,7 +83,7 @@ openssl pkcs8 -in out/ca1/privkey_plain -topk8 \
 
 openssl pkey -in out/ca1/privkey -passin pass:ca1ca1ca1 -noout -pubcheck
 
-#call decode out/ca1/privkey > nul#
+source decode.sh out/ca1/privkey
 
 openssl req -new -utf8 -nameopt multiline,utf8 -config ./cfg/ca1.cfg \
   -key out/ca1/privkey -passin pass:ca1ca1ca1 -out out/ca1/csr -batch
@@ -94,7 +94,7 @@ openssl ca -name ca0 -create_serial -batch -in out/ca1/csr \
   -key ca0ca0ca0 -extfile ./cfg/ca1.cfg -extensions exts \
   -out out/ca1/cert -notext -utf8 2> /dev/null
 
-#call decode out/ca1/cert > nul#
+source decode.sh out/ca1/cert
 
 echo ok
 
@@ -118,7 +118,7 @@ openssl pkcs8 -in out/ca2/privkey_plain -topk8 \
   -v2 belt-kwp256 -v2prf belt-hmac -iter 10000 \
   -passout pass:ca2ca2ca2 -out out/ca2/privkey
 
-#call decode out/ca1/privkey > nul#
+source decode.sh out/ca1/privkey
 
 openssl req -new -utf8 -nameopt multiline,utf8 -config ./cfg/ca2.cfg \
   -key out/ca2/privkey -passin pass:ca2ca2ca2 -out out/ca2/csr -batch
@@ -129,21 +129,21 @@ openssl ca -name ca1 -create_serial -batch -in out/ca2/csr \
   -key ca1ca1ca1 -extfile ./cfg/ca2.cfg -extensions exts \
   -out out/ca2/cert -notext -utf8 2> /dev/null
 
-#call decode out/ca2/cert > nul#
+source decode.sh out/ca2/cert
 
 echo ok
 
 echo "== 5 Creating End Entities ==============================================="
 
-bash ./create.sh aa 1825
-bash ./create.sh ra 1825
-bash ./create.sh ocsp 1095
-bash ./create.sh tsa 1825
-bash ./create.sh dvcs 1825
-bash ./create.sh ids 1095
-bash ./create.sh tls 1095
-bash ./create.sh opra 730
-bash ./create.sh agca1 1095
+source create.sh aa 1825
+source create.sh ra 1825
+source create.sh ocsp 1095
+source create.sh tsa 1825
+source create.sh dvcs 1825
+source create.sh ids 1095
+source create.sh tls 1095
+source create.sh opra 730
+source create.sh agca1 1095
 
 echo 00 > ./out/tsa/tsaserial
 cat out/ca0/cert out/ca1/cert > out/ca1/chain
@@ -155,7 +155,7 @@ cp -f out/opra/cert out/opra/cert0 > /dev/null
 openssl ca -gencrl -name ca1 -key ca1ca1ca1 -crldays 1 -crlhours 6 \
   -crlexts crlexts -out out/ca1/crl1 -batch 2> /dev/null
 
-#call decode out/ca1/crl1 > nul#
+source decode.sh out/ca1/crl1
 
 openssl ca -revoke out/opra/cert0 -name ca1 -key ca1ca1ca1 \
   -crl_reason keyCompromise -crl_compromise $ldt -batch
@@ -163,11 +163,11 @@ openssl ca -revoke out/opra/cert0 -name ca1 -key ca1ca1ca1 \
 openssl ca -gencrl -name ca1 -key ca1ca1ca1 -crlhours 1 \
   -crlexts crlexts -out out/ca1/crl2 -batch 2> /dev/null
 
-#call decode out/ca1/crl2 > nul#
+source decode.sh out/ca1/crl2
 
 echo "== 7 Creating opra again ================================================="
 
-bash ./create.sh opra 730
+source create.sh opra 730
 
 #:End#
 
