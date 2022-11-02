@@ -70,11 +70,22 @@ Start server:
 ```
 $ docker-compose up bpki_ca
 ```
+
+### Database administration on image
 Connect to docker image with terminal:
 ```commandline
 docker run -it ca_server_bpki_ca bash
 ```
+Connect to DB on Docker image:
+```commandline
+psql -h localhost -p 5432 -U docker
+```
+Initialize DB in psql:
+```commandline
+# \i  /root/up.sql
+```
 
+### Database administration on image
 Connect to DB on Docker image:
 ```commandline
 psql -h localhost -p 54321 -U docker

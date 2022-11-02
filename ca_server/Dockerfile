@@ -17,6 +17,13 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY bpkipy/ ./bpkipy/
 RUN python3 -m pip install ./bpkipy
 
+# Adjust PostgreSQL configuration so that remote connections to the
+# database are possible.
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/12/main/pg_hba.conf
+
+# And add ``listen_addresses`` to ``/etc/postgresql/12/main/postgresql.conf``
+RUN echo "listen_addresses='*'" >> /etc/postgresql/12/main/postgresql.conf
+
 #RUN service postgresql start
 
 # Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3`` package when it was ``apt-get installed``
@@ -33,21 +40,15 @@ RUN service postgresql start &&\
     runuser -u postgres -- psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" &&\
     runuser -u postgres -- createdb -O docker docker
 
-# Adjust PostgreSQL configuration so that remote connections to the
-# database are possible.
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/12/main/pg_hba.conf
-
-# And add ``listen_addresses`` to ``/etc/postgresql/12/main/postgresql.conf``
-RUN echo "listen_addresses='*'" >> /etc/postgresql/12/main/postgresql.conf
-
 # RUN service postgresql restart &&\
 #    psql "dbname='docker' user='docker' password='docker'" -f up.sql
 
+# Add VOLUMEs to allow backup of config, logs and databases
+# RUN mkdir /etc/postgresql && mkdir /var/log/postgresql && mkdir /var/lib/postgresql
+VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
+
 # Expose the PostgreSQL port
 EXPOSE 5432
-
-# Add VOLUMEs to allow backup of config, logs and databases
-VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 
 #CMD    /etc/init.d/postgresql start
 
