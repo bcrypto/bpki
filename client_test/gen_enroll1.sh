@@ -32,17 +32,19 @@ openssl pkcs8 -in out/$1/privkey_pre -passin pass:$1$1$1 -topk8 \
   -passout pass:$1$1$1 -out out/$1/privkey
 
 rm out/$1/privkey_pre > /dev/null
+
 source decode.sh out/$1/privkey > /dev/null
 
 echo stored in out/$1/privkey.der
 
 echo "-- 3 creating CSR($1)"
 
-openssl req -new -utf8 -nameopt multiline,utf8 -newkey bign:out/params256 \
-  -config ./cfg/$1.cfg -keyout out/$1/privkey -reqexts reqexts \
-  -out out/$1/csr -passout pass:$1$1$1 -batch 2> /dev/null
+openssl req -new -utf8 -nameopt multiline,utf8 -key out/$1/privkey \
+  -config ./cfg/$1.cfg -reqexts reqexts \
+  -out out/$1/csr -passin pass:$1$1$1 -batch
 
 source decode.sh out/$1/csr > /dev/null
+
 
 echo stored in out/$1/csr.der
 
