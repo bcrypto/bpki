@@ -10,7 +10,7 @@ if not os.path.exists(f"answers/{entity}"):
     os.mkdir(f"answers/{entity}")
 
 print(f"-- 2 Processing Revoke on server {entity}")
-with open(f"out/{entity}/revoke.der", "rb") as f:
+with open(f"out/{entity}/enveloped_revoke.der", "rb") as f:
     req = f.read()
 req_str = base64.b64encode(req.strip())
 r = requests.post(f'http://{HOSTNAME}/bpki/revoke', data=req_str)

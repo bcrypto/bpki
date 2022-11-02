@@ -185,8 +185,8 @@ def revoke():
         account = db.session.query(Certificate).filter_by(serial_num=bytes.fromhex(proc.rev_data['serial'][2:])).first()
         current_app.logger.error('Status: ' + account.status)
         if account.status == 'Actual':
-            # TODO: revoke certificate with OpenSSL command
-
+            # revoke certificate with OpenSSL command
+            proc.revoke(account.cert)
             account.status = 'Revoked'
             db.session.commit()
             current_app.logger.error('Revoke completed.')

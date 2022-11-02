@@ -34,12 +34,26 @@ class Revoke(Req):
                f"-out {self.path}/verified_csr.der -outform der -purpose any")
         _, out_, err_ = openssl(cmd)
 
-    def revoke(self, cert, crl_reason):
+    def revoke(self, cert):
         with open(f"{self.path}/cert", 'wb') as f:
             f.write(cert)
-            # ca -revoke out/opra/cert0 -name ca1 -key ca1ca1ca1 \
-            #   -crl_reason keyCompromise -crl_compromise $ldt -batch
-        custom_option = ""
+        reason = {
+            1: "keyCompromise",
+            2: "cACompromise",
+            3: "affiliationChanged",
+            4: "superseded",
+            5: "cessationOfOperation",
+            6: "certificateHold",
+            8: "removeFromCRL",
+            9: "privilegeWithdrawn",
+            10: "aACompromise"
+        }
+        options = {
+            1: f"-crl_compromise {self.rev_data['date']}",
+
+        }
+        crl_reason = reason.get(self.rev_data['reason'], "unspecified")
+        custom_option = options.get(self.rev_data['reason'], "")
         "-crl_compromise {time}"
         cmd = (f"ca -revoke {self.path}/cert -name ca1 -key ca1ca1ca1"
                f" -crl_reason {crl_reason} {custom_option} -batch")
