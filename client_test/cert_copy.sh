@@ -19,6 +19,7 @@ echo "== 2 Copy CA0 certificate (Root CA) ======================================
 mkdir out/ca0 2> /dev/null
 cp -f ../ca_server/out/ca0/cert out/ca0/cert  2> /dev/null
 cp -f ../ca_server/out/ca0/cert.der out/ca0/cert.der  2> /dev/null
+cp -f ../ca_server/out/ca0/crl0.der out/ca0/crl0.der  2> /dev/null
 
 echo "== 3 Copy CA1 certificate (Republican CA) ================================"
 
@@ -59,7 +60,9 @@ cp -f ../ca_server/out/opra/privkey_plain out/opra/privkey_plain 2> /dev/null
 echo "== 6 Copy CRL before and after revoking opra (for OCSP testing) =========="
 
 cp -f ../ca_server/out/ca1/crl1  out/ca1/crl1  2> /dev/null
+cp -f ../ca_server/out/ca1/crl1.der  out/ca1/crl1.der  2> /dev/null
 cp -f ../ca_server/out/ca1/crl2  out/ca1/crl2  2> /dev/null
+cp -f ../ca_server/out/ca1/crl2.der  out/ca1/crl2.der  2> /dev/null
 
 echo "== 7 Copy revoked opra certificate ======================================="
 
