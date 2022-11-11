@@ -35,8 +35,10 @@ class Revoke(Req):
         _, out_, err_ = openssl(cmd)
 
     def revoke(self, cert):
-        with open(f"{self.path}/cert", 'wb') as f:
+        with open(f"{self.path}/cert.der", 'wb') as f:
             f.write(cert)
+        cmd = f"x509 -outform pem -in {self.path}/cert.der -out {self.path}/cert"
+        _, out_, err_ = openssl(cmd)
         reason = {
             1: "keyCompromise",
             2: "cACompromise",

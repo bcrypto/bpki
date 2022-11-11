@@ -78,7 +78,20 @@ def crl():
     cmd = f"crl -in {out_path}current_crl -outform DER -out {out_path}current_crl.der"
     openssl(cmd)
     try:
-        return send_file(f'{out_path}/current_crl.der', download_name='crl')
+        return send_file(f'{out_path}current_crl.der', download_name='crl')
+    except Exception as e:
+        return str(e)
+
+
+@bpki_bp.route('/bpki/crl0', methods=['GET'])
+def crl0():
+    cmd = (f"ca -gencrl -name ca0 -key ca1ca1ca1 -crldays 1 -crlhours 6 "
+            f" -crlexts crlexts -out {out_path}current_crl0 -batch")
+    openssl(cmd)
+    cmd = f"crl -in {out_path}current_crl0 -outform DER -out {out_path}current_crl0.der"
+    openssl(cmd)
+    try:
+        return send_file(f'{out_path}current_crl0.der', download_name='crl0')
     except Exception as e:
         return str(e)
 
@@ -166,12 +179,31 @@ def retrieve():
     pass
 
 
-@bpki_bp.route('/bpki/setpwd', methods=['GET', 'POST'])
+@bpki_bp.route('/bpki/setpwd', methods=['POST'])
 def setpwd():
-    pass
+    data = request.get_data()
+    req = base64.b64decode(data)
+    # result = None
+    try:
+        proc = Enroll1(message=req, tmp_name="enveloped_csr")
+        proc.decrypt("enveloped_signed_csr", "recovered_signed_csr")
+        proc.verify("recovered_signed_csr", "verified_csr.der")
+        # TODO: check serial match for revoked cert
+        # TODO: set PWD in database
+        result = bpkipy.create_response(
+            status=0, req_id=bytes.fromhex(proc.req_id), error_list=["EPWD is set successfully."]
+        )
+    except Exception as e:
+        current_app.logger.error('SetPwd: ' + str(e))
+        error_list = [str(e)]
+        result = bpkipy.create_response(
+            status=2, req_id=bytes.fromhex(proc.req_id), error_list=error_list
+        )
+
+    return base64.b64encode(proc.sign_response(result))
 
 
-@bpki_bp.route('/bpki/revoke', methods=['GET', 'POST'])
+@bpki_bp.route('/bpki/revoke', methods=['POST'])
 def revoke():
     data = request.get_data()
     req = base64.b64decode(data)

@@ -18,4 +18,4 @@ print(r.status_code)
 print(r.text)
 with open(f"answers/{entity}/enveloped3_cert.der", "wb") as f:
     f.write(base64.b64decode(r.text))
-print(f" stored in answers/{entity}/enveloped_cert.der")
+print(f" stored in answers/{entity}/enveloped3_cert.der")
