@@ -14,6 +14,13 @@ out_path = bpki_path + '/out'
 enroll1_path = out_path + '/enroll1/'
 
 
+# Extract serial number from certificate
+def get_serial(filename):
+    cmd = f"x509 -noout -serial -in {filename}"
+    _, out_, err_ = openssl(cmd)
+    return bytes.fromhex(out_.decode("utf-8").strip().split('=')[1])
+
+
 class Enroll1(Req):
     def __init__(self, message, tmp_name, days=365):
         super().__init__(message, tmp_name)
@@ -69,9 +76,7 @@ class Enroll1(Req):
                f"-out {self.path}/tmp_cert -notext -utf8 ")
         _, out_, err_ = openssl(cmd)
         # Extract serial number from certificate
-        cmd = f"x509 -noout -serial -in {self.path}/tmp_cert"
-        _, out_, err_ = openssl(cmd)
-        self.serial = bytes.fromhex(out_.decode("utf-8").strip().split('=')[1])
+        self.serial = get_serial(f"{self.path}/tmp_cert")
         cmd = f"x509 -outform der -in {self.path}/tmp_cert -out {self.path}/tmp_cert.der"
         _, out_, err_ = openssl(cmd)
         with open(f"{self.path}/tmp_cert.der", "rb") as f:
@@ -91,7 +96,7 @@ class Enroll1(Req):
             self.enveloped_cert = f.read()
 
     def reg_data(self):
-        # Extract serial number from certificate
+        # Extract dates from certificate
         cmd = f"x509 -noout -dates -in {self.path}/tmp_cert"
         _, out_, err_ = openssl(cmd)
 

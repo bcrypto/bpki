@@ -8,7 +8,7 @@ from app import db
 from app.user.models import Certificate
 from .tsa import tsa_req
 from .ocsp import ocsp_req
-from .enroll import Enroll1
+from .enroll import Enroll1, get_serial
 from .revoke import Revoke
 from .openssl import openssl
 import bpkipy
@@ -143,6 +143,7 @@ def enroll3():
         proc.decrypt("enveloped_csr", "verified_csr.der")
         proc.extract_csr()
         # proc.validate_cert_pol()
+        # proc.process_csr_chall_pwd()
         # TODO: extract and check EPWD like process_csr_chall_pwd()
         proc.create_cert()
         proc.envelope_cert()
@@ -169,10 +170,12 @@ def reenroll():
     data = request.get_data()
     req = base64.b64decode(data)
     try:
-        proc = Enroll1(message=req, tmp_name="enveloped_csr")
-        proc.decrypt("enveloped_csr", "verified_csr.der")
+        proc = Enroll1(message=req, tmp_name="enveloped_signed_csr")
+        proc.decrypt("enveloped_signed_csr", "recovered_signed_csr")
+        proc.verify("recovered_signed_csr", "verified_csr.der")
         proc.extract_csr()
         # proc.validate_cert_pol()
+        proc.process_csr_chall_pwd()
         proc.create_cert()
         proc.envelope_cert()
         reg_data = proc.reg_data()
@@ -181,7 +184,8 @@ def reenroll():
         user = Certificate(*reg_data)
         db.session.add(user)
         db.session.commit()
-        account = db.session.query(Certificate).filter_by(serial_num=bytes.fromhex(proc.rev_data['serial'][2:])).first()
+        serial = get_serial(proc.signer_cert_file)
+        account = db.session.query(Certificate).filter_by(serial_num=serial).first()
         current_app.logger.error('Status: ' + account.status)
         if account.status == 'Actual':
             # revoke certificate with OpenSSL command
@@ -207,10 +211,12 @@ def spawn():
     req = base64.b64decode(data)
     # result = None
     try:
-        proc = Enroll1(message=req, tmp_name="enveloped_csr")
-        proc.decrypt("enveloped_csr", "verified_csr.der")
+        proc = Enroll1(message=req, tmp_name="enveloped_signed_csr")
+        proc.decrypt("enveloped_signed_csr", "recovered_signed_csr")
+        proc.verify("recovered_signed_csr", "verified_csr.der")
         proc.extract_csr()
         # proc.validate_cert_pol()
+        proc.process_csr_chall_pwd()
         proc.create_cert()
         proc.envelope_cert()
         reg_data = proc.reg_data()

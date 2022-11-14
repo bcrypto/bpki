@@ -21,6 +21,7 @@ class Req:
         id_ = id_.decode("utf-8").split('=')[1].strip()
         self.req_id = id_
         current_app.logger.debug(self.req_id)
+        self.signer_cert_file = None
 
     def __del(self):
         shutil.rmtree(self.path)
@@ -39,6 +40,7 @@ class Req:
                f"-signer {self.path}/cert "
                f"-out {self.path}/{output_name} -outform der -purpose any")
         _, out_, err_ = openssl(cmd)
+        self.signer_cert_file = f"{self.path}/cert"
 
     def convert_format(self, inputfile, outputfile, to="pem"):
         if to == "pem":
