@@ -85,7 +85,7 @@ Initialize DB in psql:
 # \i  /root/up.sql
 ```
 
-### Database administration on image
+### Database administration from host
 Connect to DB on Docker image:
 ```commandline
 psql -h localhost -p 54321 -U docker
@@ -93,4 +93,8 @@ psql -h localhost -p 54321 -U docker
 Initialize DB in psql:
 ```commandline
 # \i  app/user/up.sql
+```
+Exit from psql:
+```commandline
+# \q
 ```

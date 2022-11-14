@@ -218,7 +218,7 @@ def revoke():
         current_app.logger.error('Status: ' + account.status)
         if account.status == 'Actual':
             # revoke certificate with OpenSSL command
-            proc.revoke(account.cert)
+            proc.revoke()
             account.status = 'Revoked'
             db.session.commit()
             current_app.logger.error('Revoke completed.')

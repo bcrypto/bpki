@@ -26,19 +26,13 @@ class Revoke(Req):
         self.rev_data = bpkipy.parse_revoke(rev_req)
         current_app.logger.debug(self.rev_data)
 
-    # verifying Signed(RevReq(%1))
-    def revoke_cert(self):
-        cmd = (f"cms -verify -in {self.path}/recovered_signed_csr -inform der "
-               f"-CAfile {out_path}/ca1/chain "
-               f"-signer {out_path}/opra/cert "
-               f"-out {self.path}/verified_csr.der -outform der -purpose any")
-        _, out_, err_ = openssl(cmd)
-
-    def revoke(self, cert):
-        with open(f"{self.path}/cert.der", 'wb') as f:
-            f.write(cert)
-        cmd = f"x509 -outform pem -in {self.path}/cert.der -out {self.path}/cert"
-        _, out_, err_ = openssl(cmd)
+    # revoke certificate
+    def revoke(self, cert=None):
+        if cert is not None:
+            with open(f"{self.path}/cert.der", 'wb') as f:
+                f.write(cert)
+            cmd = f"x509 -outform pem -in {self.path}/cert.der -out {self.path}/cert"
+            _, out_, err_ = openssl(cmd)
         reason = {
             1: "keyCompromise",
             2: "cACompromise",
@@ -58,5 +52,5 @@ class Revoke(Req):
         custom_option = options.get(self.rev_data['reason'], "")
         "-crl_compromise {time}"
         cmd = (f"ca -revoke {self.path}/cert -name ca1 -key ca1ca1ca1"
-               f" -crl_reason {crl_reason} {custom_option} -batch")
+               f" -crl_reason {crl_reason} {custom_option} ")
         openssl(cmd)
