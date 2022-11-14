@@ -164,14 +164,71 @@ def enroll3():
     return base64.b64encode(result)
 
 
-@bpki_bp.route('/bpki/reenroll', methods=['GET', 'POST'])
+@bpki_bp.route('/bpki/reenroll', methods=['POST'])
 def reenroll():
-    pass
+    data = request.get_data()
+    req = base64.b64decode(data)
+    try:
+        proc = Enroll1(message=req, tmp_name="enveloped_csr")
+        proc.decrypt("enveloped_csr", "verified_csr.der")
+        proc.extract_csr()
+        # proc.validate_cert_pol()
+        proc.create_cert()
+        proc.envelope_cert()
+        reg_data = proc.reg_data()
+
+        current_app.logger.debug('Add item to table: %s', str(reg_data))
+        user = Certificate(*reg_data)
+        db.session.add(user)
+        db.session.commit()
+        account = db.session.query(Certificate).filter_by(serial_num=bytes.fromhex(proc.rev_data['serial'][2:])).first()
+        current_app.logger.error('Status: ' + account.status)
+        if account.status == 'Actual':
+            # revoke certificate with OpenSSL command
+            proc.revoke_cert()
+            account.status = 'Revoked'
+            db.session.commit()
+            current_app.logger.error('Revoke completed.')
+        result = proc.enveloped_cert
+    except Exception as e:
+        current_app.logger.error('Reenroll: ' + str(e))
+        error_list = [str(e)]
+        resp = bpkipy.create_response(
+            status=2, req_id=bytes.fromhex(proc.req_id), error_list=error_list
+        )
+        result = proc.sign_response(resp)
+
+    return base64.b64encode(result)
 
 
-@bpki_bp.route('/bpki/spawn', methods=['GET', 'POST'])
+@bpki_bp.route('/bpki/spawn', methods=['POST'])
 def spawn():
-    pass
+    data = request.get_data()
+    req = base64.b64decode(data)
+    # result = None
+    try:
+        proc = Enroll1(message=req, tmp_name="enveloped_csr")
+        proc.decrypt("enveloped_csr", "verified_csr.der")
+        proc.extract_csr()
+        # proc.validate_cert_pol()
+        proc.create_cert()
+        proc.envelope_cert()
+        reg_data = proc.reg_data()
+
+        current_app.logger.debug('Add item to table: %s', str(reg_data))
+        user = Certificate(*reg_data)
+        db.session.add(user)
+        db.session.commit()
+        result = proc.enveloped_cert
+    except Exception as e:
+        current_app.logger.error('Spawn: ' + str(e))
+        error_list = [str(e)]
+        resp = bpkipy.create_response(
+            status=2, req_id=bytes.fromhex(proc.req_id), error_list=error_list
+        )
+        result = proc.sign_response(resp)
+
+    return base64.b64encode(result)
 
 
 @bpki_bp.route('/bpki/retrieve', methods=['GET', 'POST'])

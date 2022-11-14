@@ -63,3 +63,9 @@ class Req:
         with open(f"{self.path}/signed_response.der", 'rb') as rf:
             resp = rf.read()
         return resp
+
+    # revoke for Reenroll process
+    def revoke_cert(self):
+        cmd = (f"ca -revoke {self.path}/cert -name ca1 -key ca1ca1ca1"
+               f" -crl_reason superseded ")
+        openssl(cmd)
