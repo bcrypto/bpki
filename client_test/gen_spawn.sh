@@ -1,0 +1,200 @@
+#!/bin/bash
+
+##@echo off
+##rem ===========================================================================
+##rem \brief Процесc Spawn
+#rem \project bpki/demo
+#rem \created 2018.01.10
+#rem \version 2020.11.23
+#rem \params $1 -- конечный участник, %2 -- срок действия (дней).
+#rem \pre Имеется конфигурационный файл ./cfg/$1.cfg. Выпущен ключ и сертификат
+#rem \post Сертификат out/$1/cert и промежуточные объекты.
+#rem ===========================================================================
+
+export OPENSSL_CONF=openssl.cfg
+
+#if .$1. equ .. goto Usage
+#if not exist "./cfg/$1.cfg" goto Usage
+#if .%2. equ .. goto Usage
+#
+echo "-- 1 preparing dirs ($1)"
+
+cd out
+mkdir $1 2> /dev/null
+mkdir spawn 2> /dev/null
+cd ..
+
+ echo "-- 2 generating privkey(Spawn)"
+
+openssl genpkey -paramfile out/params256 -out out/spawn/privkey_pre -pass pass:spawnspawnspawn
+
+openssl pkcs8 -in out/spawn/privkey_pre -passin pass:spawnspawnspawn -topk8 \
+  -v2 belt-kwp256 -v2prf belt-hmac -iter 10000 \
+  -passout pass:spawnspawnspawn -out out/spawn/privkey
+
+rm out/spawn/privkey_pre > /dev/null
+
+source decode.sh out/spawn/privkey > /dev/null
+
+echo stored in out/spawn/privkey.der
+
+echo "-- 3 creating CSR($1)"
+
+openssl req -new -utf8 -nameopt multiline,utf8 -key out/spawn/privkey \
+  -config ./cfg/$1.cfg -reqexts reqexts \
+  -out out/spawn/csr -passin pass:spawnspawnspawn -batch
+
+source decode.sh out/spawn/csr > /dev/null
+
+
+echo stored in out/spawn/csr.der
+
+echo "-- 4 signing CSR(spawn) by $1 cert"
+
+openssl cms -sign -signer answers/$1/cert \
+  -inkey out/$1/privkey -passin pass:$1$1$1 \
+  -in out/spawn/csr.der -binary -econtent_type bpki-ct-enroll1-req \
+  -out out/spawn/signed_csr -outform pem -nodetach -nosmimecap
+
+source decode.sh out/spawn/signed_csr > /dev/null
+
+echo stored in out/spawn/signed_csr.der
+
+echo "-- 5 enveloping Signed(CSR(spawn)) for CA1"
+
+openssl cms -encrypt -binary -in out/spawn/signed_csr.der -inform der \
+  -recip out/ca1/cert -belt-cfb256 \
+  -out out/spawn/enveloped_signed_csr -outform pem
+
+source decode.sh out/spawn/enveloped_signed_csr > /dev/null
+
+echo stored in out/spawn/enveloped_signed_csr.der
+
+echo "-- 6 calculating reqid = hash(Enveloped(Signed(CSR(spawn))))"
+
+openssl dgst -belt-hash out/spawn/enveloped_signed_csr.der \
+  -hex > out/spawn/csr_reqid.txt 2> /dev/null
+
+# cat out/$1/csr_reqid.txt
+sed -iE "s/.*=\ //" "out/$1/csr_reqid.txt"
+cat out/$1/csr_reqid.txt
+
+#set /p reqid=< out/$1/csr_reqid.txt
+#for /f "tokens=1-2 delims= " %%i in ("%reqid%") do set reqid=%%j
+#
+#echo %reqid% > out/$1/csr_reqid.txt
+#
+echo stored in out/spawn/csr_reqid.txt
+#
+#echo "-- 7 recovering Enveloped(Signed(CSR($1)))"
+#
+#openssl cms -decrypt -in out/$1/enveloped_signed_csr -inform pem \
+#  -inkey out/ca1/privkey -out out/$1/recovered_signed_csr.der \
+#  -binary -passin pass:ca1ca1ca1 -debug_decrypt
+#
+#openssl pkcs7 -in out/$1/recovered_signed_csr.der -inform der \
+#  -out out/$1/recovered_signed_csr -outform pem > /dev/null
+#
+#source decode.sh out/$1/recovered_signed_csr > /dev/null
+#
+#echo stored in out/$1/recovered_signed_csr.der
+#
+#echo -- 8 verifying Signed(CSR($1))
+#
+#copy out\ca0\cert + out\ca1\cert out\$1\chain_opra > /dev/null
+#
+#openssl cms -verify -in out/$1/recovered_signed_csr -inform pem \
+#  -CAfile out/$1/chain_opra -signer out/$1/verified_cert_opra \
+#  -out out/$1/verified_csr.der -outform der -purpose any
+#
+#echo -- 9 extracting CSR($1) from Signed(CSR($1))
+#
+#openssl req -in out/$1/verified_csr.der -inform der \
+#  -out out/$1/verified_csr -outform pem > /dev/null
+#
+#echo stored in out/$1/verified_csr.der
+#
+#echo -- 10 extracting Cert(signer of Signed(CSR($1)))
+#
+#source decode.sh out/$1/verified_cert_opra > /dev/null
+#
+#echo stored in out/$1/verified_cert_opra.der
+#
+#echo -- 11 validating Cert(signer of Signed(CSR($1))).CertificatePolicies
+#
+#openssl x509 -in out/$1/verified_cert_opra -text -noout \
+#  | findstr /C:"bpki-role-ra"
+#
+#echo -- 12 processing CSR($1).challengePassword
+#
+#openssl req -in out/$1/verified_csr -inform pem -text \
+#  -noout | findstr /C:"challenge" > out/ca1/pwd_$1.txt
+#
+#set /p pwd=< out/ca1/pwd_$1.txt
+#
+#for /f "tokens=1-7 delims=:/" %%i in ("%pwd%") do (
+#  set pwd1=%%j
+#  set pwd2=%%k
+#  set pwd3=%%l
+#  set pwd4=%%m
+#  set pwd5=%%n
+#  set pwd6=%%o)
+#
+#if .%pwd1%. neq .. (
+#  echo %pwd1% = %pwd2%
+#  set pwd=/%pwd1%:%pwd2%)
+#
+#if .%pwd4%. neq .. (
+#  echo %pwd3% = %pwd4%
+#  set pwd=%pwd%/%pwd3%:%pwd4%)
+#
+#if .%pwd6%. neq .. (
+#  echo %pwd5% = %pwd6%
+#  set pwd=/%pwd5%:%pwd6%)
+#
+#echo %pwd% > out/ca1/pwd_$1.txt
+#
+#echo stored in out/ca1/pwd_$1.txt
+#
+#echo -- 13 creating Cert($1)
+#
+#openssl ca -name ca1 -batch -in out/$1/verified_csr \
+#  -key ca1ca1ca1 -days %2 -extfile ./cfg/$1.cfg -extensions exts \
+#  -out out/$1/tmp_cert -notext -utf8 2> /dev/null
+#
+#source decode.sh out/$1/tmp_cert > /dev/null
+#
+#echo stored in out/$1/tmp_cert.der
+#
+#echo -- 14 enveloping Cert($1) for opRA
+#
+#openssl cms -encrypt -in out/$1/tmp_cert.der -binary -inform der \
+#  -recip out/opra/cert -belt-ctr256 \
+#  -out out/$1/enveloped_cert -outform pem
+#
+#source decode.sh out/$1/enveloped_cert > /dev/null
+#
+#echo stored in out/$1/enveloped_cert.der
+#
+#echo -- 15 recovering Enveloped(Cert($1))
+#
+#openssl cms -decrypt -in out/$1/enveloped_cert -inform pem \
+# -inkey out/opra/privkey -out out/$1/cert.der -outform der \
+# -passin pass:opraopraopra -debug_decrypt
+#
+#openssl x509 -in out/$1/cert.der -inform der \
+#  -out out/$1/cert -outform pem > /dev/null
+#
+#source decode.sh out/$1/cert > /dev/null
+#
+#echo stored in out/$1/cert.der
+#
+#rem ===========================================================================
+#
+#goto End
+#
+#:Usage
+#echo Usage: enroll1.cmd \<entity\> \<days\>
+#echo   \pre ./cfg/entity.cfg exists
+#
+#:End
