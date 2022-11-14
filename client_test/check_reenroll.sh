@@ -177,8 +177,8 @@ echo "-- 15 recovering Enveloped(Cert($1))"
 bash dump.sh answers/$1/enveloped_cert.der
 #
 openssl cms -decrypt -in answers/$1/enveloped_cert.der -inform der \
- -inkey out/opra/privkey -out answers/$1/cert.der -outform der \
- -passin pass:opraopraopra -debug_decrypt
+ -inkey out/$1/privkey -passin pass:$1$1$1 -out answers/$1/cert.der -outform der \
+ -debug_decrypt
 
 echo stored in answers/$1/cert.der
 
