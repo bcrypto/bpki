@@ -59,7 +59,7 @@ openssl x509 -req -extfile ./cfg/ca0.cfg -extensions exts \
 
 source decode.sh out/ca0/cert
 
-openssl ca -gencrl -name ca0 -key ca0ca0ca0 -crldays 20 -crlhours 6 \
+openssl ca -gencrl -name ca0 -key ca0ca0ca0 -crldays 30 -crlhours 6 \
   -crlexts crlexts -out out/ca0/crl0 -batch 2> /dev/null
 
 source decode.sh out/ca0/crl0

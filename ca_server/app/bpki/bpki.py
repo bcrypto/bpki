@@ -71,7 +71,7 @@ def ocsp():
     return base64.b64encode(answer)
 
 
-@bpki_bp.route('/bpki/crl', methods=['GET'])
+@bpki_bp.route('/bpki/crl1', methods=['GET'])
 def crl():
     cmd = (f"ca -gencrl -name ca1 -key ca1ca1ca1 -crldays 1 -crlhours 6 "
             f" -crlexts crlexts -out {out_path}current_crl -batch")
@@ -79,20 +79,20 @@ def crl():
     cmd = f"crl -in {out_path}current_crl -outform DER -out {out_path}current_crl.der"
     openssl(cmd)
     try:
-        return send_file(f'{out_path}current_crl.der', download_name='crl')
+        return send_file(f'{out_path}current_crl.der', download_name='crl1.der')
     except Exception as e:
         return str(e)
 
 
 @bpki_bp.route('/bpki/crl0', methods=['GET'])
 def crl0():
-    cmd = (f"ca -gencrl -name ca0 -key ca0ca0ca0 -crldays 1 -crlhours 6 "
+    cmd = (f"ca -gencrl -name ca0 -key ca0ca0ca0 -crldays 30 -crlhours 6 "
             f" -crlexts crlexts -out {out_path}current_crl0 -batch")
     openssl(cmd)
     cmd = f"crl -in {out_path}current_crl0 -outform DER -out {out_path}current_crl0.der"
     openssl(cmd)
     try:
-        return send_file(f'{out_path}current_crl0.der', download_name='crl0')
+        return send_file(f'{out_path}current_crl0.der', download_name='crl0.der')
     except Exception as e:
         return str(e)
 
