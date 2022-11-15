@@ -86,7 +86,7 @@ def crl():
 
 @bpki_bp.route('/bpki/crl0', methods=['GET'])
 def crl0():
-    cmd = (f"ca -gencrl -name ca0 -key ca1ca1ca1 -crldays 1 -crlhours 6 "
+    cmd = (f"ca -gencrl -name ca0 -key ca0ca0ca0 -crldays 1 -crlhours 6 "
             f" -crlexts crlexts -out {out_path}current_crl0 -batch")
     openssl(cmd)
     cmd = f"crl -in {out_path}current_crl0 -outform DER -out {out_path}current_crl0.der"
