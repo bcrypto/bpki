@@ -10,6 +10,7 @@ from .tsa import tsa_req
 from .ocsp import ocsp_req
 from .enroll import Enroll1, get_serial
 from .revoke import Revoke
+from .setpwd import SetPwd
 from .openssl import openssl
 import bpkipy
 
@@ -246,13 +247,19 @@ def retrieve():
 def setpwd():
     data = request.get_data()
     req = base64.b64decode(data)
-    # result = None
     try:
-        proc = Enroll1(message=req, tmp_name="enveloped_csr")
+        proc = SetPwd(message=req, tmp_name="enveloped_signed_csr")
         proc.decrypt("enveloped_signed_csr", "recovered_signed_csr")
         proc.verify("recovered_signed_csr", "verified_csr.der")
-        # TODO: check serial match for revoked cert
-        # TODO: set PWD in database
+        proc.parse("verified_csr.der")
+        serial = get_serial(proc.signer_cert_file)
+        # set PWD in database
+        account = db.session.query(Certificate).filter_by(serial_num=serial).first()
+        current_app.logger.error('Status: ' + account.status)
+        if account.status == 'Actual':
+            account.revoke_pwd = proc.password
+            db.session.commit()
+            current_app.logger.error('SetPwd completed.')
         result = bpkipy.create_response(
             status=0, req_id=bytes.fromhex(proc.req_id), error_list=["EPWD is set successfully."]
         )

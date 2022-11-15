@@ -46,7 +46,7 @@ class Revoke(Req):
         }
         crl_reason = reason.get(self.rev_data['reason'], "unspecified")
         custom_option = ""
-        if (crl_reason == 1) and ('date' in self.rev_data):
+        if (crl_reason == "keyCompromise") and ('date' in self.rev_data):
             custom_option = f"-crl_compromise {self.rev_data['date']}"
 
         cmd = (f"ca -revoke {self.path}/cert -name ca1 -key ca1ca1ca1"
