@@ -23,4 +23,8 @@ bash test_ocsp.sh lr
 
 # 6 CRL
 python get_crl.py
-bash dump.sh answers/crl.der
+bash dump.sh answers/crl1.der
+
+# 7 Setpwd
+bash test_setpwd.sh
+
