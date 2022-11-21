@@ -28,3 +28,9 @@ bash dump.sh answers/crl1.der
 # 7 Setpwd
 bash test_setpwd.sh
 
+# 8 Bad DVCS request
+echo "--- DVCS test on BAD request"
+python post_bad_dvcs.py
+bash check_bad_dvcs.sh
+
+
