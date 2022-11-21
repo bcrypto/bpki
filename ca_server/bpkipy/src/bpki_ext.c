@@ -47,8 +47,7 @@ PyObject *parse_revoke(PyObject *self, PyObject *args) {
     const unsigned char* in = NULL;
     Py_ssize_t len;
 
-    if (!PyArg_ParseTuple(args, "y#", &in, &len))
-    {
+    if (!PyArg_ParseTuple(args, "y#", &in, &len)) {
         return NULL;
     }
     BPKIRevokeReq* req = d2i_BPKIRevokeReq(NULL, &in, len);

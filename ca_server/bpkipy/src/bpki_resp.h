@@ -45,11 +45,17 @@ typedef struct _PKIStatusInfo {
     ASN1_BIT_STRING* failInfo;
 } PKIStatusInfo;
 
+DECLARE_ASN1_FUNCTIONS(PKIStatusInfo);
+
 typedef struct _BPKIResp {
     PKIStatusInfo* statusInfo;
     ASN1_OCTET_STRING* requestId;
     ASN1_OCTET_STRING* nonce;
 } BPKIResp;
+
+int PKIStatusInfo_set_status(PKIStatusInfo *si, int i);
+int PKIStatusInfo_push_status_string(PKIStatusInfo *si, const char *text);
+int PKIStatusInfo_set_failure_info(PKIStatusInfo *si, int failure);
 
 PyObject *create_response(PyObject *self, PyObject *args, PyObject *kwargs);
 
