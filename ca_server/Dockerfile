@@ -14,9 +14,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-COPY bpkipy/ ./bpkipy/
-RUN python3 -m pip install ./bpkipy
-
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
 RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/12/main/pg_hba.conf
@@ -42,6 +39,9 @@ RUN service postgresql start &&\
 
 # RUN service postgresql restart &&\
 #    psql "dbname='docker' user='docker' password='docker'" -f up.sql
+
+COPY bpkipy/ ./bpkipy/
+RUN python3 -m pip install ./bpkipy
 
 # Add VOLUMEs to allow backup of config, logs and databases
 # RUN mkdir /etc/postgresql && mkdir /var/log/postgresql && mkdir /var/lib/postgresql
