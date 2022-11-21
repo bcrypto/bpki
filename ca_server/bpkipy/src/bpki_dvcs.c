@@ -91,3 +91,98 @@ PyObject *dvcs_error_notice(PyObject *self, PyObject *args, PyObject *kwargs) {
 
     return result;
 }
+
+int hash_message(const EVP_MD* md_type, const unsigned char *data, int len, unsigned char *digest) {
+    EVP_MD_CTX *mdctx;
+    unsigned int digest_len;
+
+	if((mdctx = EVP_MD_CTX_new()) == NULL)
+		return -1;
+
+	if(1 != EVP_DigestInit_ex(mdctx, md_type, NULL))
+		return -1;
+
+	if(1 != EVP_DigestUpdate(mdctx, data, len))
+		return -1;
+
+	if(1 != EVP_DigestFinal_ex(mdctx, digest, &digest_len))
+		return -1;
+
+	EVP_MD_CTX_free(mdctx);
+    return digest_len;
+}
+
+PyObject *dvcs_cert_info(PyObject *self, PyObject *args) {
+    const unsigned char* in = NULL;
+    Py_ssize_t size;
+
+    if (!PyArg_ParseTuple(args, "y#", &in, &size)) {
+        PyErr_SetString(PyExc_ValueError, "Parameters are not parsed.");
+        return NULL;
+    }
+
+    DVCSRequest* req = d2i_DVCSRequest(NULL, &in, size);
+    if (!req) {
+        PyErr_SetString(PyExc_ValueError, "PDVCSRequest is not decoded.");
+        return NULL;
+    }
+
+    unsigned char* data = req->data->data;
+    int len = req->data->length;
+
+    const EVP_MD* md_type = EVP_get_digestbyname("belt-hash");
+
+    if(!md_type){
+        PyErr_SetString(PyExc_ValueError, "belt-hash is not found.");
+        return NULL;
+    }
+    int digest_len = EVP_MD_size(md_type);
+    unsigned char *digest;
+
+	if((digest = (unsigned char *)OPENSSL_malloc(digest_len)) == NULL) {
+	    PyErr_SetString(PyExc_ValueError, "Memory allocation problem.");
+        return NULL;
+	}
+
+    int ret = hash_message(md_type, data, len, digest);
+	if(ret != digest_len) {
+	    PyErr_SetString(PyExc_ValueError, "Error in message hashing.");
+		return NULL;
+	}
+
+	DVCSRequest_free(req);
+
+    DVCSCertInfo* ci = DVCSCertInfo_new();
+    if(!ci) {
+        PyErr_SetString(PyExc_ValueError, "Memory allocation for DVCSCertInfo problem.");
+        return NULL;
+    }
+    ASN1_INTEGER_set(ci->version, 1);
+    ASN1_ENUMERATED_set(ci->service, 2);
+
+    DigestInfo* sig = ci->messageImprint;
+    X509_ALGOR_set_md(sig->algor, md_type);
+    if (!ASN1_OCTET_STRING_set(sig->digest, digest, digest_len)) {
+        return NULL;
+    }
+    ASN1_INTEGER_set(ci->serialNumber, 1);
+
+    time_t now = time(NULL);
+    struct tm* ptm = localtime(&now);
+    char buffer[16];
+    strftime(buffer, 32, "%Y%m%d%H%M%SZ", ptm);
+    ASN1_GENERALIZEDTIME_set_string(ci->genTime, buffer);
+
+    unsigned char* out;
+    unsigned char* buf;
+    buf = out = (unsigned char*) malloc(10000);
+
+    len = i2d_DVCSCertInfo(ci, &out);
+
+    PyObject *result = NULL;
+
+    result = Py_BuildValue("y#", buf, len);
+    DVCSCertInfo_free(ci);
+
+    return result;
+}

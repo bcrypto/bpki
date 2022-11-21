@@ -8,6 +8,7 @@ from app import db
 from app.user.models import Certificate
 from .tsa import tsa_req
 from .ocsp import ocsp_req
+from .dvcs import dvcs_req
 from .enroll import Enroll1, get_serial
 from .revoke import Revoke
 from .setpwd import SetPwd
@@ -21,6 +22,7 @@ bpki_bp = Blueprint('bpki_bp', __name__,
                     static_folder='../static')
 
 counter = 0
+bpkipy.openssl_config(os.getcwd() + '/app_openssl.cfg')
 
 
 @bpki_bp.before_request
@@ -68,6 +70,14 @@ def ocsp():
     data = request.get_data()
     req = base64.b64decode(data)
     answer = ocsp_req(req)
+    return base64.b64encode(answer)
+
+
+@bpki_bp.route('/bpki/dvcs', methods=['POST'])
+def dvcs():
+    data = request.get_data()
+    req = base64.b64decode(data)
+    answer = dvcs_req(req)
     return base64.b64encode(answer)
 
 

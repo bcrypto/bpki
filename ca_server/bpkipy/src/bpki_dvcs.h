@@ -4,8 +4,10 @@
 #define PY_SSIZE_T_CLEAN
 
 #include <Python.h>
+#include <time.h>
 #include <openssl/asn1t.h>
 #include <openssl/x509.h>
+#include <openssl/evp.h>
 #include "bpki_resp.h"
 
 /*  DVCSRequest ::= SEQUENCE  {
@@ -80,5 +82,6 @@ typedef struct _DVCSErrorNotice {
 
 PyObject *dvcs_extract_data(PyObject *self, PyObject *args);
 PyObject *dvcs_error_notice(PyObject *self, PyObject *args, PyObject *kwargs);
+PyObject *dvcs_cert_info(PyObject *self, PyObject *args);
 
 #endif
