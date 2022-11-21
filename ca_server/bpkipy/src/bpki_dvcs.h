@@ -79,5 +79,6 @@ typedef struct _DVCSErrorNotice {
 } DVCSErrorNotice;
 
 PyObject *dvcs_extract_data(PyObject *self, PyObject *args);
+PyObject *dvcs_error_notice(PyObject *self, PyObject *args, PyObject *kwargs);
 
 #endif

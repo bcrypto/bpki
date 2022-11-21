@@ -56,6 +56,7 @@ typedef struct _BPKIResp {
 int PKIStatusInfo_set_status(PKIStatusInfo *si, int i);
 int PKIStatusInfo_push_status_string(PKIStatusInfo *si, const char *text);
 int PKIStatusInfo_set_failure_info(PKIStatusInfo *si, int failure);
+void PKIStatusInfo_fill(PKIStatusInfo* statusInfo, int status, int failure_info, PyObject* error_list);
 
 PyObject *create_response(PyObject *self, PyObject *args, PyObject *kwargs);
 

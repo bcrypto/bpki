@@ -61,3 +61,33 @@ PyObject *dvcs_extract_data(PyObject *self, PyObject *args) {
 
     return result;
 }
+
+PyObject *dvcs_error_notice(PyObject *self, PyObject *args, PyObject *kwargs) {
+    int status = -1;
+    int failure_info = -1;
+    PyObject* error_list = NULL;
+
+    static char *kwlist[] = {"status", "error_list", "failure", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|Oi", kwlist,
+                                     &status, &error_list, &failure_info)) {
+        return NULL;
+    }
+
+    DVCSErrorNotice* resp = DVCSErrorNotice_new();
+    PKIStatusInfo_fill(resp->status, status, failure_info, error_list);
+
+    unsigned char* out;
+    unsigned char* buf;
+    buf = out = (unsigned char*) malloc(10000);
+
+    int len = i2d_DVCSErrorNotice(resp, &out);
+    DVCSErrorNotice_free(resp);
+
+    PyObject *result = NULL;
+
+    result = Py_BuildValue("y#", buf, len);
+    free(buf);
+
+    return result;
+}

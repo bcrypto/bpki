@@ -53,6 +53,25 @@ int PKIStatusInfo_set_failure_info(PKIStatusInfo *si, int failure) {
     return 0;
 }
 
+void PKIStatusInfo_fill(PKIStatusInfo* statusInfo, int status, int failure_info, PyObject* error_list) {
+    PKIStatusInfo_set_status(statusInfo, status);
+
+    int err_length = 0;
+    char *err_string;
+    PyObject *item;
+
+    if(error_list != NULL)
+        err_length = PyObject_Length(error_list);
+    for (int index = 0; index < err_length; index++) {
+        item = PyList_GetItem(error_list, index);
+        err_string = PyUnicode_AsUTF8(item);
+        PKIStatusInfo_push_status_string(statusInfo, err_string);
+    }
+
+    if(failure_info > 0)
+        PKIStatusInfo_set_failure_info(statusInfo, failure_info);
+}
+
 int BPKIResp_set_request_id(BPKIResp *resp, unsigned char* req_id) {
     return ASN1_OCTET_STRING_set(resp->requestId, req_id, BPKI_REQ_ID_LENGTH);
 }
@@ -92,25 +111,11 @@ PyObject *create_response(PyObject *self, PyObject *args, PyObject *kwargs) {
     }
 
     BPKIResp* resp = BPKIResp_new();
-    PKIStatusInfo_set_status(resp->statusInfo, status);
+
+    PKIStatusInfo_fill(resp->statusInfo, status, failure_info, error_list);
     BPKIResp_set_request_id(resp, req_id);
     if(nonce != NULL)
         BPKIResp_set_nonce(resp, nonce);
-
-    int err_length = 0;
-    char *err_string;
-    PyObject *item;
-
-    if(error_list != NULL)
-        err_length = PyObject_Length(error_list);
-    for (int index = 0; index < err_length; index++) {
-        item = PyList_GetItem(error_list, index);
-        err_string = PyUnicode_AsUTF8(item);
-        PKIStatusInfo_push_status_string(resp->statusInfo, err_string);
-    }
-
-    if(failure_info > 0)
-        PKIStatusInfo_set_failure_info(resp->statusInfo, failure_info);
 
     unsigned char* out;
     unsigned char* buf;
