@@ -2,7 +2,6 @@
 
 # 0 Copy relevant certificates
 bash cert_copy.sh
-bash dumpasn1b.sh
 
 # 1 Healthcheck
 python3 healthcheck.py
@@ -26,11 +25,16 @@ python get_crl.py
 bash dump.sh answers/crl1.der
 
 # 7 Setpwd
-bash test_setpwd.sh
+bash test_setpwd.sh lr
 
 # 8 Bad DVCS request
 echo "--- DVCS test on BAD request"
 python post_bad_dvcs.py
 bash check_bad_dvcs.sh
+
+# 8 DVCS request
+echo "--- DVCS test on GOOD request"
+python post_dvcs.py lr
+bash check_dvcs.sh lr
 
 

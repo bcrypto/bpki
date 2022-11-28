@@ -1,5 +1,6 @@
 import bpkipy
 
-dvcs_req = bytes.fromhex('301030060201010a01020406317132773365')
+dvcs_data = '1q2w3e'.encode('utf-8')
+print(dvcs_data)
+dvcs_req = bpkipy.dvcs_request(dvcs_data)
 print(dvcs_req)
-print(bpkipy.dvcs_extract_data(dvcs_req))

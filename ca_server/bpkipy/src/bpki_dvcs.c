@@ -186,3 +186,43 @@ PyObject *dvcs_cert_info(PyObject *self, PyObject *args) {
 
     return result;
 }
+
+PyObject *dvcs_request(PyObject *self, PyObject *args) {
+    const unsigned char* in = NULL;
+    Py_ssize_t size;
+
+    if (!PyArg_ParseTuple(args, "y#", &in, &size)) {
+        PyErr_SetString(PyExc_ValueError, "Error in data reading.");
+        return NULL;
+    }
+
+    DVCSRequest* req = DVCSRequest_new();
+    if (!req) {
+        PyErr_SetString(PyExc_ValueError, "Cannot create DVCS request.");
+        return NULL;
+    }
+    if (!ASN1_ENUMERATED_set(req->requestInformation->service, 2)) {
+        PyErr_SetString(PyExc_ValueError, "Cannot set service field to DVCS Request.");
+        return 0;
+    }
+    if (!ASN1_INTEGER_set(req->requestInformation->version, 1)) {
+        PyErr_SetString(PyExc_ValueError, "Cannot set service field to DVCS Request.");
+        return 0;
+    }
+    if (!ASN1_OCTET_STRING_set(req->data, in, size)) {
+        PyErr_SetString(PyExc_ValueError, "Cannot set data to DVCS Request.");
+        return 0;
+    }
+
+    int len = 0;
+    unsigned char* out;
+    unsigned char* buf;
+    buf = out = (unsigned char*) malloc(size + 1000);
+
+    len = i2d_DVCSRequest(req, &out);
+    DVCSRequest_free(req);
+
+    PyObject *result = Py_BuildValue("y#", buf, len);
+
+    return result;
+}

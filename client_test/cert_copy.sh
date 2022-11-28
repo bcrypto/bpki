@@ -46,6 +46,9 @@ mkdir out/tsa 2> /dev/null
 cp -f ../ca_server/out/tsa/cert out/tsa/cert 2> /dev/null
 cp -f ../ca_server/out/tsa/cert.der out/tsa/cert.der 2> /dev/null
 #bash ./create.sh dvcs 1825
+mkdir out/dvcs 2> /dev/null
+cp -f ../ca_server/out/dvcs/cert out/dvcs/cert 2> /dev/null
+cp -f ../ca_server/out/dvcs/cert.der out/dvcs/cert.der 2> /dev/null
 #bash ./create.sh ids 1095
 #bash ./create.sh tls 1095
 #bash ./create.sh opra 730

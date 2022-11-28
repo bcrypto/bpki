@@ -5,6 +5,7 @@
 
 char bpki_resp_docs[] = "BPKIResp object creation.";
 char bpki_rev_docs[] = "BPKIRevokeReq object parsing.";
+char dvcs_req_docs[] = "DVCSRequest object creation.";
 char dvcs_data_docs[] = "Data extraction from DVCSRequest object.";
 char dvcs_err_docs[] = "DVCSErrorNotice object creation.";
 char dvcs_resp_docs[] = "DVCSCertInfo object creation.";
@@ -16,6 +17,7 @@ PyMethodDef bpkipy_funcs[] = {
 	{	"dvcs_extract_data", (PyCFunction)dvcs_extract_data, METH_VARARGS, dvcs_data_docs},
 	{	"dvcs_error_notice", (PyCFunction)dvcs_error_notice, METH_VARARGS | METH_KEYWORDS, dvcs_err_docs},
 	{	"dvcs_cert_info", (PyCFunction)dvcs_cert_info, METH_VARARGS, dvcs_resp_docs},
+	{	"dvcs_request", (PyCFunction)dvcs_request, METH_VARARGS, dvcs_req_docs},
 	{	"openssl_config", (PyCFunction)openssl_config, METH_VARARGS, ossl_conf_docs},
 	{	NULL }
 };
