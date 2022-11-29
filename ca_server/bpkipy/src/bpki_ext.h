@@ -28,5 +28,6 @@ typedef struct _BPKIRevokeReq {
 } BPKIRevokeReq;
 
 PyObject *parse_revoke(PyObject *self, PyObject *args);
+PyObject *create_revoke(PyObject *self, PyObject *args, PyObject *kwargs);
 
 #endif

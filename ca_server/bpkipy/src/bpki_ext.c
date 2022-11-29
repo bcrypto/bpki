@@ -80,3 +80,85 @@ PyObject *parse_revoke(PyObject *self, PyObject *args) {
     BPKIRevokeReq_free(req);
     return result;
 }
+
+X509 *load_cert(const char *file)
+{
+    X509 *x = NULL;
+    BIO *cert = BIO_new_file(file, "rb");
+
+    if (cert != NULL)
+        d2i_X509_bio(cert, &x);
+    BIO_free(cert);
+    return x;
+}
+
+PyObject *create_revoke(PyObject *self, PyObject *args, PyObject *kwargs) {
+    const char* recipfile = NULL;
+    const char* pwd = NULL;
+    int reason = 3;
+    const char* invalidityDate = NULL;
+    const char* comment = NULL;
+    int format = MBSTRING_UTF8;
+
+    static char *kwlist[] = {"cert_file", "password", "reason", "invalidity_date", "comment", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssi|ss", kwlist,
+                                     &recipfile, &pwd, &reason, &invalidityDate, &comment))
+    {
+        PyErr_SetString(PyExc_ValueError, "Error in parameters reading.");
+        return NULL;
+    }
+
+    X509* cert = load_cert(recipfile);
+    if (cert == NULL) {
+        PyErr_SetString(PyExc_ValueError, "Certificate is not loaded.");
+        return NULL;
+    }
+
+    BPKIRevokeReq* req = BPKIRevokeReq_new();
+    if(!ASN1_STRING_set(req->revokePwd, pwd, strlen(pwd))) {
+        PyErr_SetString(PyExc_ValueError, "Cannot set revokePwd field.");
+        return NULL;
+    }
+    if(!ASN1_ENUMERATED_set(req->reasonCode, reason)) {
+        PyErr_SetString(PyExc_ValueError, "Cannot set reasonCode field.");
+        return NULL;
+    }
+    if (invalidityDate) {
+        req->invalidityDate = ASN1_GENERALIZEDTIME_new();
+        if(!ASN1_GENERALIZEDTIME_set_string(req->invalidityDate, invalidityDate)) {
+            PyErr_SetString(PyExc_ValueError, "Cannot set invalidityDate field.");
+            return NULL;
+        }
+    }
+    if (comment) {
+        req->comment = ASN1_STRING_type_new(format);
+        if(!ASN1_STRING_set(req->comment, comment, strlen(comment))) {
+            PyErr_SetString(PyExc_ValueError, "Cannot set comment field.");
+            return NULL;
+        }
+    }
+
+    X509_NAME* tmp_name = req->issuer;
+    req->issuer = X509_get_issuer_name(cert);
+    ASN1_INTEGER* tmp_serial = req->serialNumber;
+    req->serialNumber = X509_get_serialNumber(cert);
+
+    unsigned char* out;
+    unsigned char* buf;
+    buf = out = (unsigned char*) malloc(10000);
+
+    int len = i2d_BPKIRevokeReq(req, &out);
+
+    req->issuer = tmp_name;
+    req->serialNumber = tmp_serial;
+    BPKIRevokeReq_free(req);
+    X509_free(cert);
+
+    PyObject *result = NULL;
+
+    result = Py_BuildValue("y#", buf, len);
+    free(buf);
+
+    return result;
+}
