@@ -38,11 +38,14 @@ python post_dvcs.py lr
 bash check_dvcs.sh lr
 
 # 9 Reenroll
+echo "--- Test reenroll ---"
 bash test_reenroll.sh lr
 
 # 10 Spawn
+echo "--- Test reenroll ---"
 bash test_spawn.sh lr
 
 # 11 Revoke
+echo "--- Test reenroll ---"
 bash test_revoke.sh lr
 

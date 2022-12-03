@@ -57,8 +57,8 @@ class Req:
         with open(f"{self.path}/response", 'wb') as rf:
             rf.write(response)
         cmd = (f"cms -sign -in {self.path}/response "
-               f"-signer {out_path}/ca1/cert "
-               f"-inkey {out_path}/ca1/privkey -passin pass:ca1ca1ca1 "
+               f"-signer {out_path}/agca1/cert "
+               f"-inkey {out_path}/agca1/privkey -passin pass:agca1agca1agca1 "
                f"-binary -econtent_type bpki-ct-resp "
                f"-out {self.path}/signed_response.der -outform der -nodetach -nosmimecap ")
         _, out_, err_ = openssl(cmd)
