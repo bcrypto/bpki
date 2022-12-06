@@ -59,6 +59,9 @@ cp -f ../ca_server/out/opra/privkey out/opra/privkey 2> /dev/null
 cp -f ../ca_server/out/opra/privkey.der out/opra/privkey.der 2> /dev/null
 cp -f ../ca_server/out/opra/privkey_plain out/opra/privkey_plain 2> /dev/null
 #bash ./create.sh agca1 1095
+mkdir out/agca1 2> /dev/null
+cp -f ../ca_server/out/agca1/cert out/agca1/cert 2> /dev/null
+cp -f ../ca_server/out/agca1/cert.der out/agca1/cert.der 2> /dev/null
 
 echo "== 6 Copy CRL before and after revoking opra (for OCSP testing) =========="
 
