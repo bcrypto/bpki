@@ -26,12 +26,21 @@ class Revoke(Req):
         self.rev_data = bpkipy.parse_revoke(rev_req)
         current_app.logger.debug(self.rev_data)
 
+    def check_pass(self, password):
+        if self.rev_data is None:
+            return False
+        if self.rev_data['password'].strip() == '':
+            return False
+        if password == self.rev_data['password']:
+            return True
+        return False
+
     # revoke certificate
     def revoke(self, cert=None):
         if cert is not None:
             with open(f"{self.path}/cert.der", 'wb') as f:
                 f.write(cert)
-            cmd = f"x509 -outform pem -in {self.path}/cert.der -out {self.path}/cert"
+            cmd = f"x509 -inform der -in {self.path}/cert.der -outform pem -out {self.path}/cert"
             _, out_, err_ = openssl(cmd)
         reason = {
             1: "keyCompromise",

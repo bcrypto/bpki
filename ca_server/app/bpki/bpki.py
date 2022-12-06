@@ -287,18 +287,31 @@ def setpwd():
 def revoke():
     data = request.get_data()
     req = base64.b64decode(data)
+    verified = False
     try:
         proc = Revoke(message=req, tmp_name="enveloped_signed_csr")
         proc.decrypt("enveloped_signed_csr", "recovered_signed_csr")
-        proc.verify("recovered_signed_csr", "verified_csr.der")
-        proc.parse("verified_csr.der")
-        # TODO: check issuer
+        try:
+            proc.verify("recovered_signed_csr", "verified_csr.der")
+            proc.parse("verified_csr.der")
+            verified = True
+        except Exception as e:
+            current_app.logger.error('Revoke: ' + str(e))
+            proc.parse("recovered_signed_csr")
 
+        # TODO: check issuer
         account = db.session.query(Certificate).filter_by(serial_num=bytes.fromhex(proc.rev_data['serial'][2:])).first()
         current_app.logger.error('Status: ' + account.status)
+        current_app.logger.debug('Verified: ' + str(verified))
+
         if account.status == 'Actual':
+            if not verified and not proc.check_pass(account.revoke_pwd):
+                raise Exception("Password is not correct.")
             # revoke certificate with OpenSSL command
-            proc.revoke()
+            if verified:
+                proc.revoke()
+            else:
+                proc.revoke(account.cert)
             account.status = 'Revoked'
             db.session.commit()
             current_app.logger.error('Revoke completed.')

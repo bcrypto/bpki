@@ -42,10 +42,15 @@ echo "--- Test reenroll ---"
 bash test_reenroll.sh lr
 
 # 10 Spawn
-echo "--- Test reenroll ---"
+echo "--- Test spawn ---"
 bash test_spawn.sh lr
 
 # 11 Revoke
-echo "--- Test reenroll ---"
+echo "--- Test revoke ---"
 bash test_revoke.sh lr
+
+# 12 Revoke without sign
+echo "--- Test revoke on PWD ---"
+bash test_revoke_pass.sh lr
+
 
