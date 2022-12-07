@@ -71,7 +71,7 @@ echo "== 3 Creating CA1 (Republican CA) ========================================
 cd out
 mkdir ca1 2> /dev/null
 cd ca1
-#cat /dev/null > index.txt
+cat /dev/null > index.txt
 echo 01 > crlnumber
 mkdir certs 2> /dev/null
 cd ..
