@@ -12,7 +12,7 @@
 export OPENSSL_CONF=openssl.cfg
 
 echo "-- 1 BPKIRevokeReq($1) creation --"
-python create_revoke.py $1
+python3 create_revoke.py $1
 
 # echo "stored in out/$1/revoke_req.der"
 

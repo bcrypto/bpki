@@ -17,7 +17,7 @@ export OPENSSL_CONF=openssl.cfg
 #if not exist "./out/$1/cert" goto Usage
 #if $2 equ .. goto Usage
 
-echo == Setting password  ================================================
+echo "== Setting password  ================================================"
 
 echo "-- 1 formatting password"
 
