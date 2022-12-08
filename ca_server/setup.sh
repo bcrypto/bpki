@@ -53,13 +53,13 @@ openssl req -new -utf8 -nameopt multiline,utf8 -config ./cfg/ca0.cfg \
 
 # call decode out/ca0/csr > nul
 
-openssl x509 -req -extfile ./cfg/ca0.cfg -extensions exts \
+openssl x509 -req -extfile ./cfg/ca0.cfg -extensions exts -days 3650 \
   -in out/ca0/csr -signkey out/ca0/privkey -passin pass:ca0ca0ca0 \
   -out out/ca0/cert 2> /dev/null
 
 source decode.sh out/ca0/cert
 
-openssl ca -gencrl -name ca0 -key ca0ca0ca0 -crldays 30 -crlhours 6 \
+openssl ca -gencrl -name ca0 -key ca0ca0ca0 -crldays 180 -crlhours 6 \
   -crlexts crlexts -out out/ca0/crl0 -batch 2> /dev/null
 
 source decode.sh out/ca0/crl0
@@ -95,7 +95,7 @@ openssl req -new -utf8 -nameopt multiline,utf8 -config ./cfg/ca1.cfg \
 
 #call decode out/ca1/csr > nul#
 
-openssl ca -name ca0 -create_serial -batch -in out/ca1/csr \
+openssl ca -name ca0 -create_serial -batch -in out/ca1/csr -days 1825 \
   -key ca0ca0ca0 -extfile ./cfg/ca1.cfg -extensions exts \
   -out out/ca1/cert -notext -utf8 2> /dev/null
 
@@ -158,7 +158,7 @@ echo "== 6 Revoking opra (for OCSP testing) ====================================
 
 cp -f out/opra/cert out/opra/cert0 > /dev/null
 
-openssl ca -gencrl -name ca1 -key ca1ca1ca1 -crldays 1 -crlhours 6 \
+openssl ca -gencrl -name ca1 -key ca1ca1ca1 -crldays 30 -crlhours 6 \
   -crlexts crlexts -out out/ca1/crl1 -batch 2> /dev/null
 
 source decode.sh out/ca1/crl1
