@@ -40,7 +40,8 @@ class Req:
                f"-signer {self.path}/cert "
                f"-out {self.path}/{output_name} -outform der -purpose any")
         ret, out_, err_ = openssl(cmd)
-        if ret > 31:
+        if ret > 1:
+            current_app.logger.debug(f"cms-verify return code: {ret}")
             raise Exception("Verification error.")
         self.signer_cert_file = f"{self.path}/cert"
         cmd = (f"verify -CRLfile {out_path}/current_crl "
