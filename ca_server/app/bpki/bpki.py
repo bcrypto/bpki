@@ -270,9 +270,13 @@ def setpwd():
             account.revoke_pwd = proc.password
             db.session.commit()
             current_app.logger.error('SetPwd completed.')
-        result = bpkipy.create_response(
-            status=0, req_id=bytes.fromhex(proc.req_id), error_list=["EPWD is set successfully."]
-        )
+            result = bpkipy.create_response(
+                status=0, req_id=bytes.fromhex(proc.req_id), error_list=["EPWD is set successfully."]
+            )
+        else:
+            result = bpkipy.create_response(
+                status=2, req_id=bytes.fromhex(proc.req_id), error_list=["Target certificate is revoked."]
+            )
     except Exception as e:
         current_app.logger.error('SetPwd: ' + str(e))
         error_list = [str(e)]

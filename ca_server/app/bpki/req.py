@@ -39,8 +39,16 @@ class Req:
                f"-CAfile {out_path}/ca1/chain "
                f"-signer {self.path}/cert "
                f"-out {self.path}/{output_name} -outform der -purpose any")
-        _, out_, err_ = openssl(cmd)
+        ret, out_, err_ = openssl(cmd)
+        if ret > 31:
+            raise Exception("Verification error.")
         self.signer_cert_file = f"{self.path}/cert"
+        cmd = (f"verify -CRLfile {out_path}/current_crl "
+               f"-CAfile {out_path}/ca1/chain "
+               f"{self.path}/cert ")
+        ret, out_, err_ = openssl(cmd)
+        if ret > 0:
+            raise Exception("Signer certificate had been revoked.")
 
     def convert_format(self, inputfile, outputfile, to="pem"):
         if to == "pem":
@@ -70,4 +78,7 @@ class Req:
     def revoke_cert(self):
         cmd = (f"ca -revoke {self.path}/cert -name ca1 -key ca1ca1ca1"
                f" -crl_reason superseded ")
+        openssl(cmd)
+        cmd = (f"ca -gencrl -name ca1 -key ca1ca1ca1 -crldays 1 -crlhours 6 "
+               f" -crlexts crlexts -out {out_path}/current_crl -batch")
         openssl(cmd)
