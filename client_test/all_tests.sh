@@ -54,4 +54,8 @@ bash test_revoke.sh lr
 echo "--- Test revoke on PWD ---"
 bash test_revoke_pass.sh lr
 
+# 13 Use revoked cert
+echo "--- Test SetPwd for Revoked Cert ---"
+bash check_crl.sh lr
+
 
