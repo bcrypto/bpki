@@ -31,7 +31,10 @@ class Req:
         cmd = (f"cms -decrypt -in {self.path}/{input_name} -inform der "
                f"-inkey {out_path}/ca1/privkey -out {self.path}/{output_name} "
                f"-outform der -binary -passin pass:ca1ca1ca1 -debug_decrypt")
-        openssl(cmd)
+        ret, out_, err_ = openssl(cmd)
+        current_app.logger.debug(f"cms-decrypt return code: {ret}")
+        if ret > 1:
+            raise Exception("Decrypt error: " + err_)
 
     # verifying Signed(CSR(%1)) and extract message
     def verify(self, input_name, output_name):
@@ -40,15 +43,16 @@ class Req:
                f"-signer {self.path}/cert "
                f"-out {self.path}/{output_name} -outform der -purpose any")
         ret, out_, err_ = openssl(cmd)
+        current_app.logger.debug(f"cms-verify return code: {ret}")
         if ret > 1:
-            current_app.logger.debug(f"cms-verify return code: {ret}")
-            raise Exception("Verification error.")
+            raise Exception("Verification error: " + err_)
         self.signer_cert_file = f"{self.path}/cert"
-        cmd = (f"verify -CRLfile {out_path}/current_crl "
+        cmd = (f"verify -CRLfile {out_path}/current_crl1 -crl_check "
                f"-CAfile {out_path}/ca1/chain "
                f"{self.path}/cert ")
         ret, out_, err_ = openssl(cmd)
-        if ret > 0:
+        current_app.logger.debug(f"verify return code: {ret}")
+        if ret > 1:
             raise Exception("Signer certificate had been revoked.")
 
     def convert_format(self, inputfile, outputfile, to="pem"):
@@ -81,5 +85,5 @@ class Req:
                f" -crl_reason superseded ")
         openssl(cmd)
         cmd = (f"ca -gencrl -name ca1 -key ca1ca1ca1 -crldays 1 -crlhours 6 "
-               f" -crlexts crlexts -out {out_path}/current_crl -batch")
+               f" -crlexts crlexts -out {out_path}/current_crl1 -batch")
         openssl(cmd)
