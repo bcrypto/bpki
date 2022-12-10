@@ -25,6 +25,15 @@ counter = 0
 bpkipy.openssl_config(os.getcwd() + '/app_openssl.cfg')
 
 
+@bpki_bp.before_app_first_request
+def update_crl(ca=1, days=1):
+    cmd = (f"ca -gencrl -name ca{ca} -key ca{ca}ca{ca}ca{ca} -crldays {days} -crlhours 6 "
+            f" -crlexts crlexts -out {out_path}current_crl{ca} -batch")
+    openssl(cmd)
+    cmd = f"crl -in {out_path}current_crl{ca} -outform DER -out {out_path}current_crl{ca}.der"
+    openssl(cmd)
+
+
 @bpki_bp.before_request
 def log_request_info():
     current_app.logger.debug('Headers: %s', request.headers)   # app.logger ?
@@ -83,24 +92,16 @@ def dvcs():
 
 @bpki_bp.route('/bpki/crl1', methods=['GET'])
 def crl():
-    cmd = (f"ca -gencrl -name ca1 -key ca1ca1ca1 -crldays 1 -crlhours 6 "
-            f" -crlexts crlexts -out {out_path}current_crl -batch")
-    openssl(cmd)
-    cmd = f"crl -in {out_path}current_crl -outform DER -out {out_path}current_crl.der"
-    openssl(cmd)
+    update_crl(ca=1, days=1)
     try:
-        return send_file(f'{out_path}current_crl.der', download_name='crl1.der')
+        return send_file(f'{out_path}current_crl1.der', download_name='crl1.der')
     except Exception as e:
         return str(e)
 
 
 @bpki_bp.route('/bpki/crl0', methods=['GET'])
 def crl0():
-    cmd = (f"ca -gencrl -name ca0 -key ca0ca0ca0 -crldays 30 -crlhours 6 "
-            f" -crlexts crlexts -out {out_path}current_crl0 -batch")
-    openssl(cmd)
-    cmd = f"crl -in {out_path}current_crl0 -outform DER -out {out_path}current_crl0.der"
-    openssl(cmd)
+    update_crl(ca=0, days=30)
     try:
         return send_file(f'{out_path}current_crl0.der', download_name='crl0.der')
     except Exception as e:
@@ -318,6 +319,7 @@ def revoke():
                 proc.revoke(account.cert)
             account.status = 'Revoked'
             db.session.commit()
+            update_crl(ca=1, days=1)
             current_app.logger.error('Revoke completed.')
             result = bpkipy.create_response(
                 status=0, req_id=bytes.fromhex(proc.req_id), error_list=["Revoked successfully."]
