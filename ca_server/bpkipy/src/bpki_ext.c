@@ -51,6 +51,10 @@ PyObject *parse_revoke(PyObject *self, PyObject *args) {
         return NULL;
     }
     BPKIRevokeReq* req = d2i_BPKIRevokeReq(NULL, &in, len);
+    if(req == NULL) {
+        PyErr_SetString(PyExc_ValueError, "Request parsing error.");
+        return NULL;
+    }
 
     char* serial = BPKIRevokeReq_get_serial(req);
     char* pwd = BPKIRevokeReq_get_revoke_pwd(req);

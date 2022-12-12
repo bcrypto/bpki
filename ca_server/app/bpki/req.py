@@ -34,7 +34,7 @@ class Req:
         ret, out_, err_ = openssl(cmd)
         current_app.logger.debug(f"cms-decrypt return code: {ret}")
         if ret > 1:
-            raise Exception("Decrypt error: " + err_)
+            raise Exception("Decrypt error: " + err_.decode("utf-8"))
 
     # verifying Signed(CSR(%1)) and extract message
     def verify(self, input_name, output_name):
@@ -45,7 +45,7 @@ class Req:
         ret, out_, err_ = openssl(cmd)
         current_app.logger.debug(f"cms-verify return code: {ret}")
         if ret > 1:
-            raise Exception("Verification error: " + err_)
+            raise Exception("Verification error: " + err_.decode("utf-8"))
         self.signer_cert_file = f"{self.path}/cert"
         cmd = (f"verify -CRLfile {out_path}/current_crl1 -crl_check "
                f"-CAfile {out_path}/ca1/chain "
