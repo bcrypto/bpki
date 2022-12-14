@@ -3,7 +3,7 @@ rem ===========================================================================
 rem \brief Запрос и ответ сервера OCSP
 rem \project bpki/demo
 rem \created 2018.01.10
-rem \version 2018.01.23
+rem \version 2022.12.14
 rem \pre Выполнен скрипт setup.cmd.
 rem \remark Выпускаются две пары "запрос - ответ". В первой паре 
 rem запрашивается статус сертификата самого OCSP-сервера. Во второй паре:
@@ -42,6 +42,8 @@ echo -- 3 OCSP Verify1 ---------------------
 openssl ocsp -issuer out/ca1/cert -cert out/ocsp/cert ^
   -CAfile out/ca0/cert -VAfile out/ocsp/cert
 
+openssl ocsp -VAfile out/ocsp/cert -respin out/ocsp/resp1.der
+
 if %ERRORLEVEL% equ 0 (echo ok) else (echo failed)
 
 echo -- 4 OCSP Request2 --------------------
@@ -76,6 +78,8 @@ echo -- 6 OCSP Verify2 ---------------------
 
 openssl ocsp -issuer out/ca1/cert -cert out/ocsp/cert ^
   -CAfile out/ca0/cert -VAfile out/ocsp/cert
+
+openssl ocsp -VAfile out/ocsp/cert -respin out/ocsp/resp2.der
 
 if %ERRORLEVEL% equ 0 (echo ok) else (echo failed)
 

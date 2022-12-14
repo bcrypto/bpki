@@ -3,7 +3,7 @@ rem ===========================================================================
 rem \brief Процесc Enroll3
 rem \project bpki/demo
 rem \created 2018.01.10
-rem \version 2020.11.23
+rem \version 2022.12.14
 rem \params %1 -- конечный участник, %2 -- срок действия (дней).
 rem \pre Имеется конфигурационный файл ./cfg/%1.cfg.
 rem \post Сертификат out/%1/cert и промежуточные объекты.
@@ -37,9 +37,9 @@ echo stored in out/%1/privkey.der
 
 echo -- 3 creating CSR(%1) 
 
-openssl req -new -utf8 -nameopt multiline,utf8 -newkey bign:out/params256 ^
-  -config ./cfg/%1.cfg -keyout out/%1/privkey -reqexts reqexts ^
-  -out out/%1/csr -passout pass:%1%1%1 -batch 2> nul
+openssl req -new -utf8 -nameopt multiline,utf8 -key out/%1/privkey ^
+  -passin pass:%1%1%1 -config ./cfg/%1.cfg -reqexts reqexts ^
+  -out out/%1/csr -batch 2> nul
 
 call decode out/%1/csr > nul
 
