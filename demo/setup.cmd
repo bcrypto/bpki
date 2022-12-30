@@ -3,7 +3,7 @@ rem ===========================================================================
 rem \brief Создание модельных УЦ и выпуск модельных сертификатов
 rem \project bpki/demo
 rem \created 2018.01.09
-rem \version 2022.09.12
+rem \version 2022.12.30
 rem \remark Контейнеры с личными ключами конфигурируются по правилам BPKI.
 rem \thanks[GeneralizedTime] https://stackoverflow.com/questions/203090/
 rem how-do-i-get-rem current-datetime-on-the-windows-command-line-in-a-
@@ -165,7 +165,14 @@ call :Create agca1 1095
 
 echo 00 > out\tsa\tsaserial
 
-echo == 6 Revoking opra (for OCSP testing) ====================================
+echo == 6 Issue CRL (ca0) =====================================================
+
+openssl ca -gencrl -name ca0 -key ca0ca0ca0 -crlhours 1 ^
+  -crlexts crlexts -out out/ca0/crl1 -batch 2> nul
+
+call decode out/ca0/crl1 > nul
+
+echo == 7 Revoking opra (for OCSP testing) ====================================
 
 copy /b /y out\opra\cert.* out\opra\cert0.* > nul
 
@@ -182,7 +189,7 @@ openssl ca -gencrl -name ca1 -key ca1ca1ca1 -crlhours 1 ^
 
 call decode out/ca1/crl2 > nul
 
-echo == 7 Creating opra again =================================================
+echo == 8 Creating opra again =================================================
 
 call :Create opra 730
 
