@@ -6,6 +6,7 @@ ASN1_SEQUENCE(DVCSRequestInformation) = {
 } ASN1_SEQUENCE_END(DVCSRequestInformation);
 
 IMPLEMENT_ASN1_FUNCTIONS(DVCSRequestInformation);
+IMPLEMENT_ASN1_DUP_FUNCTION(DVCSRequestInformation);
 
 ASN1_SEQUENCE(DVCSRequest) = {
     ASN1_SIMPLE(DVCSRequest, requestInformation, DVCSRequestInformation),
@@ -115,8 +116,9 @@ int hash_message(const EVP_MD* md_type, const unsigned char *data, int len, unsi
 PyObject *dvcs_cert_info(PyObject *self, PyObject *args) {
     const unsigned char* in = NULL;
     Py_ssize_t size;
+    long serial;
 
-    if (!PyArg_ParseTuple(args, "y#", &in, &size)) {
+    if (!PyArg_ParseTuple(args, "y#i", &in, &size, &serial)) {
         PyErr_SetString(PyExc_ValueError, "Parameters are not parsed.");
         return NULL;
     }
@@ -129,6 +131,11 @@ PyObject *dvcs_cert_info(PyObject *self, PyObject *args) {
 
     unsigned char* data = req->data->data;
     int len = req->data->length;
+    int service = req->requestInformation->service;
+    if(!service != 2){
+        PyErr_SetString(PyExc_ValueError, "Service type is not supported.");
+        return NULL;
+    }
 
     const EVP_MD* md_type = EVP_get_digestbyname("belt-hash");
 
@@ -150,6 +157,8 @@ PyObject *dvcs_cert_info(PyObject *self, PyObject *args) {
 		return NULL;
 	}
 
+    DVCSRequestInformation* reqInfo = DVCSRequestInformation_dup(req->requestInformation);
+
 	DVCSRequest_free(req);
 
     DVCSCertInfo* ci = DVCSCertInfo_new();
@@ -159,6 +168,7 @@ PyObject *dvcs_cert_info(PyObject *self, PyObject *args) {
     }
     ASN1_INTEGER_set(ci->version, 1);
     ASN1_ENUMERATED_set(ci->service, 2);
+    ci->dvReqInfo = reqInfo;
 
     DigestInfo* sig = ci->messageImprint;
     X509_ALGOR_set_md(sig->algor, md_type);

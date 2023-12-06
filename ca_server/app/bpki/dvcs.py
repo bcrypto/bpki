@@ -12,6 +12,7 @@ out_path = bpki_path + '/out'
 
 
 def dvcs_req(req):
+    serial = 1234
     tmpdirname = tempfile.mkdtemp()
     try:
         data = bpkipy.dvcs_extract_data(req)
@@ -22,7 +23,7 @@ def dvcs_req(req):
                f" -in {tmpdirname}/dvcs_data.der -inform der -purpose any")
         retcode, block, er__ = openssl(cmd)
         if retcode == 1:
-            resp = bpkipy.dvcs_cert_info(req)
+            resp = bpkipy.dvcs_cert_info(req, serial)
         else:
             resp = bpkipy.dvcs_error_notice(status=2, error_list=['Verification failure.'])
     except Exception as e:
