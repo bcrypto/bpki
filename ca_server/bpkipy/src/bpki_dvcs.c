@@ -17,7 +17,6 @@ IMPLEMENT_ASN1_FUNCTIONS(DVCSRequest);
 
 ASN1_SEQUENCE(DVCSCertInfo) = {
     ASN1_SIMPLE(DVCSCertInfo, version, ASN1_INTEGER),
-    ASN1_SIMPLE(DVCSCertInfo, service, ASN1_ENUMERATED),
     ASN1_SIMPLE(DVCSCertInfo, dvReqInfo, DVCSRequestInformation),
     ASN1_SIMPLE(DVCSCertInfo, messageImprint, X509_SIG),
     ASN1_SIMPLE(DVCSCertInfo, serialNumber, ASN1_INTEGER),
@@ -116,7 +115,7 @@ int hash_message(const EVP_MD* md_type, const unsigned char *data, int len, unsi
 PyObject *dvcs_cert_info(PyObject *self, PyObject *args) {
     const unsigned char* in = NULL;
     Py_ssize_t size;
-    long serial;
+    long long serial = 123;
 
     if (!PyArg_ParseTuple(args, "y#i", &in, &size, &serial)) {
         PyErr_SetString(PyExc_ValueError, "Parameters are not parsed.");
@@ -131,8 +130,8 @@ PyObject *dvcs_cert_info(PyObject *self, PyObject *args) {
 
     unsigned char* data = req->data->data;
     int len = req->data->length;
-    int service = req->requestInformation->service;
-    if(!service != 2){
+    int service = ASN1_ENUMERATED_get(req->requestInformation->service);
+    if(service != 2){
         PyErr_SetString(PyExc_ValueError, "Service type is not supported.");
         return NULL;
     }
@@ -167,7 +166,6 @@ PyObject *dvcs_cert_info(PyObject *self, PyObject *args) {
         return NULL;
     }
     ASN1_INTEGER_set(ci->version, 1);
-    ASN1_ENUMERATED_set(ci->service, 2);
     ci->dvReqInfo = reqInfo;
 
     DigestInfo* sig = ci->messageImprint;
@@ -175,7 +173,7 @@ PyObject *dvcs_cert_info(PyObject *self, PyObject *args) {
     if (!ASN1_OCTET_STRING_set(sig->digest, digest, digest_len)) {
         return NULL;
     }
-    ASN1_INTEGER_set(ci->serialNumber, 1);
+    ASN1_INTEGER_set(ci->serialNumber, serial);
 
     time_t now = time(NULL);
     struct tm* ptm = localtime(&now);

@@ -68,7 +68,6 @@ typedef struct _DigestInfo {
 
 typedef struct _DVCSCertInfo{
     ASN1_INTEGER* version;
-    ASN1_ENUMERATED* service;
     DVCSRequestInformation*  dvReqInfo;
     DigestInfo*  messageImprint;
     ASN1_INTEGER* serialNumber;
