@@ -12,14 +12,13 @@ BPKIResp ::= SEQUENCE {
 Тип \texttt{PKIStatusInfo} определен в СТБ 34.101.82. 
 
 В случае успеха вложенные в~\texttt{statusInfo} 
-компоненты~\texttt{statusString} 
-и~\texttt{failInfo} должны быть опущены, а вложенный
-компонент~\texttt{status} должен принимать значение~\texttt{granted}.
+компоненты~\texttt{statusString} и~\texttt{failInfo} должны быть опущены, а 
+вложенный компонент~\texttt{status} должен принимать значение~\texttt{granted}.
 %
 Если ошибка произошла по причине загруженности УЦ или потому
 что обработка запроса требует времени, 
 то~\texttt{statusString} и~\texttt{failInfo} также должны быть опущены, 
-а~\texttt{status} должно принимать значение~\texttt{wating}.
+а~\texttt{status} должен принимать значение~\texttt{waiting}.
 %
 При других ошибках в~\texttt{status} должно быть выбрано 
 значение~\texttt{rejection}, в~\texttt{failInfo} должен быть указан один 

@@ -7,7 +7,7 @@
 
 {\small
 \begin{center}
-\begin{tabular}{|p{2.9cm}|p{6.3cm}|p{6.5cm}|}
+\begin{longtable}{|p{2.9cm}|p{6.3cm}|p{6.5cm}|}
 \hline
 В каком месте & Напечатано & Должно быть\\
 \hline
@@ -63,16 +63,16 @@
 34.101.81, остальные~--- в приложении~\ref{ASN1}.
 \\
 \hline
-\addendum{Подраздел~\ref{FMT.EnvelopedData}},\par 
-\addendum{пункт 1}
+Подраздел~\ref{FMT.EnvelopedData},\par 
+пункт 1
 &
 Версия синтаксиса (компонент~\texttt{version}) должна равняться~$2$. 
 &
 Версия синтаксиса (компонент~\texttt{version}) должна равняться~$0$. 
 \\
 \hline
-\addendum{Подраздел~\ref{FMT.EnvelopedData}},\par 
-\addendum{пункт 4}
+Подраздел~\ref{FMT.EnvelopedData},\par 
+пункт 4
 &
 Тип конвертуемых данных (компонент~\texttt{eContentType}, вложенный 
 в~\texttt{encryptedContentInfo}) должен принимать одно из следующих 
@@ -88,8 +88,8 @@
 \texttt{id-signedData}.
 \\
 \hline
-\addendum{Подраздел~\ref{FMT.EnvelopedData}},\par 
-\addendum{пункт 5.1}
+Подраздел~\ref{FMT.EnvelopedData},\par 
+пункт 5.1
 &
 версия применяемого синтаксиса (компонент~\texttt{version}) должна 
 равняться~$2$;
@@ -106,6 +106,14 @@
 \texttt{statusString} (3 раза)
 \\
 \hline
+Подраздел~\ref{FMT.BPKIResp},\par 
+абзац 4
+&
+\ldots а~\texttt{status} должно принимать значение~\texttt{wating}.
+&
+\ldots а~\texttt{status} должен принимать значение~\texttt{waiting}.
+\\
+\hline
 Подраздел~\ref{PROCESSES.Reenroll},\par 
 абзац 7
 &
@@ -116,6 +124,6 @@
 действующего сертификата.
 \\
 \hline
-\end{tabular}
+\end{longtable}
 \end{center}
 }
