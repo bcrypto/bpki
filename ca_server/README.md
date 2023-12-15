@@ -93,3 +93,19 @@ Exit from psql:
 ```
 
 Note: use "-U test" for bpki_test_ca environment
+
+### Test data generation
+Connect to docker image with terminal:
+```commandline
+docker-compose run bpki_test_ca bash
+```
+
+Setup CA keys and certificates
+```
+# bash setup_test.sh
+```
+
+Change ownership of CA files:
+```commandline
+sudo chown -R $USER:$USER test_ca
+```
