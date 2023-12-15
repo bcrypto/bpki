@@ -1,11 +1,14 @@
-FROM btls/btls256
+FROM btls/bee2evp
 
 COPY requirements.txt ./
-RUN apt-get update
-RUN apt-get update \
-    && apt-get install -y \
+
+ENV TZ=Europe/Minsk
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt-get update \ 
+    && apt-get upgrade -y -q\
+    && apt-get install -y -q \
         gcc \
-        postgresql \
+        postgresql-14 \
         libpq-dev \
         libssl-dev \
         python3-dev \
@@ -16,10 +19,10 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/12/main/pg_hba.conf
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/14/main/pg_hba.conf
 
-# And add ``listen_addresses`` to ``/etc/postgresql/12/main/postgresql.conf``
-RUN echo "listen_addresses='*'" >> /etc/postgresql/12/main/postgresql.conf
+# And add ``listen_addresses`` to ``/etc/postgresql/14/main/postgresql.conf``
+RUN echo "listen_addresses='*'" >> /etc/postgresql/14/main/postgresql.conf
 
 #RUN service postgresql start
 
@@ -35,7 +38,9 @@ COPY app/user/up.sql ./up.sql
 #       allows the RUN command to span multiple lines.
 RUN service postgresql start &&\
     runuser -u postgres -- psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" &&\
-    runuser -u postgres -- createdb -O docker docker
+    runuser -u postgres -- createdb -O docker docker &&\
+    runuser -u postgres -- psql --command "CREATE USER test WITH SUPERUSER PASSWORD 'test';" &&\
+    runuser -u postgres -- createdb -O test test
 
 # RUN service postgresql restart &&\
 #    psql "dbname='docker' user='docker' password='docker'" -f up.sql
