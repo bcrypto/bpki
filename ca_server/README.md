@@ -1,21 +1,6 @@
 Run CA server
 -------------
 
-### Terminal 1
-```
-$ ngrok http 5000
-```
-Copy https url from ngrok and paste it in `./app/bpki/static/js/index.js` (variable `api_url`).
-
-### Terminal 2
-
-Make sure postgresql is running.
-```
-$ gunicorn -w 4 --bind 0.0.0.0:5000 wsgi:app
-```
-
-Open in browser url from ngrok.
-
 Preparations
 ------------
 
@@ -24,9 +9,6 @@ See instructions in [github.com/bcrypto/bee2evp](https://github.com/bcrypto/bee2
 
 ### Install gunicorn. 
 See instructions in [docs.gunicorn.org](https://docs.gunicorn.org/en/stable/install.html).
-
-### Install ngrok. 
-See instructions in [ngrok.com](https://ngrok.com).
 
 ### Python $\ge$ 3.6
 ```
@@ -74,15 +56,26 @@ $ docker-compose up bpki_ca
 ### Database administration on image
 Connect to docker image with terminal:
 ```commandline
-docker run -it ca_server_bpki_ca bash
+docker-compose run bpki_ca bash
 ```
+
+Start PostgreSQL server:
+```commandline
+service postgresql start
+```
+
 Connect to DB on Docker image:
 ```commandline
 psql -h localhost -p 5432 -U docker
 ```
+
 Initialize DB in psql:
 ```commandline
 # \i  /root/up.sql
+```
+or
+```commandline
+# \i  /app/app/user/up.sql
 ```
 
 ### Database administration from host
@@ -98,3 +91,5 @@ Exit from psql:
 ```commandline
 # \q
 ```
+
+Note: use "-U test" for bpki_test_ca environment

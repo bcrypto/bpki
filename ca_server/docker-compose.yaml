@@ -8,14 +8,29 @@ services:
     volumes:
       - ./out:/out
       - .:/app
-#      - ./db/data:/var/lib/postgresql
-#      - ./db/logs:/var/log/postgresql
-#      - ./db/config:/etc/postgresql
     ports:
       - "0.0.0.0:5000:80"
       - "54321:5432"
     env_file:
       - .service.env
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  bpki_test_ca:
+    build: .
+    restart: "no"
+    command: bash "start.sh"
+    volumes:
+      - ./test_ca:/out
+      - .:/app
+    ports:
+      - "0.0.0.0:5000:80"
+      - "54321:5432"
+    env_file:
+      - .test_service.env
     logging:
       driver: "json-file"
       options:
