@@ -1,23 +1,26 @@
 #!/bin/bash
 echo "== Creating End Entity $1"
-cd out
-mkdir $1 2> /dev/null
-cd ..
 
-openssl genpkey -paramfile out/params256 -out out/$1/privkey_plain
+ENTITY_DIR="${CA_HOME:-out}/$1"
 
-openssl pkcs8 -in out/$1/privkey_plain -topk8 \
+CONFIG="${CA_CFG:-cfg}/$1.cfg"
+
+mkdir $ENTITY_DIR 2> /dev/null
+
+openssl genpkey -paramfile $CA_HOME/params256 -out $ENTITY_DIR/privkey_plain
+
+openssl pkcs8 -in $ENTITY_DIR/privkey_plain -topk8 \
   -v2 belt-kwp256 -v2prf belt-hmac -iter 10000 \
-  -passout pass:$1$1$1 -out out/$1/privkey
+  -passout pass:$1$1$1 -out $ENTITY_DIR/privkey
 
-source decode.sh out/$1/privkey
+source decode.sh $ENTITY_DIR/privkey
 
-openssl req -new -utf8 -nameopt multiline,utf8 -config ./cfg/$1.cfg \
-  -reqexts reqexts -key out/$1/privkey -passin pass:$1$1$1 \
-  -out out/$1/csr -batch
+openssl req -new -utf8 -nameopt multiline,utf8 -config $CONFIG \
+  -reqexts reqexts -key $ENTITY_DIR/privkey -passin pass:$1$1$1 \
+  -out $ENTITY_DIR/csr -batch
 
-openssl ca -name ca1 -batch -in out/$1/csr -key ca1ca1ca1 -days $2 \
-  -extfile ./cfg/$1.cfg -extensions exts -out out/$1/cert -notext \
+openssl ca -name ca1 -batch -in $ENTITY_DIR/csr -key ca1ca1ca1 -days $2 \
+  -extfile $CONFIG -extensions exts -out $ENTITY_DIR/cert -notext \
   -utf8 2> /dev/null
 
-source decode.sh out/$1/cert
+source decode.sh $ENTITY_DIR/cert
