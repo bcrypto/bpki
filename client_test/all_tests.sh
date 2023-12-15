@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 0 Copy relevant certificates
-bash cert_copy.sh
+bash cert_copy.sh $1
 
 # 1 Healthcheck
 python3 healthcheck.py
