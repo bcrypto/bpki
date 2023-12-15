@@ -8,7 +8,7 @@ import bpkipy
 from .openssl import openssl
 
 bpki_path = os.getcwd()  # + "/../../"
-out_path = bpki_path + '/out'
+out_path = '/out'
 
 
 def dvcs_req(req):

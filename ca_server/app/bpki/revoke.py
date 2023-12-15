@@ -8,7 +8,7 @@ from .req import Req
 import bpkipy
 
 bpki_path = os.getcwd()  # + "/../../"
-out_path = bpki_path + '/out'
+out_path = '/out'
 enroll1_path = out_path + '/revoke/'
 
 

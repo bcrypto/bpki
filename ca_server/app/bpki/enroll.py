@@ -10,7 +10,7 @@ from .openssl import openssl
 from .req import Req
 
 bpki_path = os.getcwd()  # + "/../../"
-out_path = bpki_path + '/out'
+out_path = '/out'
 enroll1_path = out_path + '/enroll1/'
 
 

@@ -7,7 +7,7 @@ from flask import current_app
 from .openssl import openssl
 
 bpki_path = os.getcwd()  # + "/../../"
-out_path = bpki_path + '/out'
+out_path = '/out'
 enroll1_path = out_path + '/enroll1/'
 
 

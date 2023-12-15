@@ -12,8 +12,8 @@ def tsa_req(req, no_nonce=True):
     with open(f"{tmpdirname}/req.tsq", "wb") as f:
         f.write(req)
     current_app.logger.debug(f"File is saved to: {tmpdirname}/req1.tsq")
-    cmd = (f"ts -reply -queryfile {tmpdirname}/req.tsq -signer ./out/tsa/cert"
-           " -passin pass:tsatsatsa -inkey ./out/tsa/privkey"
+    cmd = (f"ts -reply -queryfile {tmpdirname}/req.tsq -signer /out/tsa/cert"
+           " -passin pass:tsatsatsa -inkey /out/tsa/privkey"
            f" -out {tmpdirname}/resp.tsr")
     if no_nonce:
         cmd = cmd + " -no_nonce"
