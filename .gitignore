@@ -35,7 +35,6 @@ ca_server/out/*
 client_test/out/*
 client_test/answers/*
 ca_server/test_ca/current_crl*
-ca_server/test_ca/*/certs/*
 
 # Python package files
 *.egg-info/
