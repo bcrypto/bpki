@@ -38,7 +38,7 @@ def dvcs_req(req):
     cmd = (f"cms -sign -in {tmpdirname}/response "
            f"-signer {out_path}/dvcs/cert "
            f"-inkey {out_path}/dvcs/privkey -passin pass:dvcsdvcsdvcs "
-           f"-binary -econtent_type id-smime-ct-DVCSResponseData "
+           f"-binary -econtent_type id-smime-ct-DVCSResponseData -cades "
            f"-out {tmpdirname}/signed_response.der -outform der -nodetach -nosmimecap ")
     _, out_, err_ = openssl(cmd)
     with open(f"{tmpdirname}/signed_response.der", 'rb') as rf:
