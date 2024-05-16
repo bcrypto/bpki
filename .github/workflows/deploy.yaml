@@ -1,0 +1,50 @@
+name: deploy
+
+on:
+  push:
+    tags: 
+      - v*
+
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@master
+      - name: Build LaTeX
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: bpki.tex
+          working_directory: spec/
+          args: -jobname=bpki -pdf -file-line-error -halt-on-error -interaction=nonstopmode
+      - name: Upload pdf
+        uses: actions/upload-artifact@v2
+        with:
+          name: bpki
+          path: spec/bpki.pdf
+  deploy:
+    runs-on: [ubuntu-latest]
+    needs: [build]
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: bpki
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload pdf asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./bpki.pdf
+          asset_name: bpki.pdf
+          asset_content_type: application/pdf

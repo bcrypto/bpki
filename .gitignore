@@ -16,7 +16,7 @@
 *.bak
 *.backup
 
-# Concrete files
+# Specific files
 support
 spec/*.pdf
 clear.cmd
