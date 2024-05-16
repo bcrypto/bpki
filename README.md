@@ -3,8 +3,6 @@ BPKI: профиль инфраструктуры открытых ключей
 
 [![build](https://github.com/bcrypto/bpki/actions/workflows/build.yaml/badge.svg)](https://github.com/bcrypto/bpki/actions/workflows/build.yaml)
 
-[![Build Status](https://travis-ci.com/bcrypto/bpki.svg?branch=master)](https://travis-ci.com/bcrypto/bpki)
-
 Что такое BPKI?
 ---------------
 
