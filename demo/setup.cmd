@@ -3,7 +3,7 @@ rem ===========================================================================
 rem \brief Создание модельных УЦ и выпуск модельных сертификатов
 rem \project bpki/demo
 rem \created 2018.01.09
-rem \version 2022.12.30
+rem \version 2024.06.18
 rem \remark Контейнеры с личными ключами конфигурируются по правилам BPKI.
 rem \thanks[GeneralizedTime] https://stackoverflow.com/questions/203090/
 rem how-do-i-get-rem current-datetime-on-the-windows-command-line-in-a-
@@ -128,7 +128,7 @@ cd ..
 cd ..
 
 openssl genpkey -paramfile out/params256 -pkeyopt enc_params:cofactor ^
--out out/ca2/privkey_plain
+  -out out/ca2/privkey_plain
 
 call decode out/ca2/privkey_plain > nul
 
@@ -136,7 +136,7 @@ openssl pkcs8 -in out/ca2/privkey_plain -topk8 ^
   -v2 belt-kwp256 -v2prf belt-hmac -iter 10000 ^
   -passout pass:ca2ca2ca2 -out out/ca2/privkey
 
-call decode out/ca1/privkey > nul
+call decode out/ca2/privkey > nul
 
 openssl req -new -utf8 -nameopt multiline,utf8 -config ./cfg/ca2.cfg ^
   -key out/ca2/privkey -passin pass:ca2ca2ca2 -out out/ca2/csr -batch
