@@ -8,6 +8,7 @@ rem \remark Контейнеры с личными ключами конфигу
 rem \thanks[GeneralizedTime] https://stackoverflow.com/questions/203090/
 rem how-do-i-get-rem current-datetime-on-the-windows-command-line-in-a-
 rem   suitable-format
+rem \remark CA1 использует нестандартные параметры params384.
 rem ===========================================================================
 
 echo == Initializing PKI ======================================================
@@ -28,8 +29,7 @@ echo == 1 Generating Params ===================================================
 openssl genpkey -genparam -algorithm bign -pkeyopt params:bign-curve256v1 ^
   -out out/params256
 
-openssl genpkey -genparam -algorithm bign -pkeyopt params:bign-curve384v1 ^
-  -out out/params384
+copy /b /y params384 out\params384 > nul
 
 openssl genpkey -genparam -algorithm bign -pkeyopt params:bign-curve512v1 ^
   -out out/params512
@@ -90,8 +90,7 @@ md certs 2> nul
 cd ..
 cd ..
 
-openssl genpkey -paramfile out/params384 ^
-  -pkeyopt enc_params:specified -out out/ca1/privkey_plain
+openssl genpkey -paramfile out/params384 -out out/ca1/privkey_plain
 
 call decode out/ca1/privkey_plain > nul
 
