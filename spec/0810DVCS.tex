@@ -39,13 +39,17 @@
 В компоненте~\texttt{dvCertInfo} должны быть опущены все вложенные 
 компоненты, кроме \texttt{version}, \texttt{dvReqInfo}, \texttt{messageImprint}, 
 \texttt{serialNumber}, \texttt{responseTime}.
+%
 Вложенный компонент~\texttt{dvStatus} должен присутствовать в случае 
 вердикта~\texttt{waiting} и должен быть опущен при 
 вердикте~\texttt{granted}. 
+%
+В \texttt{responseTime} должна быть выбрана опция \texttt{genTime}, 
+т.~е. время должно задаваться значением типа \texttt{GeneralizedTime}.
 
 В компоненте~\texttt{dvErrorNote} должен быть опущен вложенный 
 компонент~\texttt{transactionIdentifier}.
-
+	
 Для компонентов~\texttt{dvCertInfo} должны соблюдаться следующие правила:
 \begin{enumerate}
 \item
