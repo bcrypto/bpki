@@ -24,8 +24,6 @@ bpki_bp = Blueprint('bpki_bp', __name__,
 counter = 0
 bpkipy.openssl_config(os.getcwd() + '/app_openssl.cfg')
 
-
-@bpki_bp.before_app_first_request
 def update_crl(ca=1, days=1):
     cmd = (f"ca -gencrl -name ca{ca} -key ca{ca}ca{ca}ca{ca} -crldays {days} -crlhours 6 "
             f" -crlexts crlexts -out {out_path}current_crl{ca} -batch")

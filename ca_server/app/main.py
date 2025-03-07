@@ -18,6 +18,7 @@ with app.app_context():
     app.register_blueprint(bpki.bpki_bp)
 
     app.register_blueprint(users)
+    bpki.update_crl()
     db.create_all()
 
 if __name__ == "__main__":
