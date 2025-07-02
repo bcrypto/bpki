@@ -778,13 +778,6 @@
   July\or August\or September\or October\or November\or December\fi
   \space\number\day, \number\year}
 
-\newenvironment{note}{
-  \list{}{
-    \labelwidth=0pt\topsep=0pt\partopsep=0pt\parskip=0pt\parsep=0pt
-    \itemsep=0pt\itemindent=0pt\leftmargin=\parindent
-    \labelsep=0pt\item[]\small}
-}{\endlist}
-
 \setlength\columnsep{10\p@}
 \setlength\columnseprule{0\p@}
 
