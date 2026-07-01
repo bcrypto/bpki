@@ -15,7 +15,6 @@ jobs:
         with:
           root_file: bpki.tex
           working_directory: spec/
-          args: -jobname=bpki -pdf -file-line-error -halt-on-error -interaction=nonstopmode
       - name: Upload pdf
         uses: actions/upload-artifact@v4
         with:
