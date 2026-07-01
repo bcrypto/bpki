@@ -1,0 +1,5 @@
+HTTP/1.1 200 OK\textLF
+Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw\textLF
+Content-Length: 0\textLF
+Link: <https://example.com/acme/directory>;rel="index"\textLF
+

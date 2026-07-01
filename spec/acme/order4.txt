@@ -1,0 +1,26 @@
+HTTP/1.1 200 OK\textLF
+Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X\textLF
+Link: <https://example.com/acme/directory>;rel="index"\textLF
+Location: https://example.com/acme/order/TOlocE8rfgo\textLF
+\textLF
+\{\textLF
+\ \ "status": "valid",\textLF
+\ \ "expires": "2026-01-20T14:09:07.99Z",\textLF
+\textLF
+\ \ "notBefore": "2026-01-01T00:00:00Z",\textLF
+\ \ "notAfter": "2026-01-08T00:00:00Z",\textLF
+\textLF
+\ \ "identifiers": \left[\textLF
+\ \ \ \ \{ "type": "dns", "value": "www.example.org" \},\textLF
+\ \ \ \ \{ "type": "dns", "value": "example.org" \}\textLF
+\ \ \right],\textLF
+\textLF
+\ \ "authorizations": \left[\textLF
+\ \ \ \ "https://example.com/acme/authz/PAniVnsZcis",\textLF
+\ \ \ \ "https://example.com/acme/authz/r4HqLzrSrpI"\textLF
+\ \ \right],\textLF
+\textLF
+\ \ "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize",\textLF
+\textLF
+\ \ "certificate": "https://example.com/acme/cert/mAt3xBGaobw"\textLF
+\}

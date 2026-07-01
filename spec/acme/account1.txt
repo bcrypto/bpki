@@ -1,0 +1,20 @@
+POST /acme/new-account HTTP/1.1\textLF
+Host: example.com\textLF
+Content-Type: application/jose+json\textLF
+\textLF
+\{\textLF
+\ \ "protected": base64url(\{\textLF
+\ \ \ \ "alg": "BIGNS128",
+\ \ \ \ "jwk": \{...\},\textLF
+\ \ \ \ "nonce": "6S8IqOGY7eL2lsGoTZYifg",\textLF
+\ \ \ \ "url": "https://example.com/acme/new-account"\textLF
+\ \ \}),\textLF
+\ \ "payload": base64url(\{\textLF
+\ \ \ \ "termsOfServiceAgreed": true,\textLF
+\ \ \ \ "contact": \left[
+\ \ \ \ \ \ "mailto:cert-admin@example.org",\textLF
+\ \ \ \ \ \ "mailto:admin@example.org"\textLF
+\ \ \ \right[
+\ \ \}),\textLF
+\ \ "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"\textLF
+\}

@@ -1,0 +1,19 @@
+POST /acme/new-authz HTTP/1.1\textLF
+Host: example.com\textLF
+Content-Type: application/jose+json \textLF
+\textLF
+\{\textLF
+\ \ "protected": base64url(\{\textLF
+\ \ \ \ "alg": "BIGNS128",\textLF
+\ \ \ \ "kid": "https://example.com/acme/acct/evOfKhNU60wg",\textLF
+\ \ \ \ "nonce": "uQpSjlRb4vQVCjVYAyyUWg",\textLF
+\ \ \ \ "url": "https://example.com/acme/new-authz"\textLF
+\ \ \}),\textLF
+\ \ "payload": base64url(\{\textLF
+\ \ \ \ "identifier": \{\textLF
+\ \ \ \ \ \ "type": "dns",\textLF
+\ \ \ \ \ \ "value": "example.org"\textLF
+\ \ \ \ \}\textLF
+\ \ \}),\textLF
+\ \ "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"\textLF
+\}

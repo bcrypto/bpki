@@ -1,0 +1,391 @@
+\section{Выпуск сертификата}\label{ACME.Order}
+
+\subsection{Обработка заявки}\label{ACME.Order.Apply}
+
+Клиент инициирует выпуск сертификата, отправляя 
+\pdfexample{запрос}{acme/order1.txt} на узел \code{newOrder}. Тело запроса 
+представляет собой подписанную заявку на выпуск сертификата 
+(см.~\ref{ACME.Res.Order}) с обязательными полем \sstr{identifiers} и 
+необязательными полями \sstr{notBefore} и \sstr{notAfter}. 
+%
+Поля заполняются по правилам, установленным в~\ref{ACME.Res.Order}.
+
+\if0
+\begin{codeblock}
+POST /acme/new-order HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "5XJ1L3lEkMG7tR6pA00clA",
+    "url": "https://example.com/acme/new-order"
+  }),
+  "payload": base64url({
+    "identifiers": [
+      { "type": "dns", "value": "www.example.org" },
+      { "type": "dns", "value": "example.org" }
+    ],
+    "notBefore": "2026-01-01T00:04:00+04:00",
+    "notAfter": "2026-01-08T00:04:00+04:00"
+  }),
+  "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"
+}
+\end{codeblock}
+\fi
+
+Сервер должен возвратить ошибку, если он не может выполнить заявку в указанном 
+виде. Сервер не должен выдавать сертификат с содержимым, не соответствующим 
+заявке.
+%
+Если сервер требует изменить заявку определенным образом, он должен описать 
+необходимые изменения, указывая в ответе соответствующий тип ошибки и прилагая 
+подробности проблемы. 
+
+Если сервер готов выдать запрошенный сертификат, то он дает
+\pdfexample{ответ}{acme/order2.txt} с кодом статуса 201 (создано). Тело этого
+ответа представляет собой объект заявки, в котором отражается запрос клиента и
+перечисляются все авторизации, необходимые для выпуска сертификата.
+%
+Сервер возвращает URL заявки в заголовке \code{Location} ответа.
+
+% use: https://errata.rfc-editor.org/eid5979/
+   
+\if0
+\begin{codeblock}
+HTTP/1.1 201 Created
+Replay-Nonce: MYAuvOpaoIiywTezizk5vw
+Link: <https://example.com/acme/directory>;rel="index"
+Location: https://example.com/acme/order/TOlocE8rfgo
+
+{
+  "status": "pending",
+  "expires": "2026-01-05T14:09:07.99Z",
+
+  "notBefore": "2026-01-01T00:00:00Z",
+  "notAfter": "2026-01-08T00:00:00Z",
+
+  "identifiers": [
+    { "type": "dns", "value": "www.example.org" },
+    { "type": "dns", "value": "example.org" }
+  ],
+
+  "authorizations": [
+    "https://example.com/acme/authz/PAniVnsZcis",
+    "https://example.com/acme/authz/r4HqLzrSrpI"
+  ],
+
+  "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize"
+} 
+\end{codeblock}
+\fi
+
+Возвращая заявку, сервер информирует клиента, что если тот выполнит его
+требования до истечения срока действия заявки (поле \sstr{expires}), 
+то сервер обработает заявку и выдаст запрошенный сертификат. 
+%
+Требования сервера состоят в выполнении авторизаций, которые перечислены
+в поле \sstr{authorizations} и имеют статус \sstr{pending}.
+%
+Если клиент не выполняет требуемые действия до истечения срока действия заявки, 
+то сервер должен изменить ее статус на \sstr{invalid} и может удалить заявку.
+%
+Клиенты не должны делать предположений о порядке сортировки элементов 
+массивов \sstr{identifiers} и \sstr{authorizations} в возвращаемой сервером
+заявке.  
+
+Как только клиент выполнил требования сервера, он должен отправить 
+\pdfexample{POST-запрос}{acme/order3.txt} на URL-адрес финализации заявки. Тело 
+запроса должно включать подписанный объект JSON с единственным полем: 
+
+\begin{itemize}
+\item
+\sstr{csr} (обязательное, строка)~--- запрос на выпуск сертификата, 
+сформированный в соответствии с~\ref{FMT.CSR}. DER-код запроса должен
+быть дополнительно закодирован по правилам base64url.
+\end{itemize}
+
+\if0
+\begin{codeblock}
+POST /acme/order/TOlocE8rfgo/finalize HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "MSF2j2nawWHPxxkE3ZJtKQ",
+    "url": "https://example.com/acme/order/TOlocE8rfgo/finalize"
+  }),
+  "payload": base64url({
+    "csr": "MIIBPTCBxAIBADBFMQ...FS6aKdZeGsysoCo4H9P",
+  }),
+  "signature": "uOrUfIIk5RyQ...nw62Ay1cl6AB"
+}
+\end{codeblock}
+\fi
+
+Запрос на выпуск сертификата определяет содержание будущего сертификата.
+Запрос должен содержать тот же набор идентификаторов, что и исходная заявка
+на узел \code{newOrder}.
+%
+Идентификаторы типа \sstr{dns} должны быть указаны в атрибуте
+\code{extensionRequest}  в части, которая касается расширения 
+\code{SubjectAltName}. Идентификаторы могут указываться в любом порядке.
+%
+Спецификации, которые определяют новые типы идентификаторов, должны указывать, 
+в какой части запроса на выпуск сертификата эти идентификаторы должны 
+появляться.
+
+Запрос на финализацию заявки приведет к ошибке, если УЦ откажется 
+выпустить сертификат по присланному запросу. Возможные причины отказа:
+%
+\begin{itemize}
+\item
+идентификаторы заявки и запроса различаются;
+\item
+авторизация не завершена;
+\item
+УЦ не готов включить в сертификат расширения, перечисленные в запросе.
+\end{itemize}
+
+В случае отказа сервер должен указать в своем ответе тип ошибки \sstr{badCSR},
+а в поле \sstr{detail} подробностей проблемы конкретные причины отклонения 
+запроса. После отказа сервер должен оставить заявку в состоянии \sstr{ready}, 
+чтобы клиент мог отправить на адрес финализации уточненный запрос на выпуск 
+сертификата.
+
+Запрос финализации заявки приведет к ошибке, если заявка не находится в 
+состоянии \sstr{ready}. В таких случаях сервер должен вернуть код статуса 
+403 (запрещено) с типом ошибки \sstr{orderNotReady}. Затем клиент должен 
+отправить запрос POST-as-GET на адрес заявки, чтобы получить ее текущее 
+состояние. Статус заявки укажет клиенту, какие действия следует предпринять 
+(см. ниже). 
+
+Если запрос финализации заявки обработан успешно, то сервер дает 
+\pdfexample{ответ}{acme/order4.txt} с кодом статуса 200 и включает в ответ 
+обновленную заявку. Статус заявки указывает клиенту, какие действия следует 
+предпринять:
+
+\begin{itemize}
+\item
+\sstr{invalid}~--- сертификат не будет выдан. Заявку следует считать 
+отмененной;
+
+\item
+\sstr{pending}~--- сервер считает, что клиент выполнил не все требования. 
+Следует проверить массив \sstr{authorizations} на предмет наличия записей,  
+которые находятся в состоянии ожидания;
+
+\item
+\sstr{ready}~--- сервер подтверждает выполнение требований и ожидает 
+финализации. Следует отправить запрос на адрес финализации;
+ 
+\item
+\sstr{processing}~--- сертификат в процессе выпуска. Cледует отправить запрос 
+POST-as-GET по истечении времени, указанного в заголовке \code{Retry-After}
+ответа, если таковой имеется;
+
+\item
+\sstr{valid}~--- сервер выдал сертификат и указал его URL-адрес в поле
+\sstr{certificate} заявки. Следует загрузить сертификат.
+\end{itemize}
+
+\if0
+\begin{codeblock}
+HTTP/1.1 200 OK
+Replay-Nonce: CGf81JWBsq8QyIgPCi9Q9X
+Link: <https://example.com/acme/directory>;rel="index"
+Location: https://example.com/acme/order/TOlocE8rfgo
+
+{
+  "status": "valid",
+  "expires": "2026-01-20T14:09:07.99Z",
+
+  "notBefore": "2026-01-01T00:00:00Z",
+  "notAfter": "2026-01-08T00:00:00Z",
+
+  "identifiers": [
+    { "type": "dns", "value": "www.example.org" },
+    { "type": "dns", "value": "example.org" }
+  ],
+
+  "authorizations": [
+    "https://example.com/acme/authz/PAniVnsZcis",
+    "https://example.com/acme/authz/r4HqLzrSrpI"
+  ],
+
+  "finalize": "https://example.com/acme/order/TOlocE8rfgo/finalize",
+
+  "certificate": "https://example.com/acme/cert/mAt3xBGaobw"
+}
+\end{codeblock}
+\fi
+
+\subsection{Предварительная авторизация}\label{ACME.Order.Preauthz}
+
+Определенный выше процесс обработки заявки на выпуск сертификата предполагает, 
+что объекты авторизации создаются реактивно, т.~е. в ответ на заявку. 
+Некоторые серверы могут дать клиентам возможность выполнять авторизацию 
+проактивно, т.~е. вне контекста конкретной заявки. Например, клиенту, который 
+разворачивает виртуальные серверы для набора доменных имен, может быть удобно 
+организовать авторизацию до запуска виртуальных серверов, а в момент запуска
+всего лишь получить сертификаты. 
+
+В некоторых случаях УЦ, использующий сервер ACME, может реализовать полностью 
+внешний, не связанный с ACME процесс авторизации клиента. В таких случаях УЦ 
+следует предоставить своему серверу ACME объекты авторизации, которые 
+засчитываются как действительные при обработке любой заявки клиента.. 
+
+Если УЦ разрешает предварительную авторизацию, то сервер ACME может добавить
+в каталог ресурсов поле \sstr{newAuthz} с URL-адресом узла \code{newAuthz},
+через который клиент может запрашивать предварительную авторизацию.
+
+Клиент отправляет на узел \code{newAuthz} \pdfexample{запрос}{acme/order5.txt}, 
+в теле которого содержится подписанный объект JSON с единственным полем:
+
+\begin{itemize}
+\item
+\sstr{identifier} (обязательное, объект)~---
+идентификатор, относительно которого запрашивается авторизация. 
+%
+Идентификатор представляет собой объект JSON с двумя обязательными 
+полями:
+\sstr{type} (строка)~--- тип идентификатора,
+\sstr{value} (строка)~--- собственно идентификатор. 
+\end{itemize}
+
+\if0
+POST /acme/new-authz HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+\begin{codeblock}
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
+    "url": "https://example.com/acme/new-authz"
+  }),
+  "payload": base64url({
+    "identifier": {
+      "type": "dns",
+      "value": "example.org"
+    }
+  }),
+  "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
+}
+\end{codeblock}
+\fi
+
+Идентификатор в запросе предварительной авторизации точно повторяется в объекте 
+авторизации. Поэтому предварительная авторизация не может быть использована при 
+выпуске сертификатов, содержащих подстановочные доменные имена.
+
+Перед обработкой запроса авторизации серверу следует принять решение о 
+допустимости выпуска сертификатов для данного идентификатора. Например, сервер 
+может проверить тип идентификатора или осутствие идентификатора в определенном 
+стоп-листе.
+%
+Если сервер отказывается выпускать сертификаты для данного идентификатора, то 
+он должен возвратить ответ с кодом статуса 403 (запрещено) и подробностями
+проблемы, описывающими причину отказа. 
+
+Если сервер готов продолжить, он создает объект авторизации на основе данных, 
+предоставленных клиентом. Объект должен содержать поля \sstr{identifier}, 
+\sstr{status} и \sstr{challenges}, описанные в~\ref{ACME.Res.Authz}.
+%
+Поле \sstr{status} должно принимать значение \sstr{pending}, только если 
+сервер не имеет дополнительной информации о статусе авторизации клиента.
+
+Сервер выбирает новый URL-адрес авторизации и возвращает ответ с кодом 
+статуса 201 (создано), выбранным адресом в заголовке \code{Location} 
+и объектом авторизации в теле ответа. 
+%
+Затем клиент завершает авторизацию так, как это описано в~\ref{ACME.Authz}.
+
+% skip: https://errata.rfc-editor.org/eid5861/:
+% If a server receives a newAuthz request for an identifier where the 
+% authorization object already exists, whether created by CA provisioning on 
+% the ACME server or by the ACME server handling a previous newAuthz request 
+% from a client, the server returns a 200 (OK) response with the existing 
+% authorization URL in the Location header field and the existing JSON 
+% authorization object in the body.
+
+\subsection{Загрузка сертификата}\label{ACME.Order.Cert}
+ 
+Чтобы загрузить выпущенный сертификат, клиент отправляет 
+\pdfexample{запрос}{acme/order6.txt} POST-as-GET на URL-адрес сертификата.
+
+В теле своего ответа сервер возвращает выпущенный сертификат,
+а также сопровождающую его цепочку сертификатов. Каждый 
+следующий сертификат цепочки является родительским для предыдущего.
+Последний сертификат цепочки, точка доверия, может опускаться.     
+%
+Сертификаты задаются в формате PEM~\cite{RFC7468}.
+%
+PEM-код каждого сертификата начинается с новой строки.
+
+% skip: The server MAY provide one or more link relation header fields
+%  [RFC8288] with relation "alternate".  Each such field SHOULD express
+%  an alternative certificate chain starting with the same end-entity
+%  certificate.  This can be used to express paths to various trust
+%  anchors.  Clients can fetch these alternates and use their own
+%  heuristics to decide which is optimal.
+
+\if0
+\begin{codeblock}
+POST /acme/cert/mAt3xBGaobw HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+Accept: application/pem-certificate-chain
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
+    "url": "https://example.com/acme/cert/mAt3xBGaobw"
+  }),
+  "payload": "",
+  "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
+}
+
+HTTP/1.1 200 OK
+Content-Type: application/pem-certificate-chain
+Link: <https://example.com/acme/directory>;rel="index"
+
+-----BEGIN CERTIFICATE-----
+[End-entity certificate contents]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[Issuer certificate contents]
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+[Other certificate contents]
+-----END CERTIFICATE-----
+\end{codeblock}
+\fi
+
+Выпущенный сертификат является неизменяемым ресурсом. Если клиенту
+нужно обновить сертификат, он должен запустить процесс выпуска заново.
+%
+Поскольку сертификат нельзя изменить после выпуска, сервер 
+может включить кэширование ресурса, добавив заголовки \code{Expires} и 
+\code{Cache-Control} и указав в них момент времени в отдаленном будущем. 
+Время в заголовках не имеет отношения к сроку действия сертификата. 
+
+% skip: The ACME client MAY request other formats by including an Accept
+%  header field [RFC7231] in its request.  For example, the client could
+%  use the media type "application/pkix-cert" [RFC2585] or "application/
+%  pkcs7-mime" [RFC5751] to request the end-entity certificate in DER
+%  format.  Server support for alternate formats is OPTIONAL.  For
+%  formats that can only express a single certificate, the server SHOULD
+%  provide one or more "Link: rel="up"" header fields pointing to an
+%  issuer or issuers so that ACME clients can build a certificate chain
+%  as defined in TLS (see Section 4.4.2 of [RFC8446]).
+

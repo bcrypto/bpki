@@ -1,0 +1,118 @@
+\section{Отзыв сертификата}\label{ACME.Revoke}
+
+Для отзыва сертификата клиент отправляет POST-запрос на узел \code{revokeCert}. 
+Тело запроса представляет собой подписанный объект JSON со следующими полями:
+
+\begin{itemize}
+\item
+\sstr{certificate} (обязательное, строка)~--- 
+сертификат, который необходимо отозвать. Указывается DER-код сертификата,
+повторно закодированный по правилам base64url;
+
+\item
+\sstr{reason} (необязательно, целое)~--- код причины отзыва в соответствии 
+с СТБ~34.101.19 (п. 7.3.1, расширение \code{reasonCode}).
+%
+Если это поле не задано, УЦ, агентом которого является сервер ACME, должен 
+опускать расширение \code{reasonCode} при формировании ответов OCSP и СОС. 
+
+Сервер может запретить клиенту использовать определенные коды причин отзыва.
+Если запрос содержит запрещенный код, то сервер должен отклонить запрос, указав 
+тип ошибки \sstr{badRevocationReason}. В подробностях проблемы следует
+указать, какие коды разрешены. 
+\end{itemize}
+
+Запросы на отзыв отличаются от других запросов ACME тем, что они могут быть 
+подписаны либо \pdfexample{ключом учетной записи}{acme/revoke1.txt}, либо 
+\pdfexample{ключом сертификата}{acme/revoke2.txt}.  
+%
+В первом случае в заголовке объекта JWS открытый ключ описывается через 
+поле \sstr{kid}, во втором~--- через поле \sstr{jwk}.
+
+\if0
+Пример использования пары ключей учетной записи для подписи: 
+
+\begin{codeblock}
+POST /acme/revoke-cert HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/revoke-cert"
+  }),
+  "payload": base64url({
+    "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
+    "reason": 4
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
+}
+\end{codeblock}
+
+Пример использования пары ключей сертификата для подписи:
+
+\begin{codeblock}
+POST /acme/revoke-cert HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "jwk": {...},
+    "nonce": "JHb54aT_KTXBWQOzGYkt9A",
+    "url": "https://example.com/acme/revoke-cert"
+  }),
+  "payload": base64url({
+    "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",
+    "reason": 1
+  }),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
+} 
+\end{codeblock}
+\fi
+
+Перед отзывом сертификата сервер должен убедиться, что личный ключ,
+использованный для подписи запроса на отзыв, авторизован для отзыва. Сервер
+должен принимать в качестве авторизованных, по крайней мере, следующие ключи:
+
+\begin{itemize}
+\item 
+личный ключ учетной записи, по запросу владельца которой выпущен сертификат;
+\item
+личный ключ учетной записи, которая была авторизована относительно всех 
+идентификаторов сертификата;
+\item
+личный ключ, соответствующий открытому ключу сертификата.
+\end{itemize}
+
+Если отзыв выполнен, сервер возвращает \pdfexample{ответ}{acme/revoke3.txt} с 
+кодом статуса 200. Если отзыв не состоялся, сервер возвращает 
+\pdfexample{ошибку}{acme/revoke4.txt}. Например, если сертификат уже был 
+отозван, сервер возвращает ответ с кодом статуса 400 (неверный запрос) и типом 
+\sstr{alreadyRevoked}.
+
+\if0
+\begin{codeblock}
+HTTP/1.1 200 OK
+Replay-Nonce: IXVHDyxIRGcTE0VSblhPzw
+Content-Length: 0
+Link: <https://example.com/acme/directory>;rel="index"
+\begin{codeblock}
+
+\begin{codeblock}
+HTTP/1.1 403 Forbidden
+Replay-Nonce: lXfyFzi6238tfPQRwgfmPU
+Content-Type: application/problem+json
+Content-Language: en
+Link: <https://example.com/acme/directory>;rel="index"
+
+{
+  "type": "urn:ietf:params:acme:error:unauthorized",
+  "detail": "No authorization provided for name example.org"
+}
+\end{codeblock}
+\fi

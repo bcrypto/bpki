@@ -1,0 +1,17 @@
+POST /acme/revoke-cert HTTP/1.1\textLF
+Host: example.com\textLF
+Content-Type: application/jose+json\textLF
+\textLF
+\{\textLF
+\ \ "protected": base64url(\{\textLF
+\ \ \ \ "alg": "BIGNS128",\textLF
+\ \ \ \ "kid": "https://example.com/acme/acct/evOfKhNU60wg",\textLF
+\ \ \ \ "nonce": "JHb54aT_KTXBWQOzGYkt9A",\textLF
+\ \ \ \ "url": "https://example.com/acme/revoke-cert"\textLF
+\ \ \}),\textLF
+\ \ "payload": base64url(\{\textLF
+\ \ \ \ "certificate": "MIIEDTCCAvegAwIBAgIRAP8...",\textLF
+\ \ \ \ "reason": 4\textLF
+\ \ \}),\textLF
+\ \ "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"\textLF
+\}

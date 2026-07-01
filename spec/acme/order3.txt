@@ -1,0 +1,16 @@
+POST /acme/order/TOlocE8rfgo/finalize HTTP/1.1\textLF
+Host: example.com\textLF
+Content-Type: application/jose+json\textLF
+\textLF
+\{\textLF
+\ \ "protected": base64url(\{\textLF
+\ \ \ \ "alg": "BIGNS128",\textLF
+\ \ \ \ "kid": "https://example.com/acme/acct/evOfKhNU60wg",\textLF
+\ \ \ \ "nonce": "MSF2j2nawWHPxxkE3ZJtKQ",\textLF
+\ \ \ \ "url": "https://example.com/acme/order/TOlocE8rfgo/finalize"\textLF
+\ \ \}),\textLF
+\ \ "payload": base64url(\{\textLF
+\ \ \ \ "csr": "MIIBPTCBxAIBADBFMQ...FS6aKdZeGsysoCo4H9P",\textLF
+\ \ \}),\textLF
+\ \ "signature": "uOrUfIIk5RyQ...nw62Ay1cl6AB"\textLF
+\}

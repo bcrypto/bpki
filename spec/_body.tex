@@ -1,4 +1,4 @@
-\def\draftlogo{{\scshape \small СТБ 34.101.78-2019}\xspace}
+\def\draftlogo{{\scshape \small СТБ 34.101.78-202X}\xspace}
 
 \pagestyle{myheadings}
 \input{00Title}
@@ -20,7 +20,12 @@
 \input{10Transport}
 \input{11Cont}
 \input{12Cryptoki}
-\input{91ASN}
-\input{99Biblio}
-\input{99Errata}
 
+\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}
+
+\input{91ASN}
+\input{92Root}
+\input{930ACME}
+\input{94NCES}
+\input{99Biblio}
+\clearpage

@@ -1,0 +1,12 @@
+HTTP/1.1 403 Forbidden\textLF
+Replay-Nonce: T81bdZroZ2ITWSondpTmAw\textLF
+Link: <https://example.com/acme/directory>;rel="index"\textLF
+Link: <https://example.com/acme/terms/2017-6-02>;rel="terms-of-service"\textLF
+Content-Type: application/problem+json\textLF
+Content-Language: en\textLF
+\textLF
+\{\textLF
+\ \ "type": "urn:ietf:params:acme:error:userActionRequired",\textLF
+\ \ "detail": "Terms of service have changed",\textLF
+\ \ "instance": "https://example.com/acme/agreement/?token=W8Ih3PswD-8"\textLF
+\}

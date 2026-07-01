@@ -1,0 +1,242 @@
+\section{Авторизация}\label{ACME.Authz}
+
+В процессе авторизации сервер проверяет, что
+\begin{itemize}
+\item 
+клиент владеет личным ключом учетной записи;
+\item 
+клиент контролирует целевой идентификатор. 
+\end{itemize}
+
+Авторизацию можно повторить, чтобы связать с учетной записью несколько 
+идентификаторов (например, для выпуска сертификата с несколькими 
+идентификаторами в расширении \token{SubjectAltName}{ENTITIES.SAN}) или связать 
+с идентификатором несколько учетных записей (например, для выпуска нескольких 
+сертификатов для одного идентификатора).  
+
+Объекты авторизации создаются сервером в ответ на 
+\pdfexample{запрос}{acme/authz1.txt} на узел \code{newOrder} или 
+\code{newAuthz}, отправленный владельцем учетной записи. URL-адреса 
+объектов отправляются клиенту в ответе на запрос. Объект авторизации неявно 
+связан с ключом учетной записи, который используется для подписи запроса.
+
+При запросе на узел \code{newOrder} клиент получает от сервера заявку на выпуск 
+сертификата и отправляет \pdfexample{запросы}{acme/authz2.txt} POST-as-GET на 
+указанные в заявке URL-адреса, получая в \pdfexample{ответ}{acme/authz3.txt} 
+объекты авторизации. 
+%
+При запросе на узел \code{newAuthz} клиент заранее загружает объекты 
+авторизации.
+
+\if0
+\begin{codeblock}
+POST /acme/authz/PAniVnsZcis HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
+    "url": "https://example.com/acme/authz/PAniVnsZcis"
+  }),
+  "payload": "",
+  "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
+}
+\end{codeblock}
+    
+\begin{codeblock}
+HTTP/1.1 200 OK
+Content-Type: application/json
+Link: <https://example.com/acme/directory>;rel="index"
+
+{
+  "status": "pending",
+  "expires": "2026-01-02T14:09:30Z",
+
+  "identifier": {
+    "type": "dns",
+    "value": "www.example.org"
+  },
+
+  "challenges": [
+    {
+      "type": "http-01",
+      "url": "https://example.com/acme/chall/prV_B7yEyA4",
+      "token": "DGyRejmCefe7v4NfDGDKfA",
+      "status": "pending"
+    },
+    {
+      "type": "dns-01",
+      "url": "https://example.com/acme/chall/Rg5dV14Gh1Q",
+      "token": "DGyRejmCefe7v4NfDGDKfA",
+      "status": "pending"
+    }
+  ]
+}
+\end{codeblock}
+\fi
+
+% use: https://errata.rfc-editor.org/eid8883/
+
+Чтобы завершить авторизацию, подтвердив контроль над идентификатором, клиенту
+необходимо отработать вызов авторизации и сообщить серверу, что он готов к
+проверке отработки.
+
+Клиент сообщает серверу о готовности, отправляя 
+\pdfexample{POST-запрос}{acme/authz4.txt} на URL-адрес вызова авторизации 
+(а не на URL-адрес объекта авторизации). Тело запроса представляет собой объект 
+JWS, в поле \sstr{payload} которого серверу передаются сведения, необходимые 
+для проверки отработки вызова авторизации и обновления статуса объекта 
+авторизации. Для всех типов вызовов авторизации, определяемых в настоящем 
+стандарте, поле \sstr{payload} представляет собой пустой объект JSON 
+(\sstr|{}|).
+
+% use: https://errata.rfc-editor.org/eid5729/
+
+\if0
+Например, если бы клиент ответил на вызов авторизации \sstr{http-01} в примере 
+выше, он бы отправил следующий запрос:  
+
+\begin{codeblock}
+POST /acme/chall/prV_B7yEyA4 HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "Q_s3MWoqT05TrdkM2MTDcw",
+    "url": "https://example.com/acme/chall/prV_B7yEyA4"
+  }),
+  "payload": base64url({}),
+  "signature": "9cbg5JO1Gf5YLjjz...SpkUfcdPai9uVYYQ"
+}
+\end{codeblock}
+\fi
+
+Сервер обновляет объект авторизации, уточняя статус вызова авторизации по 
+результатам его отработки клиентом. 
+%
+% skip: The server MUST ignore any fields in the response object
+%  that are not specified as response fields for this type of challenge.
+%  Note that the challenges in this document do not define any response
+%  fields, but future specifications might define them.  
+%
+При запросе объекта авторизации сервер возвращает ответ c кодом 
+статуса 200 и обновленной информацией о вызове авторизации в поле 
+\sstr{challenges}.
+
+Если ответ клиента некорректен или не дает серверу всю информацию,
+необходимую для проверки отработки вызова, сервер должен возвратить ошибку.  
+При получении ошибки клиенту следует отменить все действия, предпринятые для 
+отработки вызова, например, удалить файлы, размещенные на веб-сервере. 
+
+% info: В настоящем стандарте полезная часть ответа -- пустой объект.
+% В будущем ответ может быть более информативным.
+
+Сервер финализирует авторизацию, если успешно завершена проверка отработки 
+одного из вызовов авторизации или если все проверки завершены с отрицательным 
+результатом.
+%
+% use: https://errata.rfc-editor.org/eid6317/
+%
+Объекту авторизации присваивается статус \sstr{valid} или \sstr{invalid} 
+в зависимости от того, считает ли сервер авторизацию успешной. Если присвоен 
+статус \sstr{valid}, то сервер должен добавить в объект авторизации  
+поле \sstr{expires}. При завершении авторизации сервер может удалять 
+неотработанные вызовы авторизации и может изменять поле \sstr{expires}. 
+Сервер не должен удалять вызовы со статусом \sstr{invalid}. 
+ 
+Обычно процесс проверки отработки вызова занимает некоторое время, поэтому 
+клиенту необходимо запросить объект авторизации, чтобы узнать, завершена 
+ли проверка. 
+%
+Клиент отправляет \pdfexample{запрос}{acme/authz5.txt} POST-as-GET на адрес 
+авторизации, а сервер отвечает текущим объектом авторизации. До тех пор, пока 
+проверка не завершена, в \pdfexample{ответах}{acme/authz6.txt} клиенту сервер 
+должен указывать код статуса~200. Сервер может включать в ответы заголовок 
+\code{Retry-After}, чтобы подсказать клиенту интервал опроса. 
+%
+Если клиент имеет возможность определить, когда сервер проверил обработку 
+(например, по HTTP- или DNS-запросу от сервера), то клиенту не следует 
+запрашивать объект авторизации до момента проверки.
+
+\if0
+\begin{codeblock}
+POST /acme/authz/PAniVnsZcis HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "uQpSjlRb4vQVCjVYAyyUWg",
+    "url": "https://example.com/acme/authz/PAniVnsZcis"
+  }),
+  "payload": "",
+  "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"
+}
+\end{codeblock}
+
+\begin{codeblock}
+HTTP/1.1 200 OK
+Content-Type: application/json
+Link: <https://example.com/acme/directory>;rel="index"
+
+{
+  "status": "valid",
+  "expires": "2028-09-09T14:09:01.13Z",
+
+  "identifier": {
+    "type": "dns",
+    "value": "www.example.org"
+  },
+
+  "challenges": [
+    {
+      "type": "http-01",
+      "url": "https://example.com/acme/chall/prV_B7yEyA4",
+      "status": "valid",
+      "validated": "2024-12-01T12:05:13.72Z",
+      "token": "IlirfxKKXAsHtmzK29Pj8A"
+    }
+  ]
+}
+\end{codeblock}
+\fi
+
+Клиент может отменить авторизацию, отправив 
+\pdfexample{POST-запросы}{acme/authz7.txt} с подписанным фиксированным объектом 
+\code|{"status":"deactivated"}| на URL-адреса объектов авторизации. 
+
+\if0
+\begin{codeblock}
+POST /acme/authz/PAniVnsZcis HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "xWCM9lGbIyCgue8di6ueWQ",
+    "url": "https://example.com/acme/authz/PAniVnsZcis"
+  }),
+  "payload": base64url({
+    "status": "deactivated"
+  }),
+  "signature": "srX9Ji7Le9bjszhu...WTFdtujObzMtZcx4"
+}
+\end{codeblock}
+\fi
+
+Сервер должен проверить, что запрос подписан ключом той учетной записи, 
+которая касается авторизации. Если сервер согласен с деактивацией, 
+то он должен дать ответ с кодом статуса 200 и обновленным объектом авторизации.
+
+После деактивации объект авторизации не может использоваться в качестве 
+основания для выпуска сертификата.

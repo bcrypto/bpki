@@ -5,8 +5,9 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english,russian]{babel}
 
-\usepackage{amsmath,amssymb,amsthm,xspace,ifthen,graphicx}
-\usepackage{ucs,textcase,float}
+\usepackage{amsmath,amssymb,xspace,xifthen,float,multirow}
+\usepackage{graphicx}
+\usepackage{ucs,textcase,array,listings}
 
 \usepackage[
   pdftitle={BPKI: A Public Key Infrastructure Profile},
@@ -17,7 +18,7 @@
   citecolor=black]{hyperref}
 
 \usepackage[usenames,dvipsnames]{color}
-\usepackage{listings}
+\usepackage{pdfcomment,catchfile}
 
 \usepackage{ulem}
 \normalem
@@ -39,7 +40,7 @@
 
 \usepackage{verbatim}
 
-\renewcommand{\baselinestretch}{1.06}
+\renewcommand{\baselinestretch}{1.05}
 \renewcommand{\thefootnote}{}
 \setcounter{tocdepth}{1}
 
@@ -57,6 +58,7 @@
 \addtolength{\topmargin}{-\headheight}
 \addtolength{\topmargin}{-\headsep}
 \parindent        = 0.8cm
+\apptocmd{\thebibliography}{\setlength{\itemsep}{0pt}}{}{}
 
 \begin{document}
 \begin{sloppypar}

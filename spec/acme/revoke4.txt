@@ -1,0 +1,10 @@
+HTTP/1.1 403 Forbidden\textLF
+Replay-Nonce: lXfyFzi6238tfPQRwgfmPU\textLF
+Content-Type: application/problem+json \textLF
+Content-Language: en\textLF
+Link: <https://example.com/acme/directory>;rel="index" \textLF
+\textLF
+\{\textLF
+\ \ "type": "urn:ietf:params:acme:error:unauthorized",\textLF
+\ \ "detail": "No authorization provided for name example.org"\textLF
+\}

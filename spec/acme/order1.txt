@@ -1,0 +1,21 @@
+POST /acme/new-order HTTP/1.1\textLF
+Host: example.com\textLF
+Content-Type: application/jose+json\textLF
+\textLF
+\{\textLF
+\ \ "protected": base64url(\{\textLF
+\ \ \ \ "alg": "BIGNS128",\textLF
+\ \ \ \ "kid": "https://example.com/acme/acct/evOfKhNU60wg",\textLF
+\ \ \ \ "nonce": "5XJ1L3lEkMG7tR6pA00clA",\textLF
+\ \ \ \ "url": "https://example.com/acme/new-order"\textLF
+\ \ \}),\textLF
+\ \ "payload": base64url(\{\textLF
+\ \ \ \ "identifiers": \left[\textLF
+\ \ \ \ \{ "type": "dns", "value": "www.example.org" \},\textLF
+\ \ \ \ \{ "type": "dns", "value": "example.org" \}\textLF
+\ \ \right],\textLF
+\ \ \ \ "notBefore": "2026-01-01T00:04:00+04:00",\textLF
+\ \ \ \ "notAfter": "2026-01-08T00:04:00+04:00"\textLF
+\ \ \}),\textLF
+\ \ "signature": "H6ZXtGjTZyUnPeKn...wEA4TklBdh3e454g"\textLF
+\}

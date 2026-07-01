@@ -6,6 +6,7 @@
 *.thm
 *.toc
 *.dvi
+*.upa
 
 # Graphic files
 *.eps

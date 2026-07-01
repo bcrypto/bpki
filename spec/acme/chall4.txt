@@ -1,0 +1,6 @@
+\{\textLF
+\ \ "type": "dns-01",\textLF
+\ \ "url": "https://example.com/acme/chall/Rg5dV14Gh1Q",\textLF
+\ \ "status": "pending",\textLF
+\ \ "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"\textLF
+\}

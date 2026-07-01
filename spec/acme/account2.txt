@@ -1,0 +1,16 @@
+HTTP/1.1 201 Created\textLF
+Content-Type: application/json\textLF
+Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA\textLF
+Link: <https://example.com/acme/directory>;rel="index"\textLF
+Location: https://example.com/acme/acct/evOfKhNU60wg\textLF
+\textLF
+\{\textLF
+\ \ "status": "valid",\textLF
+\textLF
+\ \ "contact": \left[\textLF
+\ \ "mailto:cert-admin@example.org",\textLF
+\ \ "mailto:admin@example.org"\textLF
+\ \right],\textLF
+\textLF
+\ \ "orders": "https://example.com/acme/acct/evOfKhNU60wg/orders"\textLF
+\}

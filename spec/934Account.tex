@@ -1,0 +1,514 @@
+\section{Управление учетной записью}\label{ACME.Account}
+
+\subsection{Создание учетной записи}\label{ACME.Account.Create}
+
+Клиент создает новую учетную запись, отправляя
+\pdfexample{POST-запрос}{acme/account1.txt} на узел \code{newAccount}. Тело
+запроса представляет собой незавершенный объект учетной записи 
+(см.~\ref{ACME.Res.Account}) с необязательными полями \sstr{contact}, 
+\sstr{termsOfServiceAgreeed}, \sstr{externalAccountBinding} и одним 
+дополнительным полем:
+
+\begin{itemize}
+\item
+\sstr{onlyReturnExisting} (необязательное, логическое значение)~---
+если поле присутствует и в нем указано значение \code{true}, то сервер не 
+должен создавать новую учетную запись. Это позволяет клиенту искать адрес уже 
+существующей учетной записи по ее ключу (см.~\ref{ACME.Account.Find}).
+\end{itemize}
+
+Поля \sstr{contact}, \sstr{termsOfServiceAgreeed} и 
+\sstr{externalAccountBinding} заполняются по правилам, установленным 
+в~\ref{ACME.Res.Account}.
+
+\if0
+\begin{codeblock}
+POST /acme/new-account HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "jwk": {...},
+    "nonce": "6S8IqOGY7eL2lsGoTZYifg",
+    "url": "https://example.com/acme/new-account"
+  }),
+  "payload": base64url({
+    "termsOfServiceAgreed": true,
+    "contact": [
+      "mailto:cert-admin@example.org",
+      "mailto:admin@example.org"
+    ]
+  }),
+  "signature": "RZPOnYoPs1PhjszF...-nh6X1qtOFPB519I"
+}
+\end{codeblock}
+\fi
+
+Сервер должен игнорировать любые значения, указанные в поле \sstr{orders} 
+объекта учетной записи, отправленного клиентом, а также любые другие поля, 
+которые сервер не распознает. 
+%
+Если в будущем появится дополнительное поле, то в его спецификации должно быть
+сказано в возможности формирования поля клиентом.
+%
+Сервер не должен переносить поле \sstr{onlyReturnExisting}, а также любые другие 
+поля, которые он не распознает, в итоговый объект учетной записи. Последнее 
+позволяет клиенту определить, поддерживает ли сервер то или иное дополнительное 
+поле.
+
+Серверу следует проверить, что адреса в поле \sstr{contact} корректны и 
+поддерживаются сервером. Сервер должен проверять адреса схемы \sstr{mailto}. 
+Если клиент указывает адрес такой схемы, то он не должен использовать
+компонент \sstr{hfields} (см.~\cite{RFC6068}) и не должен указывать более 
+одного значения \sstr{addr-spec} в компоненте \sstr{to}. 
+%
+Если сервер обнаруживает нарушение данных правил, то он должен отклонить адрес
+как недействительный. 
+
+Если сервер отклоняет контактный адрес из-за использования неподдерживаемой  
+схемы, то он должен возвратить ошибку типа \sstr{unsupportedContact} с 
+подробностями проблемы и указанием типов контактных URL, которые сервер считает 
+приемлемыми. Если сервер отклоняет контактный адрес из-за использования 
+поддерживаемой схемы, но недопустимого значения, он должен возвратить ошибку 
+типа \sstr{invalidContact}.  
+
+Если сервер требует от клиента согласия с условиями использования сервиса ACME, 
+он должен указать URL-адрес, по которому можно ознакомиться с этими условиями, 
+в подполе \sstr{termsOfService} поля \sstr{meta} каталога ресурсов 
+(см.~\ref{ACME.Res.Dir}). Сервер должен отклонять запросы на узел 
+\code{newAccount}, в которых поле \sstr{termsOfServiceAgreed} либо отсутствует,
+либо не принимает значения \code{true}. 
+%
+Клиенту не следует автоматически соглашаться с условиями обслуживания.
+Следует предусмотреть интерактивное взаимодействие с клиентом для согласия с 
+условиями.
+
+При успешной обработке запроса на узел \code{newAccount} сервер создает учетную 
+запись и сохраняет открытый ключ, который размещен в поле \sstr{jwk} заголовка 
+объекта JWS запроса. Открытый ключ будет использоваться в дальнейшем при 
+проверке запросов клиента~--- владельца учетной записи. 
+%%
+Сервер возвращает \pdfexample{ответ}{acme/account2.txt} с кодом статуса 201 
+(создан), URL-адресом учетной записи в заголовке \code{Location} и объектом 
+учетной записи в теле.
+%
+URL-адрес учетной записи используется в качестве значения поля \sstr{kid} 
+объекта JWS в последующих запросах для данной учетной записи 
+(см.~\ref{ACME.Transport.JWS}).
+%
+URL-адрес учетной записи используется также в запросах на управление этой 
+учетной записью, как описано ниже. 
+
+\if0
+\begin{codeblock}
+HTTP/1.1 201 Created
+Content-Type: application/json
+Replay-Nonce: D8s4D2mLs8Vn-goWuPQeKA
+Link: <https://example.com/acme/directory>;rel="index"
+Location: https://example.com/acme/acct/evOfKhNU60wg
+
+{
+  "status": "valid",
+  "contact": [
+    "mailto:cert-admin@example.org",
+    "mailto:admin@example.org"
+  ],
+  "orders": "https://example.com/acme/acct/evOfKhNU60wg/orders"
+}
+\end{codeblock}
+\fi
+
+\subsection{Поиск учетной записи по ключу} \label{ACME.Account.Find}
+
+Если запрос на узел \code{newAccount} признается корректным при проверке на 
+открытом ключе, для которого уже зарегистрирована учетная запись, то сервер 
+должен возвратить ответ с кодом статуса 200 и указать URL-адрес учетной
+записи в заголовке \code{Location}. 
+%
+В тело ответа сервер включает объект учетной записи в том виде, в котором он 
+находился до запроса.
+%
+Любые поля, которые клиент указывает в объекте своего запроса, должны быть 
+проигнорированы сервером. Такая логика позволяет клиенту, у которого есть
+ключ учетной записи, но нет соответствующего адреса записи, восстановить адрес.
+
+Если клиент хочет найти URL-адрес существующей учетной записи и не хочет
+создавать новую, если она еще не существует, то ему следует отправить 
+на узел \code{newAccount} запрос, в объекте которого есть 
+поле \sstr{onlyReturnExisting} и оно принимает значение \code{true}.
+%
+Если клиент отправляет такой запрос, а учетная запись не существует, то сервер
+должен возвратить ответ с кодом статуса 400 (неверный запрос) и типом
+\sstr{accountDoesNotExist}.
+
+\subsection{Обновление учетной записи}\label{ACME.Account.Upd}
+
+Для обновления учетной записи клиент отправляет 
+\pdfexample{запрос}{acme/account3.txt} на URL-адрес учетной записи. В теле 
+запроса клиент указывает обновленный объект учетной записи.
+%
+Сервер должен игнорировать любые обновления полей \sstr{orders}, 
+\sstr{termsOfServiceAgreed} (см.~\ref{ACME.Account.ToS} и \sstr{status} 
+(за исключением случаев, предусмотренных в~\ref{ACME.Account.Deact}), 
+а также любых других полей, которые сервер не распознает. 
+
+Если сервер принимает обновление, то он должен возвратить ответ с кодом статуса 
+200 и обновленным объектом учетной записи в теле. 
+
+\if0
+Например, чтобы обновить контактную информацию в указанной выше учетной записи, 
+клиент может отправить следующий запрос:  
+
+\begin{codeblock}
+POST /acme/acct/evOfKhNU60wg HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "ax5RnthDqp_Yf4_HZnFLmA",
+    "url": "https://example.com/acme/acct/evOfKhNU60wg"
+  }),
+  "payload": base64url({
+    "contact": [
+      "mailto:certificates@example.org",
+      "mailto:admin@example.org"
+    ]
+  }),
+  "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"
+}
+\end{codeblock}
+\fi
+
+\subsection{Изменения условий обслуживания}\label{ACME.Account.ToS} 
+
+Клиент подтверждает согласие с условиями обслуживания сервера через
+значение \code{true} в поле \sstr{termsOfServiceAgreed} объекта своей учетной 
+записи. 
+
+Если сервер изменил условия обслуживания с момента первоначального согласия 
+клиента и не желает обрабатывать определенный запрос без явного согласия с 
+новыми условиями, то он должен возвратить \pdfexample{ответ}{acme/account4.txt} 
+с кодом статуса 403 (запрещено) и типом ошибки \sstr{userActionRequired}. Этот 
+ответ должен включать заголовок \code{Link} с веб-отношением 
+\sstr{terms-of-service} и URL-адресом актуальной редакции условий обслуживания.
+
+Подробности проблемы, возвращаемый с ответом, должны также включать поле 
+\sstr{instance} с URL-адресом, на который клиент должен направить 
+человека-пользователя для получения инструкций о том, как согласиться с 
+условиями. 
+
+\if0
+\begin{codeblock}
+HTTP/1.1 403 Forbidden
+Replay-Nonce: T81bdZroZ2ITWSondpTmAw
+Link: <https://example.com/acme/directory>;rel="index"
+Link: <https://example.com/acme/terms/2017-6-02>;rel="terms-of-service"
+Content-Type: application/problem+json
+Content-Language: en
+
+{
+  "type": "urn:ietf:params:acme:error:userActionRequired",
+  "detail": "Terms of service have changed",
+  "instance": "https://example.com/acme/agreement/?token=W8Ih3PswD-8"
+}
+\end{codeblock}
+\fi
+
+\subsection{Привязка к внешней учетной записи}\label{ACME.Account.Binding}
+
+Сервер может требовать, чтобы в объекте учетной записи запроса на узел
+\code{newAccount} присутствовало поле \sstr{externalAccountBinding} 
+или, другими словами, чтобы учетная запись клиента была привязана к внешней 
+учетной записи, например, к базе данных клиентов УЦ.
+
+Для привязки к внешней учетной записи УЦ, управляющий сервером ACME, 
+должен за пределами ACME предоставить клиенту ключ имитозащиты и его 
+идентификатор. Идентификатор ключа должен быть строкой КОИ-7 (ASCII). 
+Ключ имитозащиты должен быть представлен кодом base64url. 
+
+Используя ключ имитозащиты, клиент формирует связывающий объект JWS.
+Этот объект \pdfexample{указывается}{acme/account5.txt} в поле 
+\sstr{externalAccountBinding} родительского объекта JWS. Полезными данными 
+связывающего объекта является ключ учетной записи в том виде, в котором он 
+задается в поле \sstr{jwk} родительского объекта.
+%
+Заголовок связывающего объекта должен быть защищен. Его поля должны заполняться
+следующим образом:
+\begin{itemize}
+\item
+\str{alg}~--- используемый алгоритм имитозащиты.
+Может использоваться алгоритм \algname{hmac-hbelt},
+определенный в СТБ 34.101.47. Этому алгоритму назначается 
+имя \sstr{HMACBELT};
+\item
+\sstr{kid}~--- идентификатор ключа имитозащиты;
+\item
+\sstr{url}~--- повтор одноименного поля родительского JWS.
+\end{itemize}
+Поле \sstr{nonce} должно отсутствовать.
+
+Поле \sstr{signature} связывающего JWS будет содержать имитовставку открытого
+ключа учетной записи, вычисленную на ключе имитозащиты, представленном УЦ.
+
+\if0
+\begin{codeblock}
+POST /acme/new-account HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "jwk": {...},
+    "nonce": "K60BWPrMQG9SDxBDS_xtSw",
+    "url": "https://example.com/acme/new-account"
+  }),
+  "payload": base64url({
+    "contact": [
+      "mailto:cert-admin@example.org",
+      "mailto:admin@example.org"
+    ],
+    "termsOfServiceAgreed": true,
+
+    "externalAccountBinding": {
+      "protected": base64url({
+        "alg": "HMACBELT",
+        "kid": ...,
+        "url": "https://example.com/acme/new-account"
+      }),
+      "payload": base64url({...}),
+      "signature": APqUMnKOoIx0MZ-X7vjTftbHgcKCfvtJ_vVdm_Vlgz0
+    }
+  }),
+  "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
+}
+\end{codeblock}
+\fi
+
+Если сервер требует, чтобы запросы на узел \code{newAccount} содержали поле
+\sstr{externalAccountBinding}, он должен указать значение \code{true}
+в подполе \sstr{externalAccountRequired} поля \sstr{meta} каталога
+ресурсов. Если сервер получает запрос на узел \code{newAccount} без
+\sstr{externalAccountBinding}, то ему следует дать ответ с ошибкой типа
+\sstr{externalAccountRequired}.
+
+Когда сервер получает запрос на узел \sstr{newAccount} с полем 
+\sstr{externalAccountBinding}, он решает, проверять ли привязку учетной записи. 
+Если привязка не проверяется, то сервер не должен включать поле 
+\sstr{externalAccountBinding} в итоговый объект учетной записи (если таковой  
+буде сформирован). 
+
+Для проверки привязки учетной записи сервер должен выполнить следующие действия:
+
+\begin{enumerate}
+\item 
+Проверить, что в поле указан правильно сформированный объект JWS.
+\item
+Проверить, что защищаемые поля объекта JWS соответствует вышеуказанным 
+правилам.  
+\item 
+Определить ключ имитозащиты, который соответствует идентификатору 
+в поле \sstr{kid}.
+\item 
+Проверить корректность имитовставки в поле \sstr{signature}. 
+\item 
+Проверить, что полезные данные объекта JWS повторяют значение поля
+\sstr{jwk} родительского JWS.
+\end{enumerate}
+
+Если все проверки пройдены успешно и сервер создает новую учетную 
+запись, то он может связать эту запись с внешней учетной записью, 
+соответствующей ключу имитозащиты.  
+%
+Возвращаемый сервером объект учетной записи должен включать поле 
+\sstr{externalAccountBinding} с тем же значением, что и в запросе. 
+%
+Если хотя бы одна из проверок не пройдена, сервер 
+должен отклонить запрос \code{newAccount}. 
+
+% todo: сервер или УЦ?
+
+\subsection{Обновление ключа учетной записи}\label{ACME.Account.Rollover}
+
+Клиент может изменить ключи, связанные с учетной записью, обратившись с 
+запросом на узел \code{keyChange}. Тело \pdfexample{запроса}{acme/account6.txt} 
+в этом случае представляет собой подписанные данные в виде объекта JWS.
+%
+Данные подписываются на действующем личном ключе учетной записи. Подписанные 
+данные сами являются объектом JWS (внутренним). Подпись внутреннего объекта JWS 
+вырабатывается на новом личном ключе и при этом подписывается объект JSON
+со следующими полями:
+
+\begin{itemize}
+\item
+\sstr{account} (обязательное, строка)~--- URL-адрес учетной записи. 
+Адрес должен повторять строку в заголовке \code{Location} ответа с узла 
+\code{newAccount} во время создания учетной записи;
+
+\item
+\sstr{oldKey} (обязательное, JWK)~--- действующий открытый ключ, повтор
+поля \sstr{jwk} из заголовка родительского объекта JWS. 
+\end{itemize}
+
+% skip: The signature by the new key covers the account URL and the
+%  old key, signifying a request by the new key holder to take over the
+%  account from the old key holder.  The signature by the old key covers
+%  this request and its signature, and indicates the old key holder's
+%  assent to the rollover request.
+
+Внешний объект JWS должен соответствовать стандартным требованиям,
+заданным в~\ref{ACME.Transport.JWS}. Внутренний объект JWS также должен 
+соответствовать стандартным требованиям со следующими уточнениями:
+
+\begin{itemize}
+\item
+в поле \sstr{jwk} заголовка должен быть указан новый открытый ключ;
+\item
+поле \sstr{url} заголовка должно совпадать с одноименным 
+полем заголовка внешнего JWS;
+\item
+в заголовке должно быть опущено поле \sstr{nonce}. 
+\end{itemize}
+
+% skip: This transaction has signatures from both the old and new keys so
+%  that the server can verify that the holders of the two keys both
+%  agree to the change.  The signatures are nested to preserve the
+%  property that all signatures on POST messages are signed by exactly
+%  one key.  The "inner" JWS effectively represents a request by the
+%  holder of the new key to take over the account form the holder of the
+%  old key.  The "outer" JWS represents the current account holder's
+%  assent to this request.
+
+\if0
+\begin{codeblock}
+POST /acme/key-change HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "S9XaOcxP5McpnTcWPIhYuB",
+    "url": "https://example.com/acme/key-change"
+  }),
+  "payload": base64url({
+    "protected": base64url({
+      "alg": "BIGNS128",
+      "jwk": {...},
+      "url": "https://example.com/acme/key-change"
+    }),
+    "payload": base64url({
+      "account": "https://example.com/acme/acct/evOfKhNU60wg",
+      "oldKey": {...}
+    }),
+    "signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"
+  }),
+  "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"
+}
+\end{codeblock}
+\fi
+
+При получении запроса на узел \code{keyChange} сервер должен выполнить 
+следующие шаги в дополнение к обычной проверке объекта JWS:
+
+\begin{enumerate}
+\item 
+Проверить, соответствует ли запрос учетной записи.
+\item 
+Проверить, что полезные данные объекта JWS запроса представляют собой правильно 
+сформированный объект JWS (внутренний JWS).  
+\item 
+Проверить, что защищенный заголовок внутреннего JWS имеет поле \sstr{jwk}.
+\item
+Проверить, что подпись внутреннего JWS признается корректной при проверке на открытом
+ключе в поле \sstr{jwk} заголовка.  
+\item 
+Проверить, что полезные данные внутреннего JWS представляют собой 
+правильно сформированный объект JSON с полями \sstr{account} и \sstr{oldKey}.
+\item 
+Проверить, что поля \sstr{url} в заголовках внутреннего и внешнего JWS 
+совпадают.
+\item
+Проверить, что поле \sstr{account} в полезных данных внутреннего JWS
+содержит URL-адрес учетной записи, соответствующий старому ключу 
+(т. е. совпадает с полем \sstr{kid} в родительском JWS). 
+\item
+Проверить, что поле \sstr{oldKey} в полезных данных внутреннего JWS
+совпадает с открытым ключом учетной записи.
+\item 
+Проверить, что не существует учетной записи, открытый ключ которой совпадает с  
+ключом в поле \sstr{jwk} заголовка внутреннего JWS.  
+\end{enumerate}
+
+Если все проверки пройдены успешно, то сервер обновляет учетную запись, заменяя 
+старый открытый ключ учетной записи новым открытым ключом, и возвращает  
+ответ с кодом статуса 200. 
+%
+В противном случае сервер отвечает кодом статуса ошибки и подробностями 
+проблемы. 
+%
+Если обнаружена учетная запись, которая связана с новым открытым ключом, 
+серверу следует установить код статуса 409 (конфликт) и указать URL-адрес 
+найденной учетной записи в заголовке \code{Location}.
+
+Изменение открытого ключа учетной записи следует организовать так, чтобы
+оно не оказывало никакого другого влияния на учетную запись. 
+Например, сервер не должен аннулировать отложенные заявки или объекты
+авторизации из-за изменения ключа. 
+
+\subsection{Деактивация учетной записи}\label{ACME.Account.Deact}
+
+Клиент может деактивировать учетную запись, отправив подписанное 
+\pdfexample{обновление}{acme/account7.txt} учетной записи с полем статуса 
+\sstr{deactivated}. Клиент может это сделать, если ключ учетной записи 
+скомпрометирован или выведен из эксплуатации.
+
+Сервер должен проверить, что запрос подписан на ключе учетной записи. 
+Если сервер принимает запрос на деактивацию, он дает ответ с кодом состояния 
+200 и текущим содержимым объекта учетной записи. 
+
+После деактивации учетная запись не может использоваться для выпуска 
+сертификатов, ее ресурсы, например, объекты авторизации и заявки, становятся
+недоступными. 
+%
+Если сервер получает запрос на адрес деактивированной учетной записи, 
+он должен дать ответ об ошибке с кодом статуса 401 (не авторизовано) и типом 
+\sstr{unauthorized}.  
+
+\if0
+\begin{codeblock}
+POST /acme/acct/evOfKhNU60wg HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "ntuJWWSic4WVNSqeUmshgg",
+    "url": "https://example.com/acme/acct/evOfKhNU60wg"
+  }),
+  "payload": base64url({
+    "status": "deactivated"
+  }),
+  "signature": "earzVLd3m5M4xJzR...bVTqn7R08AKOVf3Y"
+}
+\end{codeblock}
+\fi
+
+После деактивации сервер не должен принимать запросы, подписанные на ключе этой 
+учетной записи. Сервер должен отменить все ожидающие операции, авторизованные 
+ключом этой учетной записи, например, заявки на выпуск сертификатов. 
+
+Сервер может предпринять различные действия в ответ на деактивацию учетной
+записи, например, удалить данные, связанные с учетной записью, или
+отправить письмо по контактным адресам учетной записи. Сервер не должен отзывать
+сертификаты, связанные с деактивированной учетной записью.
+%
+Повторная активация деактивированной учетной записи в ACME не предусмотрена. 

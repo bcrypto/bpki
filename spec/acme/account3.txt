@@ -1,0 +1,19 @@
+POST /acme/acct/evOfKhNU60wg HTTP/1.1\textLF
+Host: example.com\textLF
+Content-Type: application/jose+json\textLF
+\textLF
+\{\textLF
+\ \ "protected": base64url(\{\textLF
+\ \ \ \ "alg": "BIGNS128",\textLF
+\ \ \ \ "kid": "https://example.com/acme/acct/evOfKhNU60wg",\textLF
+\ \ \ \ "nonce": "ax5RnthDqp_Yf4_HZnFLmA",\textLF
+\ \ \ \ "url": "https://example.com/acme/acct/evOfKhNU60wg"\textLF
+\ \ \}),\textLF
+\ \ "payload": base64url(\{\textLF
+\ \ \ \ "contact": \left[\textLF
+\ \ \ \ \ \ "mailto:certificates@example.org",\textLF
+\ \ \ \ \ \ "mailto:admin@example.org"\textLF
+\ \ \ \right]\textLF
+\ \ \}),\textLF
+\ \ "signature": "hDXzvcj8T6fbFbmn...rDzXzzvzpRy64N0o"\textLF
+\}

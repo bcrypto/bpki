@@ -1,20 +1,53 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{_defs}
 
-%%%%%%%%%%%  Format %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%% Format %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\doubt}[1]{{\textcolor{red}{#1}}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+\newcommand{\doubt}[1]{{\textcolor{black}{#1}}}
 \newcommand{\addendum}[1]{\textcolor{blue}{#1}}
 \newcommand{\old}[1]{}
 
-\newcommand\algname[1]{\texttt{#1}\xspace}
-\newcommand\str[1]{\texttt{\textsf{'}#1\textsf{'}}\xspace}
-\newcommand\hex[1]{\ensuremath\texttt{#1}_{16}}
+\newcommand\hexz[1]{\ensuremath\texttt{#1}}
+\newcommand\hex[1]{\hexz{#1}_{16}}
 
 \newcounter{defctr}
 \setcounter{defctr}{0}
 \renewcommand{\thedefctr}
 {\addtocounter{defctr}{1}\thechapter.\arabic{defctr}}
+
+\providecommand{\rand}[1][]{\ifthenelse{\isempty{#1}{}}
+  {\stackrel{\$}\leftarrow}{\stackrel{#1}\leftarrow}}
+
+\DeclareRobustCommand*{\code}{%
+  \ifmmode
+    \let\SavedBGroup\bgroup
+    \def\bgroup{%
+      \let\bgroup\SavedBGroup
+      \hbox\bgroup
+    }%
+  \fi
+  \lstinline
+}
+
+\newcommand\str[1]{\texttt{\textsf{'}#1\textsf{'}}\xspace}
+\newcommand\sstr[1]{\texttt{"#1"}\xspace}
+
+\lstnewenvironment{codeblock}[1][]{\lstset{#1}}{}
+\newcommand{\algname}[1]{\texttt{#1}}
+
+\newcommand{\token}[2][]{\ifthenelse{\isempty{#1}{}}
+  {\code{#2}}{\hyperref[#1]{\code{#2}}}}
+
+%%%%%%%%%%% Local Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand\itob[1]{\ensuremath{\langle#1\rangle}}
+\newcommand\Itob[1]{\ensuremath{\left\langle#1\right\rangle}}
+\providecommand{\Lo}{\mathop{\texttt{Lo}}\nolimits}
+\providecommand{\GG}{\mathbb{G}}
 
 %%%%%%%%%%%%%%%%%%%%%%%% Renew %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -95,9 +128,10 @@
   }
   \def\@currentlabel{#1}
   \def\apprefix{#1.}
-  \def\thechapter{#1}
+  \setcounter{chapter}{0}
   \setcounter{table}{0}
   \setcounter{section}{0}
+  \def\thechapter{#1}
   \addcontentsline{toc}{chapter}{Приложение~#1~(#2)~#3}
 }
 {
@@ -105,7 +139,7 @@
   \def\thechapter{\@arabic\c@chapter}
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%% Local %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% Locale %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \addto\captionsrussian{%
   \renewcommand{\figurename}{Рисунок}
@@ -114,6 +148,51 @@
   \renewcommand{\bibname}{Библиография}
 }
 
-%%
-%%
+\hyphenation{СКЗИ}
+\hyphenation{ГосСУОК}
+
+%%%%%%%%%%%%%%%%%%%%%%%% Listings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\lstset{
+  language=C++,                   % choose the language of the code
+  xleftmargin=\parindent,         % leftmargin
+  basicstyle=\tt,                 % the size of the fonts that are used for the code
+  keywordstyle=\color{black},
+  numbers=none,                   % where to put the line-numbers
+  numberstyle=\normalsize,        % the size of the fonts that are used for the line-numbers
+  stepnumber=2,                   % the step between two line-numbers. If it's 1 each line 
+                                  % will be numbered
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=none,                     % adds a frame around the code
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=true,        % sets if automatic breaks should only happen at whitespace
+  escapeinside={/<}{>/}           % if you want to add a comment within your code
+}
+
+\lstset{
+morekeywords={
+  opaque,
+  uint8,
+  uint16,
+  uint32,
+  uint24,
+  uint64,
+  select,
+}}
+
+%%%%%%%%%%% PDF Comments %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\pdfexample}[2]{%
+  % #1 = Hover text, #2 = Path to external file
+  \CatchFileDef{\filecontent}{#2}{\endlinechar=-1} % strip trailing newlines
+  \pdftooltip{#1}{\filecontent}
+  \pdfcomment[icon={Comment},opacity={0.4},subject={Пример}]{\filecontent}
+}
+
 \endinput

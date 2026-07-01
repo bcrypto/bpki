@@ -2,47 +2,47 @@
 
 \subsection{Формат запроса}
 
-Формат запроса OCSP задается типом \texttt{OCSPRequest}, который определен 
-в СТБ 34.101.26. В самом контейнере~\texttt{OCSPRequest} и во вложенных в него
+Формат запроса OCSP задается типом \code{OCSPRequest}, который определен 
+в СТБ~34.101.26. В самом контейнере~\code{OCSPRequest} и во вложенных в него
 контейнерах должны быть опущены все опциональные компоненты и компоненты 
 со значениями по умолчанию.
 
-Основная информационная часть~\texttt{OCSPRequest}~--- это список ссылок
+Основная информационная часть~\code{OCSPRequest}~--- это список ссылок
 на сертификаты, статус которых необходимо проверить.
 %
-Каждая ссылка описывается контейнером~\texttt{Request}, который заполняется
-по правилам СТБ 34.101.26. Идентификатор алгоритма хэширования, указанный в
-компоненте~\texttt{hashAlgorithm} контейнера~\texttt{Request}, должен
+Каждая ссылка описывается контейнером~\code{Request}, который заполняется
+по правилам СТБ~34.101.26. Идентификатор алгоритма хэширования, указанный в
+компоненте~\code{hashAlgorithm} контейнера~\code{Request}, должен
 выбираться из перечня, заданного в~\ref{CRYPTO.Hash}.
 
 \subsection{Формат ответа}
 
-Формат ответа OCSP задается типом~\texttt{OCSPResponse}, который определен 
-в СТБ 34.101.26. 
+Формат ответа OCSP задается типом~\code{OCSPResponse}, который определен 
+в СТБ~34.101.26. 
 
-Контейнер~\texttt{OCSPResponse} заполняется по правилам СТБ 34.101.26
+Контейнер~\code{OCSPResponse} заполняется по правилам СТБ~34.101.26
 со следующими уточнениями.
 
 \begin{enumerate}
 \item
-В компоненте~\texttt{signatureAlgorithm} 
-контейнера~\texttt{BasicOCSPResponse}, вложенного   
-в~\texttt{OCSPResponse}, должен быть указан алгоритм ЭЦП
+В компоненте~\code{signatureAlgorithm} 
+контейнера~\code{BasicOCSPResponse}, вложенного   
+в~\code{OCSPResponse}, должен быть указан алгоритм ЭЦП
 из перечня, заданного в~\ref{CRYPTO.Sign}.
 
 \item
-Компонент~\texttt{certs} контейнера~\texttt{BasicOCSPResponse}
+Компонент~\code{certs} контейнера~\code{BasicOCSPResponse}
 должен быть опущен либо в этом компоненте должен быть указан 
 единственный сертификат~--- сертификат отправителя OCSP-ответа.
 
 \item
-В контейнере~\texttt{ResponseData}, вложенном 
-в~\texttt{BasicOCSPResponse}, должны быть опущены 
-компонент~\texttt{version} со значением по умолчанию
-и опциональный компонент~\texttt{responseExtensions}.
+В контейнере~\code{ResponseData}, вложенном 
+в~\code{BasicOCSPResponse}, должны быть опущены 
+компонент~\code{version} со значением по умолчанию
+и опциональный компонент~\code{responseExtensions}.
 
 \item
-В каждом из контейнеров~\texttt{SingleResponse}, вложенных
-в~\texttt{ResponseData}, должен быть опущен 
-компонент~\texttt{singleExtensions}.
+В каждом из контейнеров~\code{SingleResponse}, вложенных
+в~\code{ResponseData}, должен быть опущен 
+компонент~\code{singleExtensions}.
 \end{enumerate}

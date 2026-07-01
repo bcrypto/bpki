@@ -1,4 +1,4 @@
-Bpki-module-v1 {iso(1) member-body(2) by(112) 0 2 0 34 101 78 module(1) ver1(1)}
+Bpki-module-v2 {iso(1) member-body(2) by(112) 0 2 0 34 101 78 module(1) ver2(2)}
 DEFINITIONS ::=
 BEGIN
   IMPORTS
@@ -34,13 +34,15 @@ BEGIN
   bpki-role-dvcs OBJECT IDENTIFIER ::= {bpki-role 32}
   bpki-role-ids OBJECT IDENTIFIER ::= {bpki-role 33}
   bpki-role-tls OBJECT IDENTIFIER ::= {bpki-role 50}
-  -- natural persons
+  -- natural person
   bpki-role-np OBJECT IDENTIFIER ::= {bpki-role 60}
-  -- foreign natural persons
+  -- foreign natural person
   bpki-role-fnp OBJECT IDENTIFIER ::= {bpki-role 61}
-  -- legal representatives
+  -- legal representative
   bpki-role-lr OBJECT IDENTIFIER ::= {bpki-role 62}
-  -- autonomous cryptographic devices
+  -- legal entity
+  bpki-role-le OBJECT IDENTIFIER ::= {bpki-role 63}
+  -- autonomous cryptographic device
   bpki-role-acd OBJECT IDENTIFIER ::= {bpki-role 70}
 
   -- extended key usage

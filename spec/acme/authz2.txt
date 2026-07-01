@@ -1,0 +1,28 @@
+HTTP/1.1 200 OK\textLF
+Content-Type: application/json\textLF
+Link: <https://example.com/acme/directory>;rel="index"\textLF
+\textLF
+\{\textLF
+\ \ "status": "pending",\textLF
+\ \ "expires": "2026-01-02T14:09:30Z",\textLF
+\textLF
+\ \ "identifier": \{\textLF
+\ \ \ \ "type": "dns",\textLF
+\ \ \ \ "value": "www.example.org"\textLF
+\ \ \},\textLF
+\textLF
+\ \ "challenges": \left[\textLF
+\ \ \ \ \{\textLF
+\ \ \ \ \ \ "type": "http-01",\textLF
+\ \ \ \ \ \ "url": "https://example.com/acme/chall/prV_B7yEyA4", \textLF
+\ \ \ \ \ \ "token": "DGyRejmCefe7v4NfDGDKfA",\textLF
+\ \ \ \ \ \ "status": "pending"\textLF
+\ \ \ \ \},\textLF
+\ \ \ \ \{\textLF
+\ \ \ \ \ \ "type": "dns-01",\textLF
+\ \ \ \ \ \ "url": "https://example.com/acme/chall/Rg5dV14Gh1Q",\textLF
+\ \ \ \ \ \ "token": "DGyRejmCefe7v4NfDGDKfA",\textLF
+\ \ \ \ \ \ "status": "pending"\textLF
+\ \ \ \ \}\textLF
+\ \ \right]\textLF
+\}

@@ -1,0 +1,304 @@
+\section{Вызовы авторизации}\label{ACME.Chall}
+
+\subsection{Обработка вызова}\label{ACME.Chall.Proc}
+
+С помощью вызовов авторизации сервер проверяет, что владелец учетной записи
+контролирует определенный идентификатор. Сервер размещает вызовы в массиве
+\sstr{challenges} объекта авторизации. Клиент отрабатывает вызов, демонстрируя
+контроль над идентификатором. После отработки клиент дает ответ авторизации,
+обращаясь по адресу, указанному в вызове. Сервер проверяет результаты
+отработки.
+
+В зависимости от типа идентификатора данная схема уточняется в трех аспектах:
+содержание вызова авторизации, содержание отработки и содержание ответа
+авторизации.
+
+Вызов авторизации представляет собой объект JSON со следующими основными
+полями:
+\begin{itemize}
+\item
+\sstr{type} (обязательное, строка)~--- тип вызова;
+
+\item
+\sstr{url} (обязательное, строка)~--- URL-адрес, на который следует отправить 
+ответ;
+
+\item
+\sstr{status} (обязательное, строка)~--- статус вызова. Возможные значения: 
+\sstr{pending}, \sstr{processing}, \sstr{valid} и \sstr{invalid} 
+(см.~\ref{ACME.Res.Status});
+
+\item
+\sstr{validated} (необязательное, строка)~--- момент времени, когда сервер 
+проверил отработку вызова. Время задается в формате, указанном 
+в~\cite{RFC3339}. Поле \sstr{validated} является обязательным, если поле 
+\sstr{status} принимает значение \sstr{valid};
+
+\item
+\sstr{error} (необязательное, объект)~--- описание ошибки, которая возникла во
+время проверки отработки вызова, если таковая имелась. Описание представляет 
+собой объект с подробностями проблемы (см.~\ref{ACME.Transport.Err}). Несколько 
+ошибок могут быть описаны с помощью подзадач. Вызов с ошибкой должен иметь 
+статус \sstr{processing} или \sstr{invalid}.
+\end{itemize}
+
+% use: https://errata.rfc-editor.org/eid5732/
+
+Дополнительные поля определяются типом вызова. 
+
+Если сервер устанавливает в поле \sstr{status} значение \sstr{invalid}, 
+то ему следует также включить в вызов поле \sstr{error}. 
+
+Различные вызовы позволяют серверу проверять различные аспекты контроля над 
+идентификатором. Выбор тех или иных вызовов определяется политикой сервера.
+%
+% skip: In some challenges, like HTTP
+%  and DNS, the client directly proves its ability to do certain things
+%  related to the identifier.  
+
+В настоящем стандарте определяются правила проверки контроля над доменными
+именами. Правила контроля над другими идентификаторами могут определяться 
+в расширениях ACME. При расширении перечня типов идентификаторов должны 
+определяться соответствующие вызовы авторизации.
+
+% skip: 8.2 Retrying Challenges
+% skip: https://errata.rfc-editor.org/eid7826/
+
+\subsection{Вызов авторизации типа HTTP}\label{ACME.Chall.HTTP}
+
+При использовании вызова типа HTTP клиент доказывает контроль над доменным 
+именем, размещая ресурс HTTP по определенному сетевому адресу в области 
+действия доменного имени.
+
+% skip: As a domain may resolve to multiple IPv4 and IPv6 addresses, the
+%   server will connect to at least one of the hosts found in the DNS A
+%   and AAAA records, at its discretion.  Because many web servers
+%   allocate a default HTTPS virtual host to a particular low-privilege
+%   tenant user in a subtle and non-intuitive manner, the challenge must
+%   be completed over HTTP, not HTTPS.
+
+% skip: https://errata.rfc-editor.org/eid6843/
+
+В поле \sstr{type} вызова авторизации типа HTTP указывается значение
+\sstr{http-01}. \pdfexample{Вызов}{acme/chall1.txt} содержит следующее 
+дополнительное поле:
+
+\begin{itemize}
+\item
+\sstr{token} (обязательное, строка)~--- случайное значение, однозначно 
+идентифицирующее вызов. Это значение должно содержать не менее 128 бит 
+энтропии. Оно не должно содержать символы за пределами алфавита base64url и не 
+должно включать завершающие символы \str{=}.
+%
+В частности, строка должна состоять из не менее чем 22 символов.
+%
+% note: log2(64^22) = 132
+% use: https://errata.rfc-editor.org/eid6950/
+\end{itemize}
+
+\if0
+\begin{codeblock}
+{
+  "type": "http-01",
+  "url": "https://example.com/acme/chall/prV_B7yEyA4",
+  "status": "pending",
+  "token": "LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0"
+}
+\end{codeblock}
+\fi
+
+Клиент \pdfexample{отрабатывает}{acme/chall2.txt} вызов, вычисляя ключ 
+авторизации и размещая его по адресу, который получается конкатенацией 
+фиксированного префикса \sstr{/.well-known/acme-challenge} со значением поля 
+\sstr{token} вызова.
+
+Ключ авторизации представляет собой строку, которая получается добавлением к 
+значению поля \sstr{token} сначала точки (\str{.}), а затем отпечатка 
+(thumbprint) открытого ключа учетной записи. Отпечаток вычисляется по 
+правилам~\cite{RFC7638} c помощью алгоритма хэширования \code{belt-hash}. 
+Хэш-значение представляется строкой в алфавите base64url.
+
+% change: SHA-256 -> belt-hash
+%
+% skip: As noted in [RFC7518] any prepended zero octets in the fields 
+% of a JWK object MUST be stripped before doing the computation.
+%
+% skip: https://errata.rfc-editor.org/eid7565/
+
+\if0
+\begin{codeblock}
+GET /.well-known/acme-challenge/LoqXcYV8...jxAjEuX0 HTTP/1.1
+Host: example.org
+
+HTTP/1.1 200 OK
+Content-Type: application/octet-stream
+
+LoqXcYV8...jxAjEuX0.9jg46WB3...fm21mqTI
+\end{codeblock}
+\fi 
+
+\pdfexample{Ответ}{acme/chall3.txt} авторизации клиента~--- это пустой объект 
+JSON (\sstr|{}|), который сигнализирует, что вызов может быть проверен 
+сервером.
+
+\if0
+\begin{codeblock}
+POST /acme/chall/prV_B7yEyA4 HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "UQI1PoRi5OuXzxuX7V7wL0",
+    "url": "https://example.com/acme/chall/prV_B7yEyA4"
+  }),
+  "payload": base64url({}),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
+}
+\end{codeblock}
+\fi
+
+Получив ответ, сервер независимо вычисляет ключ авторизации и 
+проверяет контроль клиента над доменным именем следующим образом:
+
+\begin{enumerate}
+\item     
+Сформировать URL-адрес, заполняя шаблон 
+\sstr{http://\{domain\}/.well-known/acme-challenge/\{token\}}.
+В поле \sstr{domain} сервер указывает проверяемое доменное имя,
+в поле \sstr{token}~--- токен из вызова авторизации.
+\item
+Убедиться, что полученный URL-адрес имеет правильный формат.
+\item
+Разыменовать URL-адрес с помощью GET-запроса. Этот запрос должен быть 
+отправлен на TCP-порт 80 HTTP-сервера.
+% 
+% skip: https://errata.rfc-editor.org/eid8381/
+%   The HTTP client must not resolve and/or must ignore any HTTPS DNS RRs 
+%   [RFC 9460].
+%
+\item
+Убедиться, что тело ответа представляет собой ключ авторизации корректного 
+формата. Сервер должен игнорировать пробелы в конце тела. 
+\item
+Убедиться, что предоставленные HTTP-сервером ключ авторизации соответствуют 
+ключу, который вычислил сервер.
+\end{enumerate}
+
+% skip: The server SHOULD follow redirects when dereferencing the URL.
+%  Clients might use redirects, for example, so that the response can be
+%  provided by a centralized certificate management server.  See
+%  Section 10.2 for security considerations related to redirects.
+
+Отработка вызова завершена успешно тогда и только тогда, когда успешно 
+завершены все перечисленные проверки.
+
+Клиент должен отменить выделение ресурса для отработки вызова сразу после 
+завершения отработки, т.~е. после того, как поле \sstr{status} вызова примет 
+значение \sstr{valid} или \sstr{invalid}.
+
+% skip: Note that because the token appears both in the request sent by the
+%   ACME server and in the key authorization in the response, it is
+%   possible to build clients that copy the token from request to
+%   response.  Clients should avoid this behavior because it can lead to
+%   cross-site scripting vulnerabilities; instead, clients should be
+%   explicitly configured on a per-challenge basis.  A client that does
+%   copy tokens from requests to responses MUST validate that the token
+%   in the request matches the token syntax above (e.g., that it includes
+%   only characters from the base64url alphabet).
+
+\subsection{Вызов авторизации типа DNS}\label{ACME.Chall.DNS}
+
+При использовании вызова типа DNS клиент доказывает контроль над доменным 
+именем, размещая TXT-запись DNS на сервере, доступном по этому имени.
+
+В поле \sstr{type} вызова авторизации типа HTTP указывается значение
+\sstr{dns-01}. \pdfexample{Вызов}{acme/chall4.txt} содержит следующее 
+дополнительное поле:
+
+\begin{itemize}
+\item
+\sstr{token} (обязательное, строка)~--- случайное значение, 
+однозначно идентифицирующее вызов. Это значение должно 
+содержать не менее 128 бит энтропии. Оно не должно содержать символы за 
+пределами алфавита base64url и не должно включать завершающие символы \str{=}. 
+\end{itemize}
+
+\if0
+\begin{codeblock}
+{
+  "type": "dns-01",
+  "url": "https://example.com/acme/chall/Rg5dV14Gh1Q",
+  "status": "pending",
+  "token": "evaGxfADs6pSRb2LAv9IZf17Dt3juxGJ-PCt92wr-oA"
+}
+\end{codeblock}
+\fi
+
+Клиент отрабатывает вызов, вычисляя ключ авторизации, хэшируя
+его и размещая хэш-значение в TXT-записи DNS.
+TXT-запись касается домена \code|_acme-challenge.{domain}|, где 
+\code{domain}~--- проверяемое доменное имя.
+
+Ключ авторизации строится так же, как в вызове типа HTTP.
+Хэширование выполняется с помощью алгоритма \code{belt-hash}.
+Хэш-значение кодируется по правилам base64url.
+
+Пример записи DNS:
+
+\begin{codeblock}
+_acme-challenge.www.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
+\end{codeblock}
+
+\if0
+Например, если проверяемое доменное имя — "www.example.org", то 
+клиент предоставит следующую DNS-запись : 
+
+\begin{codeblock}
+_acme-challenge.www.example.org. 300 IN TXT "gfj9Xq...Rg85nM"
+\end{codeblock}
+\fi
+
+\pdfexample{Ответ}{acme/chall5.txt} авторизации клиента~--- это пустой объект 
+JSON (\sstr|{}|), который сигнализирует, что вызов может быть проверен 
+сервером.
+
+\if0
+\begin{codeblock}
+POST /acme/chall/Rg5dV14Gh1Q HTTP/1.1
+Host: example.com
+Content-Type: application/jose+json
+
+{
+  "protected": base64url({
+    "alg": "BIGNS128",
+    "kid": "https://example.com/acme/acct/evOfKhNU60wg",
+    "nonce": "SS2sSl1PtspvFZ08kNtzKd",
+    "url": "https://example.com/acme/chall/Rg5dV14Gh1Q"
+  }),
+  "payload": base64url({}),
+  "signature": "Q1bURgJoEslbD1c5...3pYdSMLio57mQNN4"
+}
+\end{codeblock} 
+\fi
+
+Получив ответ, сервер независимо вычисляет ключ авторизации и 
+проверяет контроль клиента над доменным именем следующим образом:
+
+\begin{enumerate}
+\item
+Вычислить хэш-значение ключа авторизации.
+\item
+Запросить TXT-записи DNS для проверяемого доменного имени.
+\item
+Убедиться, что в одной из TXT-записей указано вычисленное хэш-значение. 
+\end{enumerate}
+
+Отработка вызова завершена успешно тогда и только тогда, когда успешно 
+завершены все перечисленные проверки.
+
+Клиенту следует отменить выделение ресурса для отработки вызова сразу после 
+завершения отработки, т.~е. после того, как поле \sstr{status} вызова примет 
+значение \sstr{valid} или \sstr{invalid}.

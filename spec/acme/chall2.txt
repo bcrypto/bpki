@@ -1,0 +1,8 @@
+GET /.well-known/acme-challenge/LoqXcYV8...jxAjEuX0 HTTP/1.1\textLF
+Host: example.org\textLF
+\textLF
+HTTP/1.1 200 OK\textLF
+Content-Type: application/octet-stream\textLF
+\textLF
+LoqXcYV8...jxAjEuX0.9jg46WB3...fm21mqTI\textLF
+\}

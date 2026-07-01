@@ -1,0 +1,25 @@
+POST /acme/key-change HTTP/1.1\textLF
+Host: example.com\textLF
+Content-Type: application/jose+json\textLF
+\textLF
+\{\textLF
+\ \ "protected": base64url(\{\textLF
+\ \ \ \ "alg": "BIGNS128",\textLF
+\ \ \ \ "kid": "https://example.com/acme/acct/evOfKhNU60wg",\textLF
+\ \ \ \ "nonce": "S9XaOcxP5McpnTcWPIhYuB",\textLF
+\ \ \ \ "url": "https://example.com/acme/key-change"\textLF
+\ \ \}),\textLF
+\ \ "payload": base64url(\{\textLF
+\ \ \ \ "protected": base64url(\{\textLF
+\ \ \ \ \ \ "alg": "BIGNS128",\textLF
+\ \ \ \ \ \ "jwk": \{...\},\textLF
+\ \ \ \ \ \ "url": "https://example.com/acme/key-change"\textLF
+\ \ \ \ \}),\textLF
+\ \ \ \ "payload": base64url(\{\textLF
+\ \ \ \ \ \"account": "https://example.com/acme/acct/evOfKhNU60wg",\textLF
+\ \ \ \ \ \"oldKey": \{...\}\textLF
+\ \ \ \ \}),\textLF
+\ \ \ \"signature": "Xe8B94RD30Azj2ea...8BmZIRtcSKPSd8gU"\textLF
+\ \ \}),\textLF
+\ \ "signature": "5TWiqIYQfIDfALQv...x9C2mg8JGPxl5bI4"\textLF
+\}

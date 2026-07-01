@@ -1,0 +1,23 @@
+HTTP/1.1 200 OK\textLF
+Content-Type: application/json\textLF
+Link: <https://example.com/acme/directory>;rel="index"\textLF
+\textLF
+\{\textLF
+\ \ "status": "valid",\textLF
+\ \ "expires": "2028-09-09T14:09:01.13Z",\textLF
+\textLF
+\ \ "identifier": \{\textLF
+\ \ \ \ "type": "dns",\textLF
+\ \ \ \ "value": "www.example.org"\textLF
+\ \ \},\textLF
+\textLF
+\ \ "challenges": \left[\textLF
+\ \ \ \ \{\textLF
+\ \ \ \ \ \ "type": "http-01",\textLF
+\ \ \ \ \ \ "url": "https://example.com/acme/chall/prV_B7yEyA4",\textLF
+\ \ \ \ \ \ "status": "valid",\textLF
+\ \ \ \ \ \ "validated": "2024-12-01T12:05:13.72Z",\textLF
+\ \ \ \ \ \ "token": "IlirfxKKXAsHtmzK29Pj8A"\textLF
+\ \ \ \ \}\textLF
+\ \ \right]\textLF
+\}

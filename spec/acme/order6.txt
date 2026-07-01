@@ -1,0 +1,30 @@
+POST /acme/cert/mAt3xBGaobw HTTP/1.1\textLF
+Host: example.com\textLF
+Content-Type: application/jose+json\textLF
+Accept: application/pem-certificate-chain\textLF
+\textLF
+\{\textLF
+\ \ "protected": base64url(\{\textLF
+\ \ \ \ "alg": "BIGNS128",\textLF
+\ \ \ \ "kid": "https://example.com/acme/acct/evOfKhNU60wg",\textLF
+\ \ \ \ "nonce": "uQpSjlRb4vQVCjVYAyyUWg",\textLF
+\ \ \ \ "url": "https://example.com/acme/cert/mAt3xBGaobw"\textLF
+\ \ \}),\textLF
+\ \ "payload": "",\textLF
+\ \ "signature": "nuSDISbWG8mMgE7H...QyVUL68yzf3Zawps"\textLF
+\}\textLF
+\textLF
+HTTP/1.1 200 OK\textLF
+Content-Type: application/pem-certificate-chain\textLF
+Link: <https://example.com/acme/directory>;rel="index"\textLF
+\textLF
+-----BEGIN CERTIFICATE-----\textLF
+\left[End-entity certificate contents\right]\textLF
+-----END CERTIFICATE-----\textLF
+-----BEGIN CERTIFICATE----- \textLF
+\left[Issuer certificate contents\right]\textLF
+-----END CERTIFICATE-----\textLF
+-----BEGIN CERTIFICATE-----\textLF
+\left[Other certificate contents\right]\textLF
+-----END CERTIFICATE-----\textLF
+\}

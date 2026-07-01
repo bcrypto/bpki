@@ -1,0 +1,6 @@
+\{\textLF
+\ \ "type": "http-01",\textLF
+\ \ "url": "https://example.com/acme/chall/prV_B7yEyA4",\textLF
+\ \ "status": "pending",\textLF
+\ \ "token": "LoqXcYV8q5ONbJQxbmR7SCTNo3tiAXDfowyjxAjEuX0"\textLF
+\}
