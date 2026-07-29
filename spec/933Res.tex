@@ -5,7 +5,7 @@
 Сервер ACME управляет следующими ресурсами: 
 \begin{itemize}
 \item
-учетные записи (см.~\ref{ACME.Res.Account})
+учетные записи (см.~\ref{ACME.Res.Account});
 \item
 заявки на выпуск сертификата (см.~\ref{ACME.Res.Order});
 \item
@@ -241,7 +241,7 @@ Content-Type: application/json
 схемы URL-адресов определены в~\ref{ACME.Account};
 
 \item
-\sstr{termsOfServiceAgreeed} (необязательное, логическое значение)~--- 
+\sstr{termsOfServiceAgreed} (необязательное, логическое значение)~--- 
 согласие клиента с условиями обслуживания. Клиент подтверждает согласие, 
 включая поле со значением \code{true} в запрос на узел \code{newAccount}.
 Клиент не может обновлять поле;
@@ -368,7 +368,7 @@ Link: <https://example.com/acme/orders/rzGoeA?cursor=2>;rel="next"
 выполненные авторизации. 
 %
 Строка массива \sstr{authorizations} представляет собой URL-адрес, 
-по которому размещены адреса объекты авторизации. Объекты можно получить 
+по которому размещены адреса объектов авторизации. Объекты можно получить 
 с помощью запроса POST-as-GET.
 
 \begin{note*}
@@ -522,7 +522,7 @@ Link: <https://example.com/acme/orders/rzGoeA?cursor=2>;rel="next"
 Подстановочное доменное имя (со звездочкой) не должно включаться в объект 
 авторизации. Даже если заявка на узел \code{newOrder} содержит подстановочное
 доменное имя, сервер должен включить в объект авторизации полное доменное имя,
-сопроводив его значением \code{true} в поле \sstr{widlcard}.
+сопроводив его значением \code{true} в поле \sstr{wildcard}.
 
 \if0
 \begin{codeblock}
@@ -597,7 +597,7 @@ Link: <https://example.com/acme/orders/rzGoeA?cursor=2>;rel="next"
 Если на любом из этапов возникает ошибка, заявка переходит в состояние 
 \sstr{invalid}. В это состояние заявка переходит также тогда, когда 
 истек срок ее действия и состояние одного из объектов авторизации изменилось
-с \sstr{valid} на \sstr{expires}, \sstr{revoked} или \sstr{deactivated}).
+с \sstr{valid} на \sstr{expired}, \sstr{revoked} или \sstr{deactivated}).
 
 Учетные записи создаются в состоянии \sstr{valid}, поскольку после 
 успешного запроса на узел \code{newAccount} никаких дополнительных действий для 
