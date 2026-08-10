@@ -40,3 +40,6 @@ client_test/answers/*
 bdist.*/
 lib.*/
 temp.*/
+
+# Specific files
+.DS_Store

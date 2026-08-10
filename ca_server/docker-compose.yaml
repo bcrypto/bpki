@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   bpki_ca:
     build: .
@@ -8,9 +6,8 @@ services:
     volumes:
       - ./out:/out
       - .:/app
-#      - ./db/data:/var/lib/postgresql
-#      - ./db/logs:/var/log/postgresql
-#      - ./db/config:/etc/postgresql
+      - pgdata:/var/lib/postgresql/data
+
     ports:
       - "0.0.0.0:5000:80"
       - "54321:5432"
@@ -21,3 +18,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+volumes:
+  pgdata:

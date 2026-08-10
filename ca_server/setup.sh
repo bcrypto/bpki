@@ -1,8 +1,7 @@
 #!/bin/bash
 echo "== Initializing PKI ======================================================"
 
-export OPENSSL_CONF=openssl.cfg
-mkdir out 2> /dev/null
+mkdir -p out
 
 ldt=$(date +"%Y%m%d%H%M%S%z")
 
@@ -26,11 +25,11 @@ openssl pkeyparam -in out/params256 -noout -check
 echo "== 2 Creating CA0 (Root CA) =============================================="
 
 cd out
-mkdir ca0 2> /dev/null
+mkdir -p ca0
 cd ca0
 cat /dev/null > index.txt
 echo 01 > crlnumber
-mkdir certs 2> /dev/null
+mkdir -p certs
 cd ..
 cd ..
 
@@ -69,11 +68,11 @@ echo ok
 echo "== 3 Creating CA1 (Republican CA) ========================================"
 
 cd out
-mkdir ca1 2> /dev/null
+mkdir -p ca1
 cd ca1
 cat /dev/null > index.txt
 echo 01 > crlnumber
-mkdir certs 2> /dev/null
+mkdir -p certs
 cd ..
 cd ..
 
@@ -106,11 +105,11 @@ echo ok
 echo "== 4 Creating CA2 (Subordinate CA) ======================================="
 
 cd out
-mkdir ca2 2> /dev/null
+mkdir -p ca2
 cd ca2
 cat /dev/null > index.txt
 echo 01 > crlnumber
-mkdir certs 2> /dev/null
+mkdir -p certs
 cd ..
 cd ..
 

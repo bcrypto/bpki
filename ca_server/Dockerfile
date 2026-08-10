@@ -1,57 +1,37 @@
 FROM btls/btls256
 
-COPY requirements.txt ./
 RUN apt-get update
 RUN apt-get update \
     && apt-get install -y \
         gcc \
-        postgresql \
+        postgresql-16 \
         libpq-dev \
         libssl-dev \
         python3-dev \
+        python3-venv \
         python3-pip \
     && apt-get autoremove --purge \
     && rm -rf /var/lib/apt/lists/*
-RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/12/main/pg_hba.conf
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/16/main/pg_hba.conf
 
-# And add ``listen_addresses`` to ``/etc/postgresql/12/main/postgresql.conf``
-RUN echo "listen_addresses='*'" >> /etc/postgresql/12/main/postgresql.conf
+# And add ``listen_addresses`` to ``/etc/postgresql/16/main/postgresql.conf``
+RUN echo "listen_addresses='*'" >> /etc/postgresql/16/main/postgresql.conf
 
-#RUN service postgresql start
+COPY app/user/up.sql /init.sql
 
-# Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3`` package when it was ``apt-get installed``
-#USER postgres
-COPY app/user/up.sql ./up.sql
+COPY requirements.txt ./
+COPY bpkipy/ /bpkipy/
+    # Создание виртуального окружения Python
 
-# TODO: create user postgres
-
-# Create a PostgreSQL role named ``docker`` with ``docker`` as the password and
-# then create a database `docker` owned by the ``docker`` role.
-# Note: here we use ``&&\`` to run commands one after the other - the ``\``
-#       allows the RUN command to span multiple lines.
-RUN service postgresql start &&\
-    runuser -u postgres -- psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" &&\
-    runuser -u postgres -- createdb -O docker docker
-
-# RUN service postgresql restart &&\
-#    psql "dbname='docker' user='docker' password='docker'" -f up.sql
-
-COPY bpkipy/ ./bpkipy/
-RUN python3 -m pip install ./bpkipy
-
-# Add VOLUMEs to allow backup of config, logs and databases
-# RUN mkdir /etc/postgresql && mkdir /var/log/postgresql && mkdir /var/lib/postgresql
-VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
+RUN python3 -m venv /opt/venv \
+    && /opt/venv/bin/pip install --upgrade pip setuptools \
+    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt \
+    && /opt/venv/bin/pip install /bpkipy
 
 # Expose the PostgreSQL port
 EXPOSE 5432
-
-#CMD    /etc/init.d/postgresql start
-
-#COPY ./app /app
 
 WORKDIR /app
