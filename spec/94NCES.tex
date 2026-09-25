@@ -4,17 +4,18 @@
 
 \section{Роли}\label{NCES.Roles}
 
-В ГосСУОК прямо поддерживаются роли КУЦ, ИУЦ, ЦАС, ЮП, ЮЛ и КА.
+В ГосСУОК прямо поддерживаются роли КУЦ, ИУЦ, ЦАС, ФЛ, ЮП и ЮЛ.
 %
 Роль ИУЦ проходит под именем <<РУЦ>>~--- республиканский удостоверяющий центр.
-Это имя используется в настоящем приложении. Роль ЮП проходит как <<юридическое 
-лицо>>, роль ЮЛ~--- под именем <<ОРГ>>.
+Это имя используется в настоящем приложении. Роль ЮП проходит как 
+<<представитель юридического лица>>, роль ЮЛ~--- под именем <<ОРГ>>.
 
-Сертификаты OCSP-сервера, СШВ, СЗД, СИ и TLS-сервера дифференцируются только на 
+Сертификаты OCSP-сервера, СШВ, СЗД, TLS-сервера и КА дифференцируются только на 
 уровне расширений, считаясь сертификатами единой роли TC (технологические 
 сертификаты).
 %
-Наоборот, от ФЛ отделяется роль ФЛ2~--- физическое лицо как владелец ID-карты.
+% skip: Наоборот, от ФЛ отделяется роль ФЛ2~--- физическое лицо как владелец 
+% ID-карты. 
 
 \section{Идентификационные данные}\label{NCES.Name}
 
@@ -42,7 +43,8 @@
 %
 \texttt{идентификаторГИС} & 
 Идентификатор государственной информационной системы &
-Строится по учетному номеру системы\\
+Соответствует номеру, присвоенному в Государственном регистре
+информационных систем\\
 \hline                                      
 \end{tabular}
 \end{table}
@@ -53,32 +55,36 @@
 
 В таблице~\ref{Table.NCES.AttrRole} показано, какие атрибуты включаются в
 идентификационные данные стороны ГосСУОК в зависимости от ее роли.
+%
+Знак <<$+$>> в таблице означает обязательное присутствие атрибута,
+знак <<$\pm$>>~--- необязательное присутствие,
+пропуск~--- обязательное отсутствие.
 
 \begin{table}[hbt]
 \caption{Идентификационные атрибуты ролей ГосСУОК}
 \label{Table.NCES.AttrRole}
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
 \hline 
-Атрибут                       &КУЦ&РУЦ&ЦАС& ТС& ФЛ&ФЛ2& ЮП& ЮЛ& КА\\
+Атрибут                       &КУЦ&РУЦ&ЦАС& ТС&  ФЛ & ЮП&ОРГ\\
 \hline 
 \hline 
-\code{commonName}             & + & + & + & + & + & + &   & + & + \\
-\code{surname}                &   &   &   &   & + & + & + &   &   \\
-\code{name}                   &   &   &   &   & + & + & + &   &   \\
-\code{givenName}              &   &   &   &   & + & + &   &   &   \\
-\code{serialNumber}           &   &   &   &   & + & + & + &   &   \\
-\code{countryName}            & + & + & + & + & + & + & + & + & + \\
-\code{localityName}           &   & + & + & + &   &   & + & + & + \\
-\code{stateOrProvinceName}    &   &   &   & + &   &   & + & + & + \\
-\code{streetAddress}          &   &   &   & + &   &   & + & + & + \\
-\code{organizationName}       & + & + & + & + &   &   & + & + & + \\
-\code{organizationalUnitName} &   &   &   &   &   &   & + & + &   \\
-\code{title}                  &   &   &   &   &   &   & + &   &   \\
-\code{organizationIdentifier} &   & + & + &   &   &   &   & + &   \\
-\hline                                                
-\code{description}            &   &   &   & + &   &   &   &   & + \\
-\code{emailAddress}           &   &   &   & + & + &   & + &   & + \\
-\texttt{идентификаторГИС}     &   &   &   & + &   &   &   &   &   \\
+\code{commonName}             & + & + & + & + &  +  & + & + \\
+\code{surname}                &   &   &   &   &  +  & + &   \\
+\code{name}                   &   &   &   &   &  +  & + &   \\
+\code{givenName}              &   &   &   &   &  +  &   &   \\
+\code{serialNumber}           &   &   &   &   &  +  & + &   \\
+\code{countryName}            & + & + & + & + &  +  & + & + \\
+\code{localityName}           &   & + & + & + &     & + & + \\
+\code{stateOrProvinceName}    &   &   &   & + &     & + & + \\
+\code{streetAddress}          &   &   &   & + &     & + & + \\
+\code{organizationName}       & + & + & + & + &     &   & + \\
+\code{organizationalUnitName} &   &   &   &   &     &   & + \\
+\code{title}                  &   &   &   &   &     & + &   \\
+\code{organizationIdentifier} &   & + & + &   &     &   & + \\
+\hline                                                  
+\code{description}            &   &   &   & + &     &   &   \\
+\code{emailAddress}           &   &   &   & + &$\pm$& + &   \\
+\texttt{идентификаторГИС}     &   &   &   & + &     &   &   \\
 \hline
 \end{tabular}
 \end{table}
@@ -91,12 +97,12 @@
 таблице~\ref{Table.ENTITIES.Attrs}, ослабляются.
 
 \item 
-В сертификатах ФЛ и ФЛ2 в атрибуте \code{commonName} указываются имя и 
+В сертификате ФЛ в атрибуте \code{commonName} указываются имя и 
 фамилия физического лица на английском языке вместе с идентификационным  
 (личным) номером из удостоверения лица.
 
 \item 
-В сертификатах ФЛ и ФЛ2 в атрибутах \code{surname}, \code{name} и 
+В сертификате ФЛ в атрибутах \code{surname}, \code{name} и 
 \code{givenName} указываются соответственно фамилия, имя и отчество 
 физического лица на русском языке.
 
@@ -106,7 +112,7 @@
 имя и отчество представителя организации на русском языке.
 	
 \item 
-В сертификате ЮЛ в атрибуте \code{organizationName}
+В сертификате ОРГ в атрибуте \code{organizationName}
 указывается полное название организации, а в атрибуте \code{commonName}~---
 сокращенное название.
 \end{enumerate}
@@ -145,28 +151,30 @@
 
 В таблице~\ref{Table.NCES.Exts} показано, какие расширения включаются в
 сертификат стороны ГосСУОК в зависимости от ее роли.
+%
+Знаки <<$+$>>, <<$\pm$>> и пропуски трактуются так же, как ранее.
 
 \begin{table}[thb]
 \caption{Расширения сертификатов ролей ГосСУОК}
 \label{Table.NCES.Exts}
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
 \hline 
-Расширение                    &КУЦ&РУЦ&ЦАС& ТС& ФЛ&ФЛ2& ЮП& ЮЛ& КА\\
+Расширение                    &КУЦ&РУЦ&ЦАС& ТС& ФЛ  & ЮП  &  ОРГ\\
 \hline                                    
 \hline                                    
-\code{SubjectAltName}         &   & + & + & + & + & + &   & + & + \\
-\code{SubjectKeyIdentifier}   & + & + & + & + & + & + & + & + & + \\
-\code{AuthorityKeyIdentifier} & + & + & + & + & + & + & + & + & + \\
-\code{CertificatePolicies}    &   & + & + & + & + & + & + & + & + \\
-\code{BasicConstraints}       & + & + & + & + & + & + &   & + & + \\
-\code{CRLDistributionPoints}  &   & + & + & + & + & + & + & + & + \\
-\code{AuthorityInfoAccess}    &   &   & + & + & + & + & + & + & + \\
-\code{KeyUsage}               & + & + & + & + & + & + & + & + & + \\
-\code{ExtKeyUsage}            &   &   &   & + & + & + & + & + & + \\
+\code{SubjectAltName}         &   & + & + & + &  +  &     &  +  \\
+\code{SubjectKeyIdentifier}   & + & + & + & + &  +  &  +  &  +  \\
+\code{AuthorityKeyIdentifier} & + & + & + & + &  +  &  +  &  +  \\
+\code{CertificatePolicies}    &   & + & + & + &$\pm$&  +  &  +  \\
+\code{BasicConstraints}       & + & + & + & + &  +  &  +  &  +  \\
+\code{CRLDistributionPoints}  &   & + & + & + &$\pm$&$\pm$&$\pm$\\
+\code{AuthorityInfoAccess}    &   &   & + & + &  +  &  +  &  +  \\
+\code{KeyUsage}               & + & + & + & + &  +  &  +  &  +  \\
+\code{ExtKeyUsage}            &   &   &   & + &  +  &  +  &  +  \\
 \hline                                    
-\code{SOAIdentifier}          &   &   & + &   &   &   &   &   &   \\
-\texttt{УНП}                  &   &   &   &   &   &   & + & + &   \\
-\texttt{УНПФ}                 &   &   &   &   &   &   &   & + &   \\
+\code{SOAIdentifier}          &   &   & + &   &     &     &     \\
+\texttt{УНП}                  &   &   &   &   &     &  +  &  +  \\
+\texttt{УНПФ}                 &   &   &   &   &     &     &  +  \\
 \hline
 \end{tabular}
 \end{table}
@@ -174,21 +182,30 @@
 Имеются следующие особенности формирования расширений.
 \begin{enumerate}
 \item 
-В сертификатах ФЛ и ФЛ2 в расширении \code{SubjectAltName}
-указывается фамилия, имя и отчество субъекта на белорусском языке.
+В сертификате ФЛ в расширении \code{SubjectAltName}
+указываются фамилия, имя и отчество субъекта на белорусском языке.
+Фамилия задается в атрибуте \algname{surname-by} с идентификатором 
+\code|{1 2 112 1 2 1 1 1 4 2}|, 
+имя~--- в атрибуте \algname{givenName-by} с идентификатором 
+\code|{1 2 112 1 2 1 1 1 4 3}|,
+отчество~--- в атрибуте \algname{secondName-by} с идентификатором 
+\code|{1 2 112 1 2 1 1 1 4 4}|. 
 \item 
 В расширении \code{CertificatePolicies} указываются идентификаторы политик 
-ГосСУОК.
+ГосСУОК.                                                                   	
 \item 
-В сертификатах OCSP-сервера, СШВ и СЗД в расширении \code{KeyUsage} дополнительно 
-указываются флаги \code{keyEncipherment} и \code{keyAgreement}.
+В сертификатах СШВ и СИ в расширении \code{KeyUsage} не указывается флаг 
+\code{nonRepudiation}, а в сертификате КА, наоборот, указывается.
+\item 
+В сертификатах OCSP-сервера, СШВ и СЗД в расширении 
+\code{KeyUsage} дополнительно указывается флаг \code{keyEncipherment}.
+\item 
+В сертификатах OCSP-сервера, СШВ, СЗД, СИ и TLS-сервера в расширении 
+\code{KeyUsage} дополнительно указывается флаг \code{keyAgreement}.
 \item 
 В сертификате ЮП в расширении \code{KeyUsage} не указывается
 флаг \code{nonRepudiation}, но дополнительно указываются флаги 
 \code{keyAgreement} и \code{dataEncipherment}.
-\item 
-В сертификате КА в расширении \code{KeyUsage} дополнительно 
-указываются флаги \code{nonRepudiation} и \code{keyAgreement}.
 \end{enumerate}
 
 \mbox{}
