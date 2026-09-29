@@ -90,7 +90,7 @@ UTF-8~\cite{UTF8}.
 Контейнер \code{PrivateKeyInfo} кодируется по базовым правилам (BER).
 В результате кодирования получается строка октетов~$X\in\{0,1\}^{8*}$.
 \item
-Строка~$X$ защищается с помощью алгоритма \code{belt-keywrap}, 
+Строка~$X$ защищается с помощью алгоритма \code{belt-kwp}, 
 определенного в СТБ~34.101.31 (шифрование и имитозащита ключа, 
 установка защиты). На вход алгоритма подаются~$X$, нулевой 
 заголовок~$I\in\{0,1\}^{128}$ и~ключ~$K$, построенный на шаге~2. Алгоритм 
@@ -120,7 +120,7 @@ UTF-8~\cite{UTF8}.
 Определяется строка октетов~$Y\in\{0,1\}^{8*}$, размещенная в 
 компоненте~\code{encryptedData} контейнера. 
 \item
-Строка~$Y$ обрабатывается алгоритмом~$\code{belt-keywrap}^{-1}$, определенным в
+Строка~$Y$ обрабатывается алгоритмом~$\code{belt-kwp}^{-1}$, определенным в
 СТБ~34.101.31 (шифрование и имитозащита ключа, снятие защиты). На вход алгоритма
 подаются~$Y$, нулевой заголовок~$I\in\{0,1\}^{128}$ и ключ~$K$, построенный на
 шаге~$2$.
@@ -211,14 +211,14 @@ EncryptionAlgorithmIdentifier ::= SEQUENCE {
 
 PBES2-params ::= SEQUENCE {
   keyDerivationFunc PBKDF2AlgorithmIdentifier,
-  encryptionScheme  BeltKeywrapAlgorithmIdentifier }
+  encryptionScheme  BeltKwpAlgorithmIdentifier }
 
 PBKDF2AlgorithmIdentifier ::= SEQUENCE {
   algorithm   OBJECT IDENTIFIER(id-PBKDF2),
   params      PBKDF2-params }
 
-BeltKeywrapAlgorithmIdentifier ::= SEQUENCE {
-  algorithm   OBJECT IDENTIFIER(belt-keywrap256),
+BeltKwpAlgorithmIdentifier ::= SEQUENCE {
+  algorithm   OBJECT IDENTIFIER(belt-kwp256),
   params      NULL }
 
 PBKDF2-params ::= SEQUENCE {
@@ -238,8 +238,8 @@ PrfAlgorithmIdentifier ::= SEQUENCE {
 Задействованные в описаниях идентификаторы~\code{id-PBES2} и~\code{id-PBKDF2}
 определены в~\cite{PKCS5}, а также в СТБ~34.101.45 (приложение Е).
 %
-Идентификатор~\code{belt-keywrap256} алгоритмов 
-$\code{belt-keywrap}$, $\code{belt-keywrap}^{-1}$
+Идентификатор~\code{belt-kwp256} алгоритмов 
+$\code{belt-kwp}$, $\code{belt-kwp}^{-1}$
 с $256$-битовыми ключами определен в СТБ~34.101.31 (приложение Б).
 
 Тип~\code{PBKDF2-params} описывает параметры PBKDF2.

@@ -9,7 +9,7 @@ BEGIN
     PKIStatusInfo
       FROM PKIXTSP {iso(1) identified-organization(3) dod(6) internet(1)
         security(5) mechanisms(5) pkix(7) id-mod(0) id-mod-tsp(13)}
-    belt-keywrap256
+    belt-kwp256
       FROM Belt-module-v1 {iso(1) member-body(2) by(112) 0 2 0 34 101 31 1 1}
     bign-pubkey, bign-curve256v1, bign-curve384v1, bign-curve512v1
       FROM Bign-module-v2 {iso(1) member-body(2) by(112) 0 2 0 34 101 45 1 2}
@@ -110,14 +110,14 @@ BEGIN
   
   PBES2-params ::= SEQUENCE {
     keyDerivationFunc PBKDF2AlgorithmIdentifier,
-    encryptionScheme  BeltKeywrapAlgorithmIdentifier }
+    encryptionScheme  BeltKwpAlgorithmIdentifier }
   
   PBKDF2AlgorithmIdentifier ::= SEQUENCE {
     algorithm   OBJECT IDENTIFIER(id-PBKDF2),
     params      PBKDF2-params }
   
-  BeltKeywrapAlgorithmIdentifier ::= SEQUENCE {
-    algorithm   OBJECT IDENTIFIER(belt-keywrap256),
+  BeltKwpAlgorithmIdentifier ::= SEQUENCE {
+    algorithm   OBJECT IDENTIFIER(belt-kwp256),
     params      NULL }
 
   PBKDF2-params ::= SEQUENCE {
