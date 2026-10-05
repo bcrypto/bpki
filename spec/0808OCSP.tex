@@ -25,24 +25,28 @@
 
 \begin{enumerate}
 \item
-В компоненте~\code{signatureAlgorithm} 
-контейнера~\code{BasicOCSPResponse}, вложенного   
-в~\code{OCSPResponse}, должен быть указан алгоритм ЭЦП
-из перечня, заданного в~\ref{CRYPTO.Sign}.
+В компоненте~\code{signatureAlgorithm} контейнера~\code{BasicOCSPResponse},
+вложенного   в~\code{OCSPResponse}, должен быть указан алгоритм ЭЦП из перечня,
+заданного в~\ref{CRYPTO.Sign}.
 
 \item
-Компонент~\code{certs} контейнера~\code{BasicOCSPResponse}
-должен быть опущен либо в этом компоненте должен быть указан 
-единственный сертификат~--- сертификат отправителя OCSP-ответа.
+Компонент~\code{certs} контейнера~\code{BasicOCSPResponse} должен быть опущен
+либо в этом компоненте должен быть указан единственный сертификат~--- сертификат
+отправителя OCSP-ответа.
 
 \item
-В контейнере~\code{ResponseData}, вложенном 
-в~\code{BasicOCSPResponse}, должны быть опущены 
-компонент~\code{version} со значением по умолчанию
-и опциональный компонент~\code{responseExtensions}.
+В контейнере~\code{ResponseData}, вложенном в~\code{BasicOCSPResponse}, должны
+быть опущены компонент~\code{version} со значением по умолчанию и опциональный
+компонент~\code{responseExtensions}.
 
 \item
-В каждом из контейнеров~\code{SingleResponse}, вложенных
-в~\code{ResponseData}, должен быть опущен 
-компонент~\code{singleExtensions}.
+В каждом из контейнеров~\code{SingleResponse}, вложенных в~\code{ResponseData},
+должен быть опущен компонент~\code{singleExtensions}.
+
+\item
+В контейнере~\code{RevokedInfo}, вложенном в~\code{SingleResponse},
+компонент \code{revocationReason} должен быть опущен, если сертификат отозван 
+по неопределенной причине. Если компонент \code{revocationReason} присутствует, 
+то код причины отзыва в нем должен принимать значения, перечисленные 
+в~\ref{FMT.CRL}.
 \end{enumerate}
