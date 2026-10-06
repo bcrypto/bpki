@@ -65,6 +65,13 @@
 таблице означает отсутствие атрибута, <<$+$>>~--- обязательное включение,
 <<$\pm$>>~--- включение при наличии.
 
+Пометка <<eab>> в колонке TLS-сервера означает, что при выпуске сертификата 
+в рамках технологии ACME атрибут включается в контейнер \code{Name}, только 
+если выполнена привязка к внешней учетной записи (external account 
+binding, см. \ref{ACME.Account.Binding}).
+
+\newcommand\eab[1]{\ensuremath{{}_{\phantom{\text{eab}}}{#1}^{\text{eab}}}}
+
 \begin{table}[H]
 \caption{Идентификационные атрибуты ролей}
 \label{Table.ENTITIES.AttrRole}
@@ -86,27 +93,27 @@ TLS- &
 \code|surname| & 
   &   &   & + & + &   &\\
 \code|name|* & 
-  & + & + &   & + & + &  +\\
+  & + & $\eab{+}$ &   & + & + &  +\\
 \code|givenName| & 
   &   &   & + & + & &\\
 \code|serialNumber| & 
   &   &   & + & + & + & +\\
 \code|countryName|* & 
-+ & + & + & + & + & + & +\\
++ & + & $\eab{+}$ & + & + & + & +\\
 \code|localityName|* & 
-  & + & + &   & + & + & +\\
+  & + & $\eab{+}$ &   & + & + & +\\
 \code|stateOrProvinceName|* & 
-  & $\pm$ & $\pm$ &   & $\pm$ & $\pm$ & $\pm$\\
+  & $\pm$ & $\eab{\pm}$ &   & $\pm$ & $\pm$ & $\pm$\\
 \code|streetAddress|* &
   &   &  &   & + & + & \\
 \code|organizationName|* & 
-  & + & + &   & + & + & +\\
+  & + & $\eab{+}$ &   & + & + & +\\
 \code|organizationalUnitName|* & 
-  & $\pm$ & $\pm$ &   & $\pm$ & $\pm$ & $\pm$\\
+  & $\pm$ & $\eab{\pm}$ &   & $\pm$ & $\pm$ & $\pm$\\
 \code|title| & 
   &   &   &   & + & & \\
 \code|organizationIdentifier|* & 
-  & + & + &   & + & + & +\\
+  & + & $\eab{+}$ &   & + & + & +\\
 \hline                                     
 \end{tabular}
 \end{table}
