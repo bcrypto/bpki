@@ -8,7 +8,7 @@
 %
 Роль ИУЦ проходит под именем <<РУЦ>>~--- республиканский удостоверяющий центр.
 Это имя используется в настоящем приложении. Роль ЮП проходит как 
-<<представитель юридического лица>>, роль ЮЛ~--- под именем <<ОРГ>>.
+представитель юридического лица, роль ЮЛ~--- под именем <<ОРГ>>.
 
 Сертификаты OCSP-сервера, СШВ, СЗД, TLS-сервера и КА дифференцируются только на 
 уровне расширений, считаясь сертификатами единой роли TC (технологические 
@@ -65,26 +65,26 @@
 \label{Table.NCES.AttrRole}
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
 \hline 
-Атрибут                       &КУЦ&РУЦ&ЦАС& ТС&  ФЛ & ЮП&ОРГ\\
-\hline 
-\hline 
-\code{commonName}             & + & + & + & + &  +  & + & + \\
-\code{surname}                &   &   &   &   &  +  & + &   \\
-\code{name}                   &   &   &   &   &  +  & + &   \\
-\code{givenName}              &   &   &   &   &  +  &   &   \\
-\code{serialNumber}           &   &   &   &   &  +  & + &   \\
-\code{countryName}            & + & + & + & + &  +  & + & + \\
-\code{localityName}           &   & + & + & + &     & + & + \\
-\code{stateOrProvinceName}    &   &   &   & + &     & + & + \\
-\code{streetAddress}          &   &   &   & + &     & + & + \\
-\code{organizationName}       & + & + & + & + &     &   & + \\
-\code{organizationalUnitName} &   &   &   &   &     &   & + \\
-\code{title}                  &   &   &   &   &     & + &   \\
-\code{organizationIdentifier} &   & + & + &   &     &   & + \\
-\hline                                                  
-\code{description}            &   &   &   & + &     &   &   \\
-\code{emailAddress}           &   &   &   & + &$\pm$& + &   \\
-\texttt{идентификаторГИС}     &   &   &   & + &     &   &   \\
+Атрибут                       &КУЦ&РУЦ&ЦАС&  ФЛ & ЮП&ОРГ& ТС\\
+\hline                                                      
+\hline                                                      
+\code{commonName}             & + & + & + &  +  & + & + & + \\
+\code{surname}                &   &   &   &  +  & + &   &   \\
+\code{name}                   &   &   &   &  +  & + &   &   \\
+\code{givenName}              &   &   &   &  +  &   &   &   \\
+\code{serialNumber}           &   &   &   &  +  & + &   &   \\
+\code{countryName}            & + & + & + &  +  & + & + & + \\
+\code{localityName}           &   & + & + &     & + & + & + \\
+\code{stateOrProvinceName}    &   &   &   &     & + & + & + \\
+\code{streetAddress}          &   &   &   &     & + & + & + \\
+\code{organizationName}       & + & + & + &     &   & + & + \\
+\code{organizationalUnitName} &   &   &   &     &   & + &   \\
+\code{title}                  &   &   &   &     & + &   &   \\
+\code{organizationIdentifier} &   & + & + &     &   & + &   \\
+\hline                                                      
+\code{description}            &   &   &   &     &   &   & + \\
+\code{emailAddress}           &   &   &   &$\pm$& + &   & + \\
+\texttt{идентификаторГИС}     &   &   &   &     &   &   & + \\
 \hline
 \end{tabular}
 \end{table}
@@ -159,22 +159,22 @@
 \label{Table.NCES.Exts}
 \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
 \hline 
-Расширение                    &КУЦ&РУЦ&ЦАС& ТС& ФЛ  & ЮП  &  ОРГ\\
-\hline                                    
-\hline                                    
-\code{SubjectAltName}         &   & + & + & + &  +  &     &  +  \\
-\code{SubjectKeyIdentifier}   & + & + & + & + &  +  &  +  &  +  \\
-\code{AuthorityKeyIdentifier} & + & + & + & + &  +  &  +  &  +  \\
-\code{CertificatePolicies}    &   & + & + & + &$\pm$&  +  &  +  \\
-\code{BasicConstraints}       & + & + & + & + &  +  &  +  &  +  \\
-\code{CRLDistributionPoints}  &   & + & + & + &$\pm$&$\pm$&$\pm$\\
-\code{AuthorityInfoAccess}    &   &   & + & + &  +  &  +  &  +  \\
-\code{KeyUsage}               & + & + & + & + &  +  &  +  &  +  \\
-\code{ExtKeyUsage}            &   &   &   & + &  +  &  +  &  +  \\
-\hline                                    
-\code{SOAIdentifier}          &   &   & + &   &     &     &     \\
-\texttt{УНП}                  &   &   &   &   &     &  +  &  +  \\
-\texttt{УНПФ}                 &   &   &   &   &     &     &  +  \\
+Расширение                    &КУЦ&РУЦ&ЦАС& ФЛ  & ЮП  &  ОРГ& ТС\\
+\hline                                                          
+\hline                                                          
+\code{SubjectAltName}         &   & + & + &  +  &     &  +  & + \\
+\code{SubjectKeyIdentifier}   & + & + & + &  +  &  +  &  +  & + \\
+\code{AuthorityKeyIdentifier} & + & + & + &  +  &  +  &  +  & + \\
+\code{CertificatePolicies}    &   & + & + &$\pm$&  +  &  +  & + \\
+\code{BasicConstraints}       & + & + & + &  +  &  +  &  +  & + \\
+\code{CRLDistributionPoints}  &   & + & + &$\pm$&$\pm$&$\pm$& + \\
+\code{AuthorityInfoAccess}    &   &   & + &  +  &  +  &  +  & + \\
+\code{KeyUsage}               & + & + & + &  +  &  +  &  +  & + \\
+\code{ExtKeyUsage}            &   &   &   &  +  &  +  &  +  & + \\
+\hline                                                          
+\code{SOAIdentifier}          &   &   & + &     &     &     &   \\
+\texttt{УНП}                  &   &   &   &     &  +  &  +  &   \\
+\texttt{УНПФ}                 &   &   &   &     &$\pm$&$\pm$&   \\
 \hline
 \end{tabular}
 \end{table}
