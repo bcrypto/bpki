@@ -42,6 +42,10 @@ BEGIN
   bpki-role-lr OBJECT IDENTIFIER ::= {bpki-role 62}
   -- legal entity
   bpki-role-le OBJECT IDENTIFIER ::= {bpki-role 63}
+  -- authenticated user
+  bpki-role-ap OBJECT IDENTIFIER ::= {bpki-role 64}
+  -- foreign authenticated user
+  bpki-role-fap OBJECT IDENTIFIER ::= {bpki-role 65}
   -- autonomous cryptographic device
   bpki-role-acd OBJECT IDENTIFIER ::= {bpki-role 70}
 
