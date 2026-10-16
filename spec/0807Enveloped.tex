@@ -1,24 +1,35 @@
 \section{Конвертованные данные}\label{FMT.EnvelopedData}
 
-Формат конвертованных данных задается типом~\code{EnvelopedData}, который
-определен в СТБ~34.101.23. 
+Форматы конвертованных данных с обычным шифрованием и аутентифицированным
+задаются соответственно типами~\code{EnvelopedData} 
+\addendum{и~\code{AuthEnvelopedData},} установленными в СТБ~34.101.23. 
 
-Контейнер~\code{EnvelopedData} заполняется по правилам СТБ~34.101.23
-со следующими уточнениями.
+Контейнеры~\code{EnvelopedData} \addendum{и~\code{AuthEnvelopedData}} 
+заполняются по правилам СТБ~34.101.23 со следующими уточнениями.
 
 \begin{enumerate}
 \item
 Версия синтаксиса (компонент~\code{version}) должна равняться~$0$. 
 
 \item
-Опциональные компоненты~\code{originatorInfo} и 
-\code{unprotectedAttrs} должны быть опущены. 
+Опциональный компонент~\code{originatorInfo} должен быть опущен.
+В \code{EnvelopedData} должен быть дополнительно опущен компонент 
+\code{unprotectedAttrs}, \addendum{а в \code{AuthEnvelopedData}~--- компоненты
+\code{authAttrs} и \code{unauthAttrs}.}
 
 \item
-Идентификатор алгоритмов шифрования 
-(компонент \code{contentEncryptionAlgorithm}, вложенный  
-в~\code{encryptedContentInfo}) должен быть выбран из перечня, 
-заданного в~\ref{CRYPTO.Encr}.
+Идентификатор алгоритмов шифрования для~\code{EnvelopedData} \addendum{или 
+алгоритмов аутентифицированного шифрования для~\code{AuthEnvelopedData}}
+(компонент \code{contentEncryptionAlgorithm}, вложенный 
+в~\code{encryptedContentInfo} \addendum{или~\code{authEncryptedContentInfo}})
+должен быть выбран из перечня, заданного в~\ref{CRYPTO.Encr}.
+
+(компонент~\code{eContentType}, вложенный 
+в~\code{encryptedContentInfo}) должен принимать значение~\code{id-data}. 
+Перед конвертованием подписанных данных они должны быть вложены в контейнер 
+\code{EncapsulatedContentInfo} (определен в СТБ~34.101.23), причем компонент 
+\code{eContentType} этого контейнера должен принимать значение 
+\code{id-signedData}.
 
 \item
 Тип конвертуемых данных (компонент~\code{eContentType}, вложенный 
@@ -46,4 +57,5 @@
 в~\code{keyEncryptionAlgorithm} должен быть установлен идентификатор
 алгоритмов~\code{bign-keytransport}, описанных в~\ref{CRYPTO.Transport}.
 \end{enumerate}
+
 \end{enumerate}
