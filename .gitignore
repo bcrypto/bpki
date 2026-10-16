@@ -10,7 +10,6 @@
 
 # Graphic files
 *.eps
-*.cdr
 
 # Tmp files
 ~*.*
