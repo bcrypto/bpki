@@ -191,21 +191,23 @@
 В расширении \code{CertificatePolicies} указываются идентификаторы политик 
 ГосСУОК.                                                                   	
 \item 
-\addendum{
-В сертификатах OCSP-сервера и КА в расширении \code{KeyUsage} 
-может дополнительно указываться флаг \code{nonRepudiation}.}
-\item 
-В сертификатах OCSP-сервера, СШВ и СЗД в расширении 
-\code{KeyUsage} \addendum{может} дополнительно указыва\addendum{ть}ся 
-флаг \code{keyEncipherment}.
-\item 
-В сертификатах OCSP-сервера, СШВ, СЗД, СИ и TLS-сервера в расширении 
-\code{KeyUsage} \addendum{может} дополнительно указыва\addendum{ть}ся 
-флаг \code{keyAgreement}.
-\item 
-В сертификате ЮП в расширении \code{KeyUsage} не указывается
-флаг \code{nonRepudiation}, но дополнительно указываются флаги 
-\code{keyAgreement} и \code{dataEncipherment}.
+\doubt{Расширение \code{KeyUsage} заполняется в соответствии с политиками.}
+%
+% skip:
+% \item 
+% Расширение 
+% В сертификатах OCSP-сервера и КА в расширении \code{KeyUsage} 
+% может дополнительно указываться флаг \code{nonRepudiation}.
+% \item 
+% В сертификатах OCSP-сервера, СШВ и СЗД в расширении \code{KeyUsage} 
+% может дополнительно указываться флаг \code{keyEncipherment}.
+% \item 
+% В сертификатах OCSP-сервера, СШВ, СЗД, СИ и TLS-сервера в расширении 
+% \code{KeyUsage} может дополнительно указываться флаг \code{keyAgreement}.
+% \item 
+% В сертификате ЮП в расширении \code{KeyUsage} не указывается
+% флаг \code{nonRepudiation}, но дополнительно указываются флаги 
+% \code{keyAgreement} и \code{dataEncipherment}.
 \end{enumerate}
 
 \mbox{}
