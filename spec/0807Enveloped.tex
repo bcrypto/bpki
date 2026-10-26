@@ -24,13 +24,6 @@
 в~\code{encryptedContentInfo} \addendum{или~\code{authEncryptedContentInfo}})
 должен быть выбран из перечня, заданного в~\ref{CRYPTO.Encr}.
 
-(компонент~\code{eContentType}, вложенный 
-в~\code{encryptedContentInfo}) должен принимать значение~\code{id-data}. 
-Перед конвертованием подписанных данных они должны быть вложены в контейнер 
-\code{EncapsulatedContentInfo} (определен в СТБ~34.101.23), причем компонент 
-\code{eContentType} этого контейнера должен принимать значение 
-\code{id-signedData}.
-
 \item
 Тип конвертуемых данных (компонент~\code{eContentType}, вложенный 
 в~\code{encryptedContentInfo}) должен принимать значение~\code{id-data}. 
